@@ -1,0 +1,566 @@
+# GMS-Testing Enrichment (Factor) Catalog
+# =============================================================================
+# HOW a base question is presented — never WHAT the answer is.
+#
+# Derived from knowlytix.harness.graphdoe.factor_catalog.yaml (the library is
+# the source of truth). Two fields are added to each factor to make the
+# base<->enrichment contract explicit and machine-checkable:
+#
+#   gt_invariant : MUST be true for every factor. A factor that could change
+#                  the ground truth is not a factor — it belongs in
+#                  base_catalog.yaml. The validator enforces this.
+#   applies_to   : which base questions this factor meaningfully enriches.
+#                    families      : base families, or ["*"] for all
+#                    answer_types  : base answer types, or ["*"] for all
+#                  When a user selects base categories, the harness filters to
+#                  factors whose applies_to matches — this is what "enrichment
+#                  enriches the base" means operationally.
+#
+# All factors control HOW questions are presented, not WHAT the answer is.
+# Ground truth is invariant across all factor combinations.
+# =============================================================================
+
+# =============================================================================
+# 1. QUERY FACTORS
+# =============================================================================
+query_factors:
+  - name: query_type
+    type: categorical
+    cardinality: 6
+    categories:
+      - "Factual_Definition"          # What is X?
+      - "Factual_Property"            # What are the properties of X?
+      - "Factual_Comparison"          # Compare X and Y
+      - "Analytical_Why"              # Why does X happen?
+      - "Validation_Verify"           # Is X correct?
+      - "Validation_Compliance"       # Does X comply with Y?
+    description: "How the question frames the retrieval task"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: clarity
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Clear"                       # Unambiguous, well-formed
+      - "Ambiguous"                   # Multiple interpretations possible
+      - "Misleading"                  # Contains incorrect assumptions
+    description: "Query clarity level"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: length
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Short"                       # <10 words
+      - "Medium"                      # 10-30 words
+      - "Long"                        # >30 words
+    description: "Query length in words"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: specificity
+    type: categorical
+    cardinality: 2
+    categories:
+      - "General"                     # Broad, open-ended
+      - "Specific"                    # Precise, targeted
+    description: "Query specificity level"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: temporal
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Past"                        # Historical framing
+      - "Present"                     # Current framing
+      - "Future"                      # Predictive framing
+    description: "Temporal focus of query"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: answer_format
+    type: categorical
+    cardinality: 4
+    categories:
+      - "Short_Answer"                # Brief, direct answer
+      - "Paragraph"                   # Detailed paragraph
+      - "Bullet_Points"              # Structured list
+      - "Citation"                    # Answer with source citations
+    description: "Expected answer format"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+# =============================================================================
+# 2. USER / PERSONA FACTORS
+# =============================================================================
+persona_factors:
+  - name: role
+    type: categorical
+    cardinality: 5
+    categories:
+      - "Employee"                    # Regular employee
+      - "Manager"                     # Team manager
+      - "Executive"                   # C-level executive
+      - "Auditor"                     # Internal/external auditor
+      - "Regulator"                   # Regulatory examiner
+    description: "User role framing"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: expertise
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Novice"                      # Beginner, needs explanations
+      - "Intermediate"                # Some domain familiarity
+      - "Expert"                      # Domain expert, uses jargon
+    description: "User expertise level"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: style
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Formal"                      # Professional, structured
+      - "Casual"                      # Conversational, relaxed
+      - "Technical"                   # Precise, jargon-heavy
+    description: "Communication style preference"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+# =============================================================================
+# 3. REASONING FACTORS
+# =============================================================================
+reasoning_factors:
+  - name: reasoning_cue
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Direct"                      # Just answer the question
+      - "Step_By_Step"                # Think step by step
+      - "No_Cue"                      # No instruction on how to reason
+    description: "Chain-of-thought / prompting strategy"
+    gt_invariant: true
+    applies_to: {families: [reasoning_composition, comparison_ranking, consistency_integrity], answer_types: ["*"]}
+
+  - name: hop_count
+    type: categorical
+    cardinality: 3
+    categories:
+      - "1-Hop"                       # Single-step reasoning
+      - "2-Hop"                       # Two-step reasoning
+      - "3+Hop"                       # Multi-step reasoning
+    description: "Reasoning depth required"
+    gt_invariant: true
+    applies_to: {families: [reasoning_composition, comparison_ranking], answer_types: ["*"]}
+
+  - name: reasoning_type
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Deductive"                   # General to specific
+      - "Inductive"                   # Specific to general
+      - "Abductive"                   # Best explanation
+    description: "Type of reasoning required"
+    gt_invariant: true
+    applies_to: {families: [reasoning_composition], answer_types: ["*"]}
+
+# =============================================================================
+# 4. CONTEXT PRESENTATION FACTORS
+# =============================================================================
+context_factors:
+  - name: context_scope
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Full_Document"               # Entire document as context
+      - "Relevant_Section"            # Only the relevant section
+      - "Minimal_Excerpt"             # Minimal snippet around the answer
+    description: "How much context is provided"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: section_hint
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                        # No section hint given
+      - "Correct_Section"             # Points to the right section
+      - "Wrong_Section"               # Points to a wrong section
+    description: "Whether the prompt references a section"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: distractor_content
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                        # Clean context
+      - "Related"                     # Similar but irrelevant data nearby
+      - "Unrelated"                   # Completely unrelated data mixed in
+    description: "Irrelevant content mixed into context"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: context_order
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Original"                    # Document order preserved
+      - "Shuffled"                    # Sections randomly reordered
+      - "Reversed"                    # Sections in reverse order
+    description: "Ordering of context sections"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: context_format
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Markdown"                    # Original markdown with tables
+      - "Plain_Text"                  # Stripped to plain text
+      - "Structured_JSON"             # Converted to JSON structure
+    description: "Format of the document context"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+# =============================================================================
+# 5. ENTITY / VALUE PRESENTATION FACTORS
+# =============================================================================
+entity_factors:
+  - name: entity_aliasing
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Exact"                       # Entity name as-is in document
+      - "Synonym"                     # Equivalent name (e.g., "CET1" -> "Common Equity Tier 1")
+      - "Abbreviated"                 # Shortened form
+    description: "How entity names are presented in the question"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: numeric_format
+    type: categorical
+    cardinality: 3
+    categories:
+      - "As_Shown"                    # Number format matching document
+      - "Percentage"                  # Convert to/from percentage
+      - "Scientific"                  # Scientific notation
+    description: "How numeric values are referenced"
+    gt_invariant: true
+    applies_to: {families: [retrieval_recall, comparison_ranking, reasoning_composition, consistency_integrity], answer_types: [float, int]}
+
+  - name: unit_variation
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Original"                    # Units as in document
+      - "Converted"                   # Equivalent units (e.g., M -> thousands)
+      - "Omitted"                     # No units specified
+    description: "Unit presentation in question"
+    gt_invariant: true
+    applies_to: {families: [retrieval_recall, comparison_ranking], answer_types: [float, int]}
+
+  - name: precision_hint
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                        # No precision guidance
+      - "Exact"                       # Demand exact value
+      - "Approximate"                 # Accept approximate
+    description: "Precision expectation signaled in question"
+    gt_invariant: true
+    applies_to: {families: [retrieval_recall, comparison_ranking], answer_types: [float, int]}
+
+# =============================================================================
+# 6. CONVERSATION FACTORS
+# =============================================================================
+conversation_factors:
+  - name: memory
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Stateless"                   # No conversation history
+      - "Shallow"                     # Recent context only
+      - "Deep"                        # Full conversation history
+    description: "Conversation memory depth"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: history
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                        # First query, no history
+      - "Related"                     # Related previous queries
+      - "Distracting"                 # Unrelated previous queries
+    description: "Type of conversation history"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: turn_position
+    type: categorical
+    cardinality: 3
+    categories:
+      - "First"                       # First turn in conversation
+      - "Middle"                      # Middle of conversation
+      - "Final"                       # Final turn, wrap-up
+    description: "Position in conversation flow"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+# =============================================================================
+# 7. ADVERSARIAL FACTORS   (substack category #10: Adversarial Framing)
+# =============================================================================
+adversarial_factors:
+  - name: instruction_conflict
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                        # No conflicting instructions
+      - "Contradictory_Hint"          # Hint suggesting wrong answer
+      - "Authority_Override"           # "As an expert, I believe X..."
+    description: "Prompt injection / instruction conflict"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: answer_anchoring
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                        # No anchoring
+      - "Wrong_Anchor"                # "I think the answer is X" (wrong)
+      - "Partial_Anchor"              # Partially correct suggestion
+    description: "Anchoring bias testing"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: confidence_pressure
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                        # No pressure
+      - "Demand_Certainty"            # "You must be certain"
+      - "Encourage_Hedging"           # "It's OK to be unsure"
+    description: "Calibration and confidence pressure"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+# =============================================================================
+# 8. SYSTEM / AGENTIC FACTORS
+# =============================================================================
+system_factors:
+  - name: tool_availability
+    type: categorical
+    cardinality: 3
+    categories:
+      - "All_Tools"                   # Full tool access
+      - "Limited_Tools"               # Restricted tool set
+      - "No_Tools"                    # No external tools
+    description: "Tool access for agentic systems"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: time_pressure
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                        # No time constraint
+      - "Moderate"                    # Soft time limit
+      - "Strict"                      # Hard time limit
+    description: "Response time constraints"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: iteration_limit
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Single_Pass"                 # One attempt only
+      - "Few_Iterations"              # 2-3 refinement rounds
+      - "Unlimited"                   # No iteration limit
+    description: "Agent iteration budget"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+# =============================================================================
+# 9. VARIABILITY TRANSFORMATIONS (V)
+# =============================================================================
+variability_factors:
+  - name: paraphrase_depth
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                          # Original phrasing unchanged
+      - "Light"                         # Minor rewording, same structure
+      - "Heavy"                         # Deep semantic paraphrase, new structure
+    description: "Depth of semantic paraphrasing applied to question"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: granularity
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Original"                      # Same level of detail as base question
+      - "Coarser"                       # More abstract, less detail
+      - "Finer"                         # More granular, more detail
+    description: "Level of detail scaling in question and expected answer"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: question_format
+    type: categorical
+    cardinality: 4
+    categories:
+      - "Interrogative"                 # Standard question: "What is X?"
+      - "Declarative"                   # Statement with blank: "The value of X is ___"
+      - "Imperative"                    # Command: "Report X."
+      - "Conditional"                   # Conditional: "If you look at X, what would..."
+    description: "Syntactic format of the question"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+# =============================================================================
+# 10. ROBUSTNESS TRANSFORMATIONS (R)   (substack category #11: Robustness)
+# =============================================================================
+robustness_factors:
+  - name: noise
+    type: categorical
+    cardinality: 3
+    categories:
+      - "None"                          # Clean text
+      - "Typos"                         # Random character substitutions/transpositions
+      - "OCR_Artifacts"                 # Garbled characters, missing spaces, ligature errors
+    description: "Surface-level noise injected into question text"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: context_relevance
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Relevant"                      # Context matches question perfectly
+      - "Partial"                       # Context partially relevant, some useful info
+      - "Irrelevant"                    # Context is mostly unrelated to question
+    description: "Relevance of provided context to the question"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: complexity
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Simple"                        # Single, direct question
+      - "Compound"                      # Two related sub-questions joined
+      - "Nested"                        # Question embedded in a conditional/sub-clause
+    description: "Structural complexity of the question"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: edge_case
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Normal"                        # Standard question about typical values
+      - "Boundary"                      # Question targets boundary conditions (zero, max, threshold)
+      - "Extreme"                       # Question pushes to extreme or degenerate cases
+    description: "Whether question targets edge/boundary conditions (presentation framing)"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+    # NOTE: this is the PRESENTATION framing of edge conditions. The CONTENT
+    # `boundary` base category (base_catalog.yaml) is what actually selects a
+    # boundary value to ask about. Pair them to stress both layers.
+
+  - name: emotional_frame
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Neutral"                       # No emotional loading
+      - "Urgent"                        # Urgency framing ("critical", "immediately")
+      - "Skeptical"                     # Doubt framing ("are you sure", "this seems wrong")
+    description: "Emotional tone or bias pressure in question framing"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: format_noise
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Clean"                         # Well-formatted question
+      - "Broken_Markup"                 # Malformed markdown/HTML tags in question
+      - "Mixed_Format"                  # Mixed formatting (partial bold, stray bullets, etc.)
+    description: "Formatting artifacts or disruptions in question text"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+  - name: intent_count
+    type: categorical
+    cardinality: 3
+    categories:
+      - "Single"                        # One clear question
+      - "Dual"                          # Two related questions combined
+      - "Conflicting"                   # Two contradictory questions combined
+    description: "Number of intents or questions packed into one query"
+    gt_invariant: true
+    applies_to: {families: ["*"], answer_types: ["*"]}
+
+# =============================================================================
+# FACTOR GROUPS  (presentation bundles; unchanged from the knowlytix catalog)
+# =============================================================================
+factor_groups:
+  quick_screen:
+    description: "Fast 3-factor screening for major effects"
+    includes: [clarity, entity_aliasing, reasoning_cue]
+
+  query_core:
+    description: "Core query presentation factors"
+    includes: [query_type, clarity, length, specificity, answer_format]
+
+  user_variation:
+    description: "User persona and style variation"
+    includes: [role, expertise, style]
+
+  context_stress:
+    description: "Context presentation stress testing"
+    includes: [context_scope, section_hint, distractor_content, context_order]
+
+  entity_stress:
+    description: "Entity and value presentation variation"
+    includes: [entity_aliasing, numeric_format, unit_variation, precision_hint]
+
+  adversarial:
+    description: "Adversarial robustness testing"
+    includes: [instruction_conflict, answer_anchoring, confidence_pressure]
+
+  variability:
+    description: "Variability transformations (V) — semantic and format variation"
+    includes: [paraphrase_depth, entity_aliasing, granularity, question_format, temporal, context_order, style]
+
+  robustness:
+    description: "Robustness transformations (R) — noise, adversarial, edge cases"
+    includes: [noise, clarity, instruction_conflict, context_relevance, answer_anchoring, complexity, edge_case, emotional_frame, format_noise, intent_count]
+
+  v_and_r:
+    description: "Combined variability + robustness screening (10 new factors)"
+    includes: [paraphrase_depth, granularity, question_format, noise, context_relevance, complexity, edge_case, emotional_frame, format_noise, intent_count]
+
+  agentic:
+    description: "Agentic system testing"
+    includes: [tool_availability, time_pressure, iteration_limit, reasoning_cue, hop_count]
+
+  conversational:
+    description: "Multi-turn conversation testing"
+    includes: [memory, history, turn_position]
+
+  comprehensive:
+    description: "20-factor comprehensive test (original 15 + key V/R factors)"
+    includes: [clarity, length, specificity, answer_format, role, expertise, style, reasoning_cue, context_scope, distractor_content, entity_aliasing, numeric_format, instruction_conflict, answer_anchoring, confidence_pressure, paraphrase_depth, noise, complexity, emotional_frame, intent_count]
+
+  full:
+    description: "All 40 factors"
+    includes: [query_type, clarity, length, specificity, temporal, answer_format, role, expertise, style, reasoning_cue, hop_count, reasoning_type, context_scope, section_hint, distractor_content, context_order, context_format, entity_aliasing, numeric_format, unit_variation, precision_hint, memory, history, turn_position, instruction_conflict, answer_anchoring, confidence_pressure, tool_availability, time_pressure, iteration_limit, paraphrase_depth, granularity, question_format, noise, context_relevance, complexity, edge_case, emotional_frame, format_noise, intent_count]

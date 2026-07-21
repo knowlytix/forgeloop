@@ -1,0 +1,453 @@
+"""Builder for notebooks/appendix_A_agent_bridge.ipynb (App A — agent bridge).
+
+CPU-only. Emits a valid nbformat-4 notebook via the ``nbformat`` package; it does
+NOT execute any cell (no store load, no Qwen). The lead runs it in CI. Grounded
+entirely in data/corpus_facts.md (Northwind Industries FY2025).
+
+Run:  ~/cluster/spark-venv/bin/python scripts/build_appendix_A_notebook.py
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import nbformat as nbf
+
+OUT = Path(__file__).resolve().parents[1] / "notebooks" / "appendix_A_agent_bridge.ipynb"
+
+# ---------------------------------------------------------------------------
+# Cells. Code cells are copied verbatim into book/appendix_A_agent_bridge.tex.
+# ---------------------------------------------------------------------------
+
+CELLS: list[tuple[str, str]] = []
+
+
+def md(text: str) -> None:
+    CELLS.append(("markdown", text))
+
+
+def code(text: str) -> None:
+    CELLS.append(("code", text))
+
+
+# --- intro ---------------------------------------------------------------
+md(
+    "# Appendix A — Plugging GEODE-RAG into a governed agent\n"
+    "\n"
+    "The capstone (Chapter 16) assembled a full GEODE-RAG system over the\n"
+    "Northwind Industries annual report. This appendix is the **bridge** to the\n"
+    "agent book, *Beyond Prompt and Pray*: we wrap that pipeline as a single\n"
+    "typed, gated tool — `search_report` — and run it inside a minimal governed\n"
+    "executor, the same shape as the agent book's `search_policy`.\n"
+    "\n"
+    "Everything below is grounded in `data/corpus_facts.md`. The only\n"
+    "GPU/Qwen-touching cell is the store reload + the real-Qwen `RagConfig`,\n"
+    "which the lead runs in CI; the deterministic path uses a scripted fake\n"
+    "`LLMBackend` so the notebook self-checks without a model."
+)
+
+# --- bootstrap (FIRST cell, exactly per global brief) --------------------
+code(
+    "import os, sys\n"
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/home/user/jupyterlab/GMS-knowlytix")\n'
+    "sys.path.insert(0, KNOWLYTIX_SRC)"
+)
+
+# --- the deterministic fake backend --------------------------------------
+md(
+    "## A.1 A scripted backend for deterministic CI\n"
+    "\n"
+    "The pipeline needs an `LLMBackend` for query-triple extraction and grounded\n"
+    "synthesis. For a reproducible notebook we script one: it answers the single\n"
+    "question this appendix asks, returning the canonical query triple and an\n"
+    "answer that quotes only the retrieved fact. The real Qwen path is shown in\n"
+    "§A.5. The interface is the real one — `knowlytix.knowledge.llm_backend.LLMBackend`."
+)
+code(
+    "from knowlytix.knowledge.llm_backend import LLMBackend\n"
+    "\n"
+    "\n"
+    "class ScriptedBackend(LLMBackend):\n"
+    '    """Deterministic stand-in for Qwen so the bridge self-checks offline.\n'
+    "\n"
+    "    extract: maps the appendix's question to its canonical query triple\n"
+    "             (cloud platform, has_revenue, ?). synthesize: echoes the one\n"
+    "             retrieved figure verbatim — no parametric memory, no other number.\n"
+    '    """\n'
+    "\n"
+    "    @property\n"
+    "    def model_name(self) -> str:\n"
+    '        return "scripted-fake"\n'
+    "\n"
+    "    def call(self, system: str, user: str, max_tokens: int = 2048) -> str:\n"
+    '        low = (system + " " + user).lower()\n'
+    '        if "query triple" in low or "extract" in low or "relation" in low:\n'
+    '            return "cloud platform | has_revenue | ?"\n'
+    "        # synthesis: answer ONLY from the evidence block we were handed\n"
+    '        return "Cloud Platform reported revenue of 120.0 for FY2025."'
+)
+
+# --- build the pipeline --------------------------------------------------
+md(
+    "## A.2 The pipeline behind the tool\n"
+    "\n"
+    "We reload the store F2 trained and wrap it bank-grade: dense fallback off,\n"
+    "strict mode on, self-verification on. This is the only cell that touches the\n"
+    "store on disk — the lead runs it in CI. (`RagConfig` and `RagPipeline` are the\n"
+    "real library symbols from `knowlytix.knowledge.rag`.)"
+)
+code(
+    "# CI-ONLY: loads the trained store + builds the pipeline. Skipped at authoring\n"
+    "# time (one shared GPU). The bridge logic below does not depend on this cell.\n"
+    "import torch\n"
+    "from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore\n"
+    "from knowlytix.knowledge.rag import RagConfig, RagPipeline\n"
+    "\n"
+    'STORE_PATH = os.environ.get("GMS_RAG_STORE", "data/gms_annual_report_store")\n'
+    "\n"
+    "\n"
+    "def build_pipeline(llm: LLMBackend) -> RagPipeline:\n"
+    '    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")\n'
+    '    config = DocGMSConfig(store_path=STORE_PATH, ingest_mode="regex")\n'
+    "    store = GMSExpertStore(config, device=device)\n"
+    "    if not store.load():\n"
+    '        raise RuntimeError(f"no store at {STORE_PATH}; run scripts/build_store.py")\n'
+    "    rag = RagConfig(\n"
+    "        llm=llm,\n"
+    '        binding="embedding",      # paraphrases bind (Chapter 7)\n'
+    "        dense_fallback=False,      # quarantined dense index never used\n"
+    "        strict_mode=True,          # graph-only; abstain rather than guess\n"
+    "        verify_llm_output=True,    # GMS self-verification (Chapter 10)\n"
+    '        on_verify_fail="abstain",  # a contradicted claim never ships\n'
+    "    )\n"
+    "    return RagPipeline.from_store(store, rag)"
+)
+
+# --- typed tool ----------------------------------------------------------
+md(
+    "## A.3 The tool: typed in, typed out, provenance carried\n"
+    "\n"
+    "The agent book registers tools as typed records with pydantic input/output\n"
+    "schemas and a risk level (agent book Ch 6). We mirror that here without\n"
+    "importing the private `agentlab` package — the schema *is* the contract.\n"
+    "\n"
+    "The key design choice: the tool's output carries the answer **and** its\n"
+    "provenance (the `file:line:char` span and the raw source text) **and** the\n"
+    "decision/verified flags. An agent that calls this tool gets a citable,\n"
+    "abstention-aware result, not a bare string. When the pipeline abstains the\n"
+    "tool returns `decision=\"abstain\"` and an empty `sources` list — the agent\n"
+    "can branch on that instead of fabricating."
+)
+code(
+    "from pydantic import BaseModel, Field\n"
+    "\n"
+    "\n"
+    "class SearchReportInput(BaseModel):\n"
+    "    question: str = Field(..., description=\"A natural-language question about the annual report.\")\n"
+    "\n"
+    "\n"
+    "class Citation(BaseModel):\n"
+    "    triple: tuple[str, str, str]\n"
+    "    location: str | None = None   # file:line:char span\n"
+    "    raw: str | None = None        # the source text the fact came from\n"
+    "\n"
+    "\n"
+    "class SearchReportOutput(BaseModel):\n"
+    "    answer: str\n"
+    "    decision: str                 # accept | abstain | escalate\n"
+    "    verified: bool                # GMS-verified, not LLM-judged\n"
+    "    confidence: float\n"
+    "    route: str                    # triple | dense_fallback\n"
+    "    sources: list[Citation] = Field(default_factory=list)\n"
+    "    notice: str | None = None"
+)
+code(
+    "def search_report(pipe: RagPipeline, question: str) -> SearchReportOutput:\n"
+    '    """Answer a question through GEODE-RAG; return a typed, cited result.\n'
+    "\n"
+    "    The pipeline does the work (extract -> bind -> retrieve -> synthesize ->\n"
+    "    verify -> decide). This wrapper only adapts RagAnswer into the agent's\n"
+    "    tool-output schema, preserving provenance and the abstain decision.\n"
+    '    """\n'
+    "    ans = pipe.query(question)\n"
+    "    citations = [\n"
+    "        Citation(triple=(f.head, f.relation, f.tail), location=f.location, raw=f.raw)\n"
+    "        for f in ans.sources\n"
+    "    ]\n"
+    "    return SearchReportOutput(\n"
+    "        answer=ans.answer,\n"
+    "        decision=ans.decision,\n"
+    "        verified=ans.verified,\n"
+    "        confidence=ans.confidence,\n"
+    "        route=ans.route,\n"
+    "        sources=citations,\n"
+    "        notice=ans.notice,\n"
+    "    )"
+)
+
+# --- minimal governed executor ------------------------------------------
+md(
+    "## A.4 A minimal governed loop\n"
+    "\n"
+    "The agent book runs every tool call through a `GovernedToolExecutor`: gates\n"
+    "fire first (schema, policy, plausibility), then the tool runs, and the result\n"
+    "is recorded for the audit trail (agent book Ch 6, Ch 15). We reproduce the\n"
+    "*shape* in a few lines so the appendix stands alone; the production executor\n"
+    "with its full gate protocol lives in the agent book — we do not duplicate it.\n"
+    "\n"
+    "Two gates suffice to show the contract: a **syntax** gate that validates the\n"
+    "arguments against the tool's input schema, and a **risk** gate that records\n"
+    "the tool's risk level. A real deployment adds policy gates (agent book Ch 6)."
+)
+code(
+    "from dataclasses import dataclass, field\n"
+    "from typing import Any, Callable\n"
+    "\n"
+    "\n"
+    "@dataclass(frozen=True)\n"
+    "class Tool:\n"
+    '    """Typed, gated tool record — the agent book\'s Tool contract, minimal form."""\n'
+    "    name: str\n"
+    "    description: str\n"
+    "    input_schema: type[BaseModel]\n"
+    "    fn: Callable[..., BaseModel]\n"
+    '    risk: str = "low"\n'
+    "\n"
+    "\n"
+    "@dataclass\n"
+    "class ToolResult:\n"
+    "    tool_name: str\n"
+    "    output: Any = None\n"
+    "    error: str | None = None\n"
+    "    allowed: bool = False\n"
+    "    gates: list[str] = field(default_factory=list)\n"
+    "\n"
+    "\n"
+    "class GovernedExecutor:\n"
+    '    """Validate args against the schema, record risk, then run the tool.\n'
+    "\n"
+    "    Mirrors agent book GovernedToolExecutor.execute: gates first, tool second,\n"
+    "    everything captured for the audit trail. A deny short-circuits before fn.\n"
+    '    """\n'
+    "\n"
+    "    def __init__(self, tools: dict[str, Tool]):\n"
+    "        self._tools = tools\n"
+    "        self.audit: list[dict] = []\n"
+    "\n"
+    "    def execute(self, name: str, arguments: dict) -> ToolResult:\n"
+    "        tool = self._tools.get(name)\n"
+    "        if tool is None:\n"
+    '            return ToolResult(name, error=f"unknown tool {name!r}")\n'
+    "        try:\n"
+    "            parsed = tool.input_schema(**arguments)  # syntax gate\n"
+    "        except Exception as e:\n"
+    '            return ToolResult(name, error=f"schema: {e}", gates=["syntax:deny"])\n'
+    '        gates = ["syntax:allow", f"risk:{tool.risk}"]\n'
+    "        output = tool.fn(**parsed.model_dump())\n"
+    "        result = ToolResult(name, output=output, allowed=True, gates=gates)\n"
+    "        self.audit.append({\n"
+    '            "tool": name, "gates": gates,\n'
+    '            "decision": getattr(output, "decision", None),\n'
+    '            "verified": getattr(output, "verified", None),\n'
+    "        })\n"
+    "        return result"
+)
+md(
+    "Register `search_report` and call it through the executor. We bind the\n"
+    "pipeline into the tool's `fn` so the registry holds a zero-argument-besides-\n"
+    "schema callable, exactly as the agent book wires a stateful tool."
+)
+code(
+    "# CI-ONLY: needs the real pipeline. The deterministic self-check (§A.6) injects\n"
+    "# a fake pipeline so this same code runs offline.\n"
+    "def make_executor(pipe: RagPipeline) -> GovernedExecutor:\n"
+    "    tool = Tool(\n"
+    '        name="search_report",\n'
+    '        description="Search the Northwind FY2025 annual report via GEODE-RAG; '
+    'returns a grounded, cited answer or abstains.",\n'
+    "        input_schema=SearchReportInput,\n"
+    "        fn=lambda question: search_report(pipe, question),\n"
+    '        risk="low",\n'
+    "    )\n"
+    '    return GovernedExecutor({"search_report": tool})'
+)
+
+# --- real qwen path ------------------------------------------------------
+md(
+    "## A.5 The real Qwen path (CI)\n"
+    "\n"
+    "Everything above runs on the scripted backend for determinism. In production\n"
+    "the synthesis/extraction LLM is local Qwen2.5-3B-Instruct — no API key. Swap\n"
+    "the backend and the bridge is unchanged. The lead runs this in CI; we show it\n"
+    "as a listing here (one GPU is shared across authors)."
+)
+code(
+    "# CI-ONLY (real Qwen). Build the pipeline with a local Transformers backend\n"
+    "# and run the governed tool end to end.\n"
+    "def run_with_qwen(question: str) -> ToolResult:\n"
+    "    from knowlytix.knowledge.llm_backend import LocalTransformersBackend\n"
+    '    qwen = LocalTransformersBackend("Qwen/Qwen2.5-3B-Instruct")\n'
+    "    pipe = build_pipeline(qwen)\n"
+    "    executor = make_executor(pipe)\n"
+    '    return executor.execute("search_report", {"question": question})\n'
+    "\n"
+    "\n"
+    "# result = run_with_qwen(\"What was Cloud Platform's revenue?\")\n"
+    "# print(result.output.answer, result.output.sources[0].location)"
+)
+
+# --- self-check ----------------------------------------------------------
+md(
+    "## A.6 Self-check — the tool returns a grounded, cited answer through the executor\n"
+    "\n"
+    "We prove the chapter's claim without a GPU by injecting a **fake pipeline**\n"
+    "that returns the corpus-true fact for the canonical question:\n"
+    "`('cloud platform', 'has_revenue', '120.0')` at span `:15:553-558`\n"
+    "(see `data/corpus_facts.md`). The fake exposes the same `.query()` ->\n"
+    "`RagAnswer` contract the real `RagPipeline` does, so the tool and executor\n"
+    "code paths are exercised verbatim. The assertion checks that the answer flows\n"
+    "through the governed executor **with** provenance and **without** losing the\n"
+    "verified/decision flags — the whole point of the bridge."
+)
+code(
+    "from knowlytix.knowledge.rag.pipeline import RagAnswer\n"
+    "from knowlytix.knowledge.rag.retrieve import RetrievedFact\n"
+    "\n"
+    "# Corpus-true fact (data/corpus_facts.md): cloud platform has_revenue 120.0.\n"
+    "_FACT = RetrievedFact(\n"
+    '    head="cloud platform", relation="has_revenue", tail="120.0",\n'
+    '    score=0.0, confidence=1.0, source="triple",\n'
+    '    location="annual_report.md:15:553-558", raw="Cloud Platform | Technology | 120.0 | 340",\n'
+    ")\n"
+    "\n"
+    "\n"
+    "class _FakePipeline:\n"
+    '    """Stands in for RagPipeline.query() so the bridge self-checks offline."""\n'
+    "    def query(self, question: str) -> RagAnswer:\n"
+    "        return RagAnswer(\n"
+    '            answer="Cloud Platform reported revenue of 120.0 for FY2025.",\n'
+    '            confidence=1.0, decision="accept", route="triple", verified=True,\n'
+    "            sources=[_FACT],\n"
+    "        )\n"
+    "\n"
+    "\n"
+    "_pipe = _FakePipeline()\n"
+    "_tool = Tool(\n"
+    '    name="search_report",\n'
+    '    description="GEODE-RAG over the annual report.",\n'
+    "    input_schema=SearchReportInput,\n"
+    "    fn=lambda question: search_report(_pipe, question),\n"
+    '    risk="low",\n'
+    ")\n"
+    'executor = GovernedExecutor({"search_report": _tool})\n'
+    "\n"
+    'result = executor.execute("search_report", {"question": "What was Cloud Platform\'s revenue?"})\n'
+    "out = result.output\n"
+    "\n"
+    "# 1. the call passed the governance gates and ran\n"
+    "assert result.allowed and result.error is None, result\n"
+    'assert "syntax:allow" in result.gates and "risk:low" in result.gates\n'
+    "# 2. the answer is grounded: it quotes the corpus figure, carries provenance,\n"
+    "#    and keeps the verified/decision flags through the executor\n"
+    'assert "120.0" in out.answer\n'
+    'assert out.decision == "accept" and out.verified is True and out.route == "triple"\n'
+    "assert out.sources, \"the tool dropped provenance\"\n"
+    'assert out.sources[0].triple == ("cloud platform", "has_revenue", "120.0")\n'
+    'assert out.sources[0].location == "annual_report.md:15:553-558"\n'
+    "# 3. the audit trail recorded the gated, verified call\n"
+    'assert executor.audit[-1]["verified"] is True\n'
+    'print("OK: search_report returned a grounded, cited answer through the governed executor")\n'
+    "print(out.answer, \"<-\", out.sources[0].location)"
+)
+md(
+    "## A.7 Abstention crosses the bridge too\n"
+    "\n"
+    "A governed agent must be able to tell *\"I don't know\"* from a wrong answer.\n"
+    "Because the pipeline abstains on a prose/blind-spot question\n"
+    "(Chapter 11; coverage blind spots in `data/corpus_facts.md`: MD&A, Risk\n"
+    "Factors, Outlook), the tool surfaces `decision=\"abstain\"` with empty\n"
+    "`sources`. The agent branches on that instead of fabricating."
+)
+code(
+    "class _AbstainPipeline:\n"
+    "    def query(self, question: str) -> RagAnswer:\n"
+    "        return RagAnswer(\n"
+    '            answer="I cannot answer this from the available grounded evidence.",\n'
+    '            confidence=0.0, decision="abstain", route="triple", verified=True,\n'
+    '            notice="Question did not bind to known entities/relations.",\n'
+    "        )\n"
+    "\n"
+    "\n"
+    "_abstain_tool = Tool(\n"
+    '    name="search_report", description="GEODE-RAG.",\n'
+    "    input_schema=SearchReportInput,\n"
+    "    fn=lambda question: search_report(_AbstainPipeline(), question),\n"
+    ")\n"
+    'abstain_exec = GovernedExecutor({"search_report": _abstain_tool})\n'
+    'ab = abstain_exec.execute("search_report", {"question": "What does the Outlook section say?"})\n'
+    'assert ab.output.decision == "abstain" and not ab.output.sources\n'
+    'print("OK: the tool abstains on a blind-spot question, carrying the notice:")\n'
+    "print(ab.output.notice)"
+)
+
+# --- exercise solution ---------------------------------------------------
+md(
+    "## A.8 Exercise solution — a policy gate\n"
+    "\n"
+    "The minimal executor has only a syntax gate and a risk tag. Here is a\n"
+    "subclass that adds a **policy** gate denying an empty or over-long question\n"
+    "*before* the tool runs — a crude prompt-injection / cost guard. It mirrors\n"
+    "the agent book's `Gate` protocol (Ch 6): check first, deny short-circuits."
+)
+code(
+    "class PolicyGovernedExecutor(GovernedExecutor):\n"
+    '    """GovernedExecutor + a policy gate on the question argument."""\n'
+    "\n"
+    "    MAX_LEN = 500\n"
+    "\n"
+    "    def execute(self, name: str, arguments: dict) -> ToolResult:\n"
+    '        q = str(arguments.get("question", "")).strip()\n'
+    "        if not q or len(q) > self.MAX_LEN:\n"
+    '            res = ToolResult(name, error="policy: empty or over-long question",\n'
+    '                             allowed=False, gates=["policy:deny"])\n'
+    '            self.audit.append({"tool": name, "gates": ["policy:deny"],\n'
+    '                               "decision": None, "verified": None})\n'
+    "            return res\n"
+    "        return super().execute(name, arguments)\n"
+    "\n"
+    "\n"
+    "_pol = PolicyGovernedExecutor({\n"
+    '    "search_report": Tool(\n'
+    '        name="search_report", description="GEODE-RAG.",\n'
+    "        input_schema=SearchReportInput,\n"
+    "        fn=lambda question: search_report(_FakePipeline(), question),\n"
+    "    )\n"
+    "})\n"
+    "# a normal question still passes\n"
+    'ok = _pol.execute("search_report", {"question": "What was Cloud Platform\'s revenue?"})\n'
+    'assert ok.allowed and "120.0" in ok.output.answer\n'
+    "# an empty question is denied before the tool runs\n"
+    'bad = _pol.execute("search_report", {"question": "   "})\n'
+    'assert not bad.allowed and bad.gates == ["policy:deny"]\n'
+    'assert _pol.audit[-1]["gates"] == ["policy:deny"]\n'
+    'print("OK: policy gate denies an empty question, allows a real one")'
+)
+
+
+def main() -> None:
+    nb = nbf.v4.new_notebook()
+    nb.cells = [
+        nbf.v4.new_markdown_cell(t) if kind == "markdown" else nbf.v4.new_code_cell(t)
+        for kind, t in CELLS
+    ]
+    nb.metadata = {
+        "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+        "language_info": {"name": "python"},
+    }
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    nbf.write(nb, str(OUT))
+    print(f"wrote {OUT} ({len(nb.cells)} cells)")
+
+
+if __name__ == "__main__":
+    main()

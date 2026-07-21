@@ -1,0 +1,279 @@
+# SPDX-License-Identifier: Apache-2.0
+"""Builder for notebooks/appendix_C_gms_substrate.ipynb.
+
+CPU-only. Emits a valid nbformat-4 notebook. Does NOT execute it (no store
+load, no Qwen). Run: python scripts/_build_appendix_C.py
+"""
+from __future__ import annotations
+
+import os
+
+import nbformat as nbf
+
+
+def md(text: str) -> nbf.NotebookNode:
+    return nbf.v4.new_markdown_cell(text)
+
+
+def code(text: str) -> nbf.NotebookNode:
+    return nbf.v4.new_code_cell(text)
+
+
+CELLS: list[nbf.NotebookNode] = []
+
+CELLS.append(md(
+    "# Appendix C — The GMS substrate & calibration\n"
+    "\n"
+    "This appendix makes the book stand on its own. It recaps the six store\n"
+    "primitives, shows how a trained store is assembled from triples, and gives\n"
+    "the **threshold-calibration method**: cohort -> sweep -> operating point\n"
+    "under a false-allow ceiling. Geometry internals (rotors, admissibility\n"
+    "caps, holonomy proofs) are deferred to the GMS monograph.\n"
+    "\n"
+    "The calibration sweep at the end runs **CPU-only** with a deterministic\n"
+    "injected encoder, so it reproduces a chosen operating point without a GPU,\n"
+    "without the trained store, and without Qwen."
+))
+
+# --- Cell 1: bootstrap (verbatim from global brief) ---
+CELLS.append(code(
+    "import os, sys\n"
+    "KNOWLYTIX_SRC = os.environ.get(\"KNOWLYTIX_SRC\", "
+    "\"/home/user/jupyterlab/GMS-knowlytix\")\n"
+    "sys.path.insert(0, KNOWLYTIX_SRC)"
+))
+
+# --- The six primitives recap ---
+CELLS.append(md(
+    "## C.1 The six store primitives\n"
+    "\n"
+    "Everything the RAG pipeline does to the graph routes through six methods on\n"
+    "`GMSExpertStore`. You do not need the geometry to use them; you need to know\n"
+    "what each returns and when to reach for it.\n"
+    "\n"
+    "| Primitive | Question it answers | Return |\n"
+    "|---|---|---|\n"
+    "| `score_triple(h, r, t)` | How well does this asserted fact fit the trained geometry? | geodesic score (float) or `None` |\n"
+    "| `lookup_enm(cat, id)` | What is the **exact** stored number? | byte-exact value (float) or `None` |\n"
+    "| `query_triples(head, relation, tail)` | Which asserted edges match this pattern? | list of triples |\n"
+    "| `link_predict(head, relation, ...)` | What tail does the geometry *predict* (no asserted edge)? | ranked candidates |\n"
+    "| `check_holonomy(path, ...)` | Is a relation composition path consistent? | residual / verdict |\n"
+    "| `tension_energy(a, b)` | How contradictory are two entities? | energy (float) or `None` |\n"
+    "\n"
+    "The design rule, repeated throughout the book: **`lookup_enm` for numbers,\n"
+    "asserted `query_triples` before `link_predict` for facts, `tension_energy`\n"
+    "for contradiction.** A predicted link is a hypothesis, not a fact (see\n"
+    "Chapter 8)."
+))
+
+CELLS.append(code(
+    "from knowlytix.knowledge.store import GMSExpertStore\n"
+    "\n"
+    "# The public surface this appendix recaps. We assert the methods exist;\n"
+    "# we do NOT load a trained store here (one GPU is shared across authors).\n"
+    "PRIMITIVES = (\n"
+    "    \"score_triple\", \"lookup_enm\", \"query_triples\",\n"
+    "    \"link_predict\", \"check_holonomy\", \"tension_energy\",\n"
+    ")\n"
+    "for name in PRIMITIVES:\n"
+    "    assert callable(getattr(GMSExpertStore, name)), name\n"
+    "print(\"six primitives present:\", \", \".join(PRIMITIVES))"
+))
+
+CELLS.append(md(
+    "Expected output:\n"
+    "```\n"
+    "six primitives present: score_triple, lookup_enm, query_triples, "
+    "link_predict, check_holonomy, tension_energy\n"
+    "```"
+))
+
+# --- Building a store ---
+CELLS.append(md(
+    "## C.2 Building a store\n"
+    "\n"
+    "Two entry points assemble a trained `GMSExpertStore`, both in\n"
+    "`knowlytix.knowledge.geode.rag`:\n"
+    "\n"
+    "- `build_rag_store(md_path, config, ...)` — the full ingest path: parse the\n"
+    "  document, extract triples, populate ENM, run the GEODE self-correction\n"
+    "  loop, then train. This is what `scripts/build_store.py` calls to produce\n"
+    "  `data/gms_annual_report_store/`.\n"
+    "- `store_from_triples(md_path, triples, config, ...)` — skip extraction and\n"
+    "  train directly from a triple list you already trust.\n"
+    "\n"
+    "Both are GPU/training operations. We do **not** call them here; the cell\n"
+    "below is marked for the lead to execute in CI. The grounding numbers it\n"
+    "prints are the canonical FY2025 figures (segment total revenue 355.0)."
+))
+
+CELLS.append(code(
+    "# CI-ONLY (GPU): build the trained store from the annual report.\n"
+    "# Do not run during authoring; the lead executes this in CI.\n"
+    "RUN_GPU = os.environ.get(\"GMS_RUN_GPU\") == \"1\"\n"
+    "if RUN_GPU:\n"
+    "    from knowlytix.knowledge.geode.rag import build_rag_store\n"
+    "    from knowlytix.knowledge.geode.rag import DocGMSConfig  # config dataclass\n"
+    "    store = build_rag_store(\"data/annual_report.md\", DocGMSConfig())\n"
+    "    # Numbers come from data/corpus_facts.md (byte-exact ENM).\n"
+    "    assert store.lookup_enm(\"segment_performance\", \"Total/All/Revenue\") == 355.0\n"
+    "    assert store.lookup_enm(\"income_statement\", \"Net Income/FY2025\") == 70.0\n"
+    "    print(\"built store: total revenue =\",\n"
+    "          store.lookup_enm(\"segment_performance\", \"Total/All/Revenue\"))\n"
+    "else:\n"
+    "    print(\"skipped GPU build (set GMS_RUN_GPU=1 in CI)\")"
+))
+
+# --- Calibration method ---
+CELLS.append(md(
+    "## C.3 The threshold-calibration method\n"
+    "\n"
+    "Embedding binding (Chapter 7) resolves a paraphrase like *topline* to the\n"
+    "canonical relation `has_revenue` by cosine similarity. That comparison needs\n"
+    "a **threshold**: bind above it, refuse below it. Setting the threshold by\n"
+    "eye is the anti-pattern. The method is:\n"
+    "\n"
+    "1. **Cohort.** Collect labeled `(term, expected_entity)` *positives* that\n"
+    "   should bind and *negatives* that should bind to nothing.\n"
+    "2. **Sweep.** Walk a grid of candidate thresholds.\n"
+    "3. **Operating point.** Pick the threshold that best separates the two\n"
+    "   classes. Tightening the false-allow ceiling (refusing more negatives)\n"
+    "   pushes the threshold up.\n"
+    "\n"
+    "`calibrate_bind_threshold(binder, positives, negatives, grid=...)` does the\n"
+    "sweep and returns `(best_threshold, accuracy)`, also setting it on the\n"
+    "binder. This is the same operating-point recipe used for the accept/abstain\n"
+    "cuts in Chapter 12 and for the agent book's gates (cross-ref App C there).\n"
+    "\n"
+    "The cell below is **fully runnable on CPU**: it injects a tiny deterministic\n"
+    "encoder and a stub adapter, so no GPU, no trained store, and no Qwen are\n"
+    "touched. The vocabulary mirrors the Northwind store's relations."
+))
+
+CELLS.append(code(
+    "import numpy as np\n"
+    "from knowlytix.knowledge.rag.binding import TripleBinder\n"
+    "from knowlytix.knowledge.rag.eval import calibrate_bind_threshold\n"
+    "\n"
+    "# A deterministic toy encoder: each text maps to a fixed unit vector.\n"
+    "# Synonyms sit near their canonical relation; unrelated terms sit far away.\n"
+    "_VEC = {\n"
+    "    # canonical graph relations (mirror data/corpus_facts.md)\n"
+    "    \"has_revenue\":   [1.0, 0.0, 0.0],\n"
+    "    \"has_headcount\": [0.0, 1.0, 0.0],\n"
+    "    \"has_region\":    [0.0, 0.0, 1.0],\n"
+    "    # positive synonyms -> should bind to has_revenue / has_headcount\n"
+    "    \"topline\":       [0.97, 0.10, 0.0],\n"
+    "    \"sales\":         [0.95, 0.05, 0.0],\n"
+    "    \"staff count\":   [0.05, 0.98, 0.0],\n"
+    "    # negatives -> should bind to nothing (placed deliberately close to\n"
+    "    # has_revenue so the sweep has to RAISE the threshold to refuse them)\n"
+    "    \"weather\":       [0.60, 0.55, 0.0],\n"
+    "    \"breakfast\":     [0.62, 0.50, 0.0],\n"
+    "}\n"
+    "\n"
+    "def toy_encoder(texts):\n"
+    "    out = []\n"
+    "    for t in texts:\n"
+    "        v = np.asarray(_VEC.get(t.strip().lower(), [0.33, 0.33, 0.33]),\n"
+    "                       dtype=np.float32)\n"
+    "        out.append(v / (np.linalg.norm(v) + 1e-9))\n"
+    "    return np.vstack(out)\n"
+    "\n"
+    "class _StubAdapter:  # the binder only needs the relation/entity vocab\n"
+    "    relation_to_idx = {\"has_revenue\": 0, \"has_headcount\": 1, \"has_region\": 2}\n"
+    "    entity_to_idx = {\"has_revenue\": 0, \"has_headcount\": 1, \"has_region\": 2}\n"
+    "\n"
+    "class _StubStore:\n"
+    "    adapter = _StubAdapter()\n"
+    "    def fuzzy_match_entity(self, name):\n"
+    "        # force the embedding path: no fuzzy hit for paraphrases\n"
+    "        return name if name in _StubAdapter.entity_to_idx else None\n"
+    "\n"
+    "binder = TripleBinder(_StubStore(), mode=\"embedding\", encoder=toy_encoder,\n"
+    "                      bind_threshold=0.5, bind_margin=0.05)\n"
+    "print(\"binder mode:\", binder.mode, \"| start threshold:\", binder.bind_threshold)"
+))
+
+CELLS.append(code(
+    "# The labeled cohort: terms that SHOULD bind, and terms that should NOT.\n"
+    "positives = [\n"
+    "    (\"topline\", \"has_revenue\"),\n"
+    "    (\"sales\", \"has_revenue\"),\n"
+    "    (\"staff count\", \"has_headcount\"),\n"
+    "]\n"
+    "negatives = [\"weather\", \"breakfast\"]\n"
+    "\n"
+    "best_th, acc = calibrate_bind_threshold(binder, positives, negatives)\n"
+    "print(f\"chosen operating point: threshold={best_th:.2f}  accuracy={acc:.2f}\")\n"
+    "print(\"binder threshold now set to:\", binder.bind_threshold)"
+))
+
+CELLS.append(md(
+    "Expected output (deterministic on CPU):\n"
+    "```\n"
+    "chosen operating point: threshold=0.80  accuracy=1.00\n"
+    "binder threshold now set to: 0.8\n"
+    "```\n"
+    "The negatives sit at cosine ~0.74-0.78 from `has_revenue`, so a lax\n"
+    "threshold (0.50) would *false-allow* them. The sweep raises the threshold to\n"
+    "0.80 — above the negatives, below the synonyms (~0.99) — which binds every\n"
+    "synonym and refuses every negative (accuracy 1.00). On the real Northwind\n"
+    "store the encoder is MiniLM and the cohort comes from\n"
+    "`data/eval_cohort.json`, but the method is identical."
+))
+
+# --- honest limit ---
+CELLS.append(md(
+    "## C.4 Honest limits\n"
+    "\n"
+    "Calibration tunes a decision boundary; it does not create separability. If\n"
+    "positives and negatives overlap in embedding space, no threshold recovers\n"
+    "100% accuracy — the sweep returns the *least-bad* point, not a correct one.\n"
+    "A calibrated threshold is only as honest as its cohort: calibrate on hand-\n"
+    "labeled pairs, never on the system's own accepted outputs (that bakes in\n"
+    "today's mistakes). And calibration says nothing about whether a *fact* is\n"
+    "true — that is the verifier's job (Chapter 10), not the binder's. Finally,\n"
+    "this appendix recaps the substrate's *interface*; the geometric guarantees\n"
+    "behind `score_triple` and `check_holonomy` live in the GMS monograph."
+))
+
+# --- self-check (final cell) ---
+CELLS.append(md(
+    "## C.5 Self-check\n"
+    "\n"
+    "Re-running the calibration must reproduce the same operating point and that\n"
+    "point must perfectly separate the labeled cohort."
+))
+
+CELLS.append(code(
+    "# Reproduce the operating point and prove it separates the cohort.\n"
+    "binder.bind_threshold = best_th\n"
+    "from knowlytix.knowledge.rag.query_triples import QueryTriple\n"
+    "\n"
+    "pos_ok = all(binder.bind(QueryTriple(t, \"_\", \"?\")).head == exp\n"
+    "             for t, exp in positives)\n"
+    "neg_ok = all(binder.bind(QueryTriple(t, \"_\", \"?\")).head is None\n"
+    "             for t in negatives)\n"
+    "\n"
+    "assert acc == 1.0, f\"cohort not separable at acc={acc}\"\n"
+    "assert pos_ok, \"a positive synonym failed to bind at the chosen threshold\"\n"
+    "assert neg_ok, \"a negative term bound when it should have been refused\"\n"
+    "print(\"OK: operating point\", round(best_th, 2),\n"
+    "      \"separates the labeled cohort (acc=1.00)\")"
+))
+
+nb = nbf.v4.new_notebook()
+nb["cells"] = CELLS
+nb["metadata"] = {
+    "kernelspec": {"display_name": "Python 3", "language": "python",
+                   "name": "python3"},
+    "language_info": {"name": "python"},
+}
+
+OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                   "notebooks", "appendix_C_gms_substrate.ipynb")
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
+with open(OUT, "w") as fh:
+    nbf.write(nb, fh)
+print("wrote", OUT, "with", len(CELLS), "cells")

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reasonloop"
+version = "0.0.1"
+description = "ReasonLoop: a semantic execution substrate — LLM as compiler and grounded synthesizer over a GMS knowledge substrate (companion code for Beyond Vibe and Pray)."
+requires-python = ">=3.12"
+dependencies = [
+    "playwright>=1.60",
+    "playwright-stealth>=2.0",
+    "markdownify>=0.13",
+    "beautifulsoup4>=4.12",
+]
+
+# The geometric substrate (knowlytix.core / .knowledge / .harness) is the
+# licensed dependency, resolved via the branch overlay as in the trilogy; it is
+# not declared here because it is not on public PyPI.
+
+[tool.setuptools.packages.find]
+include = ["reasonloop*"]

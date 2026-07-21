@@ -1,0 +1,169 @@
+--- a/knowlytix/harness/graphdoe/question_rephraser.py
++++ b/knowlytix/harness/graphdoe/question_rephraser.py
+@@ -17,7 +17,7 @@
+ import re
+ from dataclasses import dataclass
+ from pathlib import Path
+-from typing import Callable
++from typing import Any, Callable
+ 
+ import pandas as pd
+ 
+@@ -646,18 +646,18 @@
+             # Setup-only factors are recorded but don't modify question text
+         return q
+ 
+-    def _rephrase_llm(
++    def _build_rephrase_messages(
+         self,
+         question: GeneratedQuestion,
+         factor_assignment: dict[str, str],
+-    ) -> GeneratedQuestion:
+-        """Use an LLM to rephrase the question based on factor assignment.
++    ) -> list[dict[str, str]] | None:
++        """Build the chat messages for an LLM rephrase of one question.
+ 
+-        The LLM rewrites natural_language and llm_prompt to reflect the
+-        factor levels naturally. Ground truth and graph_answer_fn are
+-        copied unchanged.
++        Returns ``None`` when no text-modifying factor applies — the caller
++        keeps the original question unchanged and makes no LLM call. Factored
++        out of :meth:`_rephrase_llm` so both the single-question path and the
++        batched :meth:`expand` path build prompts identically.
+         """
+-        # Build factor instruction block
+         factor_instructions = []
+         for factor_name, level in factor_assignment.items():
+             instruction = self._templates.get(factor_name, {}).get(level)
+@@ -669,7 +669,7 @@
+                 )
+ 
+         if not factor_instructions:
+-            return question  # No text-modifying factors
++            return None  # No text-modifying factors
+ 
+         factor_block = "\n".join(factor_instructions)
+ 
+@@ -681,15 +681,21 @@
+             factor_block=factor_block,
+         )
+ 
+-        raw = self.llm.complete(
+-            messages=[
+-                {"role": "system", "content": _LLM_REPHRASE_SYSTEM},
+-                {"role": "user", "content": prompt},
+-            ],
+-            max_tokens=1024,
+-        )
++        return [
++            {"role": "system", "content": _LLM_REPHRASE_SYSTEM},
++            {"role": "user", "content": prompt},
++        ]
++
++    def _finish_rephrase(
++        self,
++        question: GeneratedQuestion,
++        raw: str,
++    ) -> GeneratedQuestion:
++        """Parse a raw LLM rephrase response into a ``GeneratedQuestion``.
+ 
+-        # Parse JSON response
++        Ground truth and ``graph_answer_fn`` are copied unchanged (INVARIANT).
++        Shared by the single-question and batched expansion paths.
++        """
+         rephrased_nl, rephrased_prompt = _parse_llm_rephrase(raw, question)
+ 
+         return GeneratedQuestion(
+@@ -703,6 +709,24 @@
+             metadata={**question.metadata},
+         )
+ 
++    def _rephrase_llm(
++        self,
++        question: GeneratedQuestion,
++        factor_assignment: dict[str, str],
++    ) -> GeneratedQuestion:
++        """Use an LLM to rephrase the question based on factor assignment.
++
++        The LLM rewrites natural_language and llm_prompt to reflect the
++        factor levels naturally. Ground truth and graph_answer_fn are
++        copied unchanged. Single-question path; :meth:`expand` batches the
++        same prompts across a whole design when the LLM supports it.
++        """
++        messages = self._build_rephrase_messages(question, factor_assignment)
++        if messages is None:
++            return question  # No text-modifying factors
++        raw = self.llm.complete(messages=messages, max_tokens=1024)
++        return self._finish_rephrase(question, raw)
++
+     def expand(
+         self,
+         base_questions: list[GeneratedQuestion],
+@@ -722,19 +746,63 @@
+         list[DOEQuestion]
+             len(base_questions) * len(design_matrix) DOE questions,
+             each with factor annotations and preserved ground truth.
++
++        Notes
++        -----
++        In ``method="llm"`` mode every rephrase prompt is built up front and
++        submitted in a single :meth:`~knowlytix.core.llm.LLMClient.complete_batch`
++        call, so an LLM that decodes a batch in one forward pass (a local
++        Hugging Face model, vLLM, ...) rephrases the whole design at once
++        instead of one question at a time. The call falls back to sequential
++        ``complete`` when the client does not implement ``complete_batch``, so
++        any provider works. Output order, ``doe_qid`` numbering, and the
++        ground-truth invariants are identical to the per-question path.
+         """
+-        doe_questions = []
++        # Materialize (run_idx, assignment, question) in final output order.
++        plan: list[tuple[Any, dict, GeneratedQuestion]] = []
+         for run_idx, row in design_matrix.iterrows():
+             assignment = row.to_dict()
+             for q in base_questions:
+-                rephrased = self.rephrase(q, assignment)
+-                doe_q = DOEQuestion(
++                plan.append((run_idx, assignment, q))
++
++        rephrased_by_index: dict[int, GeneratedQuestion] = {}
++        if self.method == "llm":
++            # Build every rephrase prompt; items with no text-modifying factor
++            # need no LLM call and pass through unchanged.
++            batch_messages: list[list[dict[str, str]]] = []
++            batch_targets: list[tuple[int, GeneratedQuestion]] = []
++            for i, (_run_idx, assignment, q) in enumerate(plan):
++                messages = self._build_rephrase_messages(q, assignment)
++                if messages is None:
++                    rephrased_by_index[i] = q
++                else:
++                    batch_messages.append(messages)
++                    batch_targets.append((i, q))
++
++            if batch_messages:
++                if hasattr(self.llm, "complete_batch"):
++                    raws = self.llm.complete_batch(batch_messages, max_tokens=1024)
++                else:
++                    raws = [
++                        self.llm.complete(messages=m, max_tokens=1024)
++                        for m in batch_messages
++                    ]
++                for (i, q), raw in zip(batch_targets, raws):
++                    rephrased_by_index[i] = self._finish_rephrase(q, raw)
++
++        doe_questions = []
++        for i, (run_idx, assignment, q) in enumerate(plan):
++            rephrased = rephrased_by_index.get(i)
++            if rephrased is None:
++                rephrased = self.rephrase(q, assignment)  # template / non-LLM path
++            doe_questions.append(
++                DOEQuestion(
+                     question=rephrased,
+                     factor_assignment=assignment,
+                     base_qid=q.qid,
+                     doe_qid=f"{q.qid}_run{run_idx:03d}",
+                 )
+-                doe_questions.append(doe_q)
++            )
+         return doe_questions
+ 
+ 

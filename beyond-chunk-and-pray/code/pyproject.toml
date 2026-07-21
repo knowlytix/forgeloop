@@ -1,0 +1,20 @@
+[project]
+name = "gms-rag-tutorial"
+version = "0.0.1"
+description = "Beyond Chunk and Pray — Building Trustworthy RAG with Geometric Memory (tutorial book + notebooks)"
+requires-python = ">=3.12"
+dependencies = [
+    "knowlytix",          # source of truth: knowlytix.knowledge.rag / .geode
+    "torch",
+    "transformers",
+    "pandas",
+    "jupyter",
+    "nbconvert",
+]
+
+[tool.gms-rag-tutorial]
+# The library is the source of truth. Notebooks import knowlytix.knowledge.rag
+# and knowlytix.knowledge.geode; the book's listings are copied verbatim from the
+# notebooks. The corpus + trained store live in data/.
+corpus = "data/annual_report.md"
+store = "data/gms_annual_report_store"

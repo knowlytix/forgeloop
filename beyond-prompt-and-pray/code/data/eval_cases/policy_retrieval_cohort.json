@@ -1,0 +1,25 @@
+{
+  "_note": "Graph-truth retrieval cohort for search_policy (Beyond Chunk and Pray methodology). Each case is a customer question whose expected_answer is the value that lives in the policy graph (data/gms_policy_store_cap). Retrieval is graded by benchmark_retrieval: parse the question -> bind to a (head, relation, tail) triple -> retrieve -> hit iff the retrieved value matches expected_answer; every miss localizes to parse/bind/retrieve. This replaces the coarse top-k policy-label recall. Includes the disambiguation-prone pairs (dispute filing vs investigation window; Reg E threshold vs escalation window) so the metric surfaces same-head relation confusion honestly.",
+  "cases": [
+    {"question": "What is the overdraft fee?", "expected_answer": "35.0"},
+    {"question": "Is the overdraft fee charged per occurrence or per month?", "expected_answer": "per_occurrence"},
+    {"question": "How long do I have to file a dispute on a charge?", "expected_answer": "60.0"},
+    {"question": "How long does a dispute investigation take?", "expected_answer": "10.0"},
+    {"question": "How much notice does the bank give before closing my account?", "expected_answer": "30.0"},
+    {"question": "What is the UDAAP consumer-harm threshold?", "expected_answer": "500.0"},
+    {"question": "How much can a customer-service representative reverse without approval?", "expected_answer": "35.0"},
+    {"question": "How much can a manager reverse?", "expected_answer": "500.0"},
+    {"question": "How much can a supervisor reverse?", "expected_answer": "100.0"},
+    {"question": "What is the late-payment fee?", "expected_answer": "25.0"},
+    {"question": "What is the domestic wire transfer fee?", "expected_answer": "30.0"},
+    {"question": "What is the international wire transfer fee?", "expected_answer": "45.0"},
+    {"question": "What is the stop-payment fee?", "expected_answer": "30.0"},
+    {"question": "What is the paper statement fee?", "expected_answer": "3.0"},
+    {"question": "What is the Reg E escalation threshold?", "expected_answer": "50.0"},
+    {"question": "Within how many days must a regulatory matter be escalated?", "expected_answer": "1.0"},
+    {"question": "How many months of account tenure are required for a fee reversal?", "expected_answer": "12.0"},
+    {"question": "How many prior reversals in the same year disqualify a fee reversal?", "expected_answer": "0.0"},
+    {"question": "How many overdraft-fee reversals are allowed per year?", "expected_answer": "1.0"},
+    {"question": "Within how many hours must a privacy incident be notified?", "expected_answer": "24.0"}
+  ]
+}
