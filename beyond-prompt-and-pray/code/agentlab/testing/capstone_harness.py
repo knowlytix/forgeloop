@@ -866,7 +866,7 @@ class CapstoneTestHarness:
         """
         from agentlab.capstone import build_complaint_harness
         from agentlab.core import Budget, BudgetTracker, TaskSpec
-        from knowlytix.harness.testing import FaultProfile, ToolGateway
+        from knowlytix.harness.testing import ToolGateway
 
         cfg = self._load_config()
         budget_cfg = cfg.get("budget", {})

@@ -5,11 +5,18 @@ and asserts the expected high-level behavior. The capstone is deliberately
 deterministic so these tests are fast and reproducible.
 """
 
-from agentlab.capstone import build_complaint_harness
-from agentlab.capstone.banking_policies import fee_waiver_policy
-from agentlab.core import ToolCall
-from agentlab.core.task import TaskSpec
-from agentlab.evaluation import summarize
+import pytest
+
+# The capstone harness builds a GEODE policy-RAG store through the licensed
+# `knowlytix` substrate (agentlab.capstone.policy_rag). Skip the whole module
+# when it is absent so the suite stays green without the proprietary package.
+pytest.importorskip("knowlytix")
+
+from agentlab.capstone import build_complaint_harness  # noqa: E402
+from agentlab.capstone.banking_policies import fee_waiver_policy  # noqa: E402
+from agentlab.core import ToolCall  # noqa: E402
+from agentlab.core.task import TaskSpec  # noqa: E402
+from agentlab.evaluation import summarize  # noqa: E402
 
 
 def _run(message: str):
@@ -82,17 +89,9 @@ def test_pii_in_message_is_blocked():
 def test_fee_waiver_policy_blocks_draft_that_promises_waiver():
     """Direct unit test of the fee_waiver policy."""
     from agentlab.governance import GateDecision
-    action = ToolCall(
-        tool_name="draft_response",
-        arguments={
-            "category": "complaint",
-            "issue": "overdraft_fee",
-            "policy_evidence": [],
-            "_body_preview": "we will waive the fee for you",
-        },
-    )
-    # The policy inspects all stringified args, so any waiver promise triggers
-    # Construct a draft args dict whose serialization contains the waiver phrase
+
+    # The policy inspects all stringified args, so any waiver promise triggers.
+    # Construct a draft args dict whose serialization contains the waiver phrase.
     waiver_action = ToolCall(
         tool_name="draft_response",
         arguments={

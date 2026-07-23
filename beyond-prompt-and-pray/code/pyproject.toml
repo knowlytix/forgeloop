@@ -69,6 +69,18 @@ include = ["agentlab*"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# Lint the importable package (agentlab) + tests; scripts/, benchmarks/ and the
+# data/ store trees are book companions ported verbatim and are not maintained
+# library code. Mirrors the root ruff.toml scope. (This per-topic config takes
+# precedence over the root one for files under code/, so the excludes are
+# repeated here.)
+extend-exclude = [
+    "scripts",
+    "benchmarks",
+    "configs",
+    "data",
+    "doe_tracing_store",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

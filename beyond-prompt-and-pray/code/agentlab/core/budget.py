@@ -9,7 +9,7 @@ safety, so this is a first-class concern, not an afterthought.
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 @dataclass

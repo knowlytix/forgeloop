@@ -12,7 +12,7 @@ library) and pass it in. This adapter is plumbing, not ingestion.
 
 from __future__ import annotations
 
-from typing import Any, Protocol
+from typing import Protocol
 
 from agentlab.memory.base import MemoryItem, MemoryKind
 

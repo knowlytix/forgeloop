@@ -20,7 +20,6 @@ import random
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from .catalogs import FactorSpec
 from .resolve import ResolvedSuite
 from .sources import QAItem
 

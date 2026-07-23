@@ -10,7 +10,6 @@ from agentlab.core import (
     run_loop,
 )
 from agentlab.evaluation import (
-    Trajectory,
     collect,
     escalated,
     failed,

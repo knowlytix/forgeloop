@@ -1,0 +1,22 @@
+# Root ruff configuration for the forgeloop monorepo.
+#
+# Lint scope is the importable topic packages (agentlab, gmstest, book_kit,
+# reasonloop, knowlytix_contrib) and their tests. The scripts/ and notebooks/
+# trees are book companions ported verbatim from GMS-Agents — they are runnable
+# walkthroughs and one-off glue, not maintained library code, and are held to
+# style only informally. Excluding them keeps `ruff check .` a meaningful gate
+# on the code that actually ships.
+line-length = 100
+target-version = "py312"
+
+extend-exclude = [
+    "**/scripts",
+    "**/notebooks",
+    "**/benchmarks",
+    "**/apps",
+    "**/catalogs",
+    "**/configs",
+    "**/data",
+    "**/doe_tracing_store",
+    "*.ipynb",
+]

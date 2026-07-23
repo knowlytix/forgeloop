@@ -19,7 +19,6 @@ import torch
 import torch.nn as nn
 
 from agentlab.models.tinygpt.attention import MultiHeadCausalSelfAttention
-from agentlab.models.tinygpt.norms import RMSNorm
 
 
 Activation = Literal["gelu", "relu", "swiglu"]
