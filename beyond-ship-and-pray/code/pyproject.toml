@@ -22,9 +22,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff"]
 
-# GMS-backed evaluation (knowlytix.harness) is licensed and NOT on public PyPI;
-# it is installed separately. `gmstest` imports it lazily, so the core test
-# harness works without it and tests that need it `pytest.importorskip`.
+# GMS-backed evaluation (knowlytix.harness) runs on the licensed `knowlytix`
+# package: on PyPI but gated by a runtime license key (~/.knowlytix/license.key;
+# sign up at https://knowlytix.ai/signup/). `gmstest` imports it lazily, so the
+# core test harness works without it and tests that need it `pytest.importorskip`.
 gms = ["knowlytix"]
 
 [build-system]

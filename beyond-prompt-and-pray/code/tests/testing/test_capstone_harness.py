@@ -154,6 +154,7 @@ def test_analyze_attributes_failure_to_clarity():
 # --- per-tool decomposition + fault profiles (model-free) -----------------
 
 @requires_knowlytix
+@requires_store
 def test_tool_breakdown_and_weak_link():
     h = CapstoneTestHarness()
     rows = [

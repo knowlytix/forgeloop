@@ -21,13 +21,15 @@ notebook ever disagrees with the library, the library is right.
 ## Layout
 
 ```
-notebooks/   one runnable notebook per chapter; each ends in a self-check assert
+notebooks/   00_setup.ipynb (build the store data) + one notebook per chapter
 scripts/     build_store.py (corpus -> trained store + corpus_facts.md), build_notebooks.py
 data/        annual_report.md (the corpus), gms_annual_report_store/, eval_cohort.json
 ```
 
-The trained store (`data/gms_annual_report_store/`) weights are **not committed**
-(git-ignored `*.pt`); rebuild with `python scripts/build_store.py`.
+The trained store (`data/gms_annual_report_store/`) is a build artifact — **not
+committed and not shipped in the package** (git-ignored). Regenerate it by running
+**`notebooks/00_setup.ipynb`** (or `python scripts/build_store.py`); only the input
+corpus is tracked.
 
 ## Corpus
 
@@ -40,9 +42,15 @@ fallback demo.
 
 ## Run
 
+Requires the licensed `knowlytix` substrate — `pip install knowlytix` and a
+developer license from <https://knowlytix.ai/signup/> at `~/.knowlytix/license.key`
+(see the repo README, "The knowlytix substrate").
+
 ```bash
-python scripts/build_store.py          # build the trained store + corpus_facts.md
+# 1. build the store data (or run notebooks/00_setup.ipynb, which does this)
+python scripts/build_store.py          # trained store + corpus_facts.md
+# 2. run the chapters
 jupyter nbconvert --execute notebooks/*.ipynb
 ```
 
-Everything runs locally on Qwen2.5-3B-Instruct; no API key.
+The GEODE stage runs locally on Qwen2.5-3B-Instruct; no API key.

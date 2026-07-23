@@ -35,12 +35,20 @@ caller* of a package API, not a reimplementation of its logic. Only implement
 something new when the package does not already provide it; when it's genuinely
 needed, add it to the package rather than leaving a one-off in a script.
 
-## The `knowlytix` substrate (licensed, separate)
+## The `knowlytix` substrate (licensed)
 
-The GMS-backed features run on the **`knowlytix`** package, which is **licensed
-and distributed separately** — not on public PyPI. Do not vendor it, commit it, or
-hardcode license keys. Code that needs it should degrade or skip cleanly when it
-is absent (tests guard the import — see below).
+The GMS-backed features run on the **`knowlytix`** package. It is published on
+PyPI (`pip install knowlytix`) but **gated by a license key validated at
+runtime**: sign up at <https://knowlytix.ai/signup/> for a developer license,
+which lands in `~/.knowlytix/license.key` (with EULA acceptance in
+`~/.knowlytix/eula-accepted`). Do not vendor it, and **never commit license keys
+or the `~/.knowlytix/` contents**. Code that needs it should degrade or skip
+cleanly when it (or the store data it loads) is absent — tests guard both the
+import and the store (`pytest.importorskip` + a store-exists skip); see below.
+
+Install caveat: recent `litellm` needs a Rust build and lacks wheels on some
+platforms; knowlytix only requires `litellm>=1.40`, so `pip install
+"litellm==1.74.9"` before `pip install knowlytix` sidesteps it.
 
 ## Development workflow
 

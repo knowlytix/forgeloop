@@ -5,12 +5,26 @@ and asserts the expected high-level behavior. The capstone is deliberately
 deterministic so these tests are fast and reproducible.
 """
 
+from pathlib import Path
+
 import pytest
 
-# The capstone harness builds a GEODE policy-RAG store through the licensed
-# `knowlytix` substrate (agentlab.capstone.policy_rag). Skip the whole module
-# when it is absent so the suite stays green without the proprietary package.
+# The capstone harness needs two things that aren't available everywhere:
+#   1. the licensed `knowlytix` substrate (agentlab.capstone.policy_rag), and
+#   2. the trained GMS stores it loads (banking plausibility gate + policy RAG),
+#      which are build artifacts — git-ignored, not shipped in the package.
+# Skip the whole module when either is missing so the suite stays green in CI
+# (no knowlytix) and for a licensed dev who hasn't built the stores yet. Build
+# the stores (see the topic README) to actually exercise these end-to-end tests.
 pytest.importorskip("knowlytix")
+
+_BANKING_STORE = Path(__file__).resolve().parents[2] / "data" / "gms_banking_store"
+if not _BANKING_STORE.exists():
+    pytest.skip(
+        "GMS banking store not built (data/gms_banking_store) — run the store "
+        "build first; see the topic README.",
+        allow_module_level=True,
+    )
 
 from agentlab.capstone import build_complaint_harness  # noqa: E402
 from agentlab.capstone.banking_policies import fee_waiver_policy  # noqa: E402

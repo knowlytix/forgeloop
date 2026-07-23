@@ -24,7 +24,7 @@ pip install "agentlab[dev]"          # + pytest, ruff, black
 | --- | --- | --- |
 | *(core)* | `pydantic`, `numpy` | the loop, types, tools, gates, audit, planning, memory, evaluation |
 | `ml` | `torch`, `transformers`, `peft`, `accelerate` | the classifier head, Qwen adapters, the draft LoRA |
-| `gms` | `knowlytix` (licensed, separate) | the GMS substrate — see below |
+| `gms` | `knowlytix` (licensed; PyPI + runtime key) | the GMS substrate — see below |
 | `anthropic` | `anthropic` | the hosted-model adapter |
 | `notebooks` | `jupyterlab`, `matplotlib`, `pandas` | running the chapter notebooks |
 | `dev` | `pytest`, `ruff`, `black` | tests and linting |
@@ -33,14 +33,17 @@ From a checkout, use `-e` for an editable install, e.g. `pip install -e ".[ml,no
 
 ### GMS / Knowlytix (licensed)
 
-The GMS-backed features — the geometric plausibility gate, the regulatory guard, the policy Graph-RAG store, Exact Numerical Memory and the design-of-experiments test harness — run on the **`knowlytix`** package. `knowlytix` is **licensed and distributed separately**; it is not on public PyPI, and a license is required.
+The GMS-backed features — the geometric plausibility gate, the regulatory guard, the policy Graph-RAG store, Exact Numerical Memory and the design-of-experiments test harness — run on the **`knowlytix`** package. `knowlytix` is on PyPI but **gated by a license key validated at runtime**: the package installs freely, using it requires a license.
 
-Get it from Knowlytix: **https://knowlytix.ai/**
+Sign up for a developer license at **https://knowlytix.ai/signup/** — the flow writes your key to `~/.knowlytix/license.key` (EULA acceptance in `~/.knowlytix/eula-accepted`). Keep the key private; never commit it.
 
 ```bash
-pip install knowlytix --index-url <KNOWLYTIX_INDEX_URL>   # license required; index from Knowlytix
-pip install "agentlab[gms]"                               # records the dependency
+pip install knowlytix          # from PyPI; the license key is read at runtime
+pip install "agentlab[gms]"    # records the dependency
+python -c "import knowlytix"   # prints a banner naming the licensed customer/tier if valid
 ```
+
+If `pip install knowlytix` fails building a `litellm` wheel (recent `litellm` needs Rust and lacks wheels on some platforms; knowlytix only needs `litellm>=1.40`), pre-install a wheel-available version: `pip install "litellm==1.74.9"` first.
 
 `agentlab` imports `knowlytix` lazily, so everything outside the GMS features works without it. To check at runtime:
 
