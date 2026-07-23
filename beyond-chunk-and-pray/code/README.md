@@ -40,6 +40,20 @@ sum anchors, a segment→division→region hierarchy → multi-hop, single-value
 Outlook) with no authoritative numbers → coverage blind spots and the dense
 fallback demo.
 
+## Requirements — two tiers
+
+The book runs in two tiers, with different hardware needs:
+
+- **Tier 1 — pure geometry (CPU, no LLM).** The GEODE store build, triple-mediated
+  retrieval, binding, provenance, and Exact Numerical Memory. This is the core of
+  the book — *grounding is geometry, not generation* — and it runs on a **CPU-only**
+  machine once the base store is built. No GPU, no Qwen.
+- **Tier 2 — answer synthesis (GPU + Qwen).** The chapters that generate and verify
+  prose answers, the calibration/evaluation chapters, and the full data-enrichment +
+  encoder-fine-tuning pipeline run a local **Qwen2.5-3B-Instruct** (no API key).
+  These **expect a CUDA GPU**: the model loads in float16 and the synthesis cells
+  assume a GPU device, so CPU inference is not supported out of the box.
+
 ## Run
 
 Requires the licensed `knowlytix` substrate — `pip install knowlytix` and a
@@ -47,10 +61,14 @@ developer license from <https://knowlytix.ai/signup/> at `~/.knowlytix/license.k
 (see the repo README, "The knowlytix substrate").
 
 ```bash
-# 1. build the store data (or run notebooks/00_setup.ipynb, which does this)
+# 1. Build the base store (Tier 1; CPU-only). Or run notebooks/00_setup.ipynb.
 python scripts/build_store.py          # trained store + corpus_facts.md
-# 2. run the chapters
-jupyter nbconvert --execute notebooks/*.ipynb
-```
 
-The GEODE stage runs locally on Qwen2.5-3B-Instruct; no API key.
+# 2. Run the chapters. Tier-1 (geometry) chapters run on CPU; the Tier-2
+#    synthesis/calibration/evaluation chapters need a GPU + the Qwen download.
+jupyter nbconvert --execute notebooks/*.ipynb
+
+# 3. For the advanced chapters, build the full pipeline first (GPU + Qwen):
+#    run notebooks/00_setup.ipynb with RUN_FULL = True
+#    (enrichment -> encoder fine-tuning -> gate calibration).
+```
