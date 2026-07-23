@@ -1,22 +1,27 @@
 # Root ruff configuration for the forgeloop monorepo.
 #
 # Lint scope is the importable topic packages (agentlab, gmstest, book_kit,
-# reasonloop, knowlytix_contrib) and their tests. The scripts/ and notebooks/
-# trees are book companions ported verbatim from GMS-Agents — they are runnable
-# walkthroughs and one-off glue, not maintained library code, and are held to
-# style only informally. Excluding them keeps `ruff check .` a meaningful gate
-# on the code that actually ships.
+# reasonloop, knowlytix_contrib), their tests, and the notebooks/ trees. The
+# scripts/ trees and data/companion dirs are runnable book glue / fixtures, not
+# maintained code, and stay out of the gate.
 line-length = 100
 target-version = "py312"
 
 extend-exclude = [
     "**/scripts",
-    "**/notebooks",
     "**/benchmarks",
     "**/apps",
     "**/catalogs",
     "**/configs",
     "**/data",
     "**/doe_tracing_store",
-    "*.ipynb",
 ]
+
+[lint.per-file-ignores]
+# Notebooks are teaching material. One-line imports (E401), imports after prose
+# (E402), compact demo statements (E701/E702), lambdas (E731) and short names
+# like `l`/`I` (E741) are deliberate style, not defects. Cells are also written
+# to run standalone, so a name re-imported in a later cell (F811) is intentional,
+# not a bug. Real dead code (F401 unused imports, F841 unused vars) is still
+# enforced so notebooks don't accumulate clutter.
+"**/notebooks/**" = ["E401", "E402", "E701", "E702", "E731", "E741", "F811"]
