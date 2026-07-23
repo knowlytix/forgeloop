@@ -19,7 +19,7 @@ feature standardization + label list + the encoder id and max_length needed to
 reproduce features at inference). Greedy / deterministic: no sampling anywhere.
 
 Run:
-    ~/cluster/spark-venv/bin/python scripts/train_complaint_classifier_qwen.py
+    python scripts/train_complaint_classifier_qwen.py
 """
 
 from __future__ import annotations

@@ -7,9 +7,9 @@ each as overview + examination-procedures, one topic per destination directory
     cip/  Customer Identification Program   -> /01, /01_ep
     sar/  Suspicious Activity Reporting      -> /04, /04_ep
 
-Run from the code/ directory with the licensed spark-venv:
+Run from the code/ directory with the licensed environment:
 
-    ~/cluster/spark-venv/bin/python scripts/fetch_ffiec.py
+    python scripts/fetch_ffiec.py
 """
 
 from __future__ import annotations

@@ -9,7 +9,7 @@ nearest entity (by tuned-encoder v-embedding cosine) and whether it is the inten
 value, plus the margin to the runner-up.
 """
 import os, sys
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 import torch, torch.nn.functional as F
 from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 from knowlytix.embedding import FineTunedEmbedding

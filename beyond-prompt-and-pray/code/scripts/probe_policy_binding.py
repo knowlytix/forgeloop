@@ -13,7 +13,7 @@ a handful of natural customer messages to policy triples (geometric parse, no
 LLM) -- the artifact ``extract_facts`` / ``search_policy`` consume.
 
 Run on spark-ef84:
-    PYTHONPATH=$HOME/jupyterlab/GMS-knowlytix \
+    PYTHONPATH=$HOME/GMS-knowlytix \
       python scripts/probe_policy_binding.py --store-path data/gms_policy_store_cap
 """
 from __future__ import annotations

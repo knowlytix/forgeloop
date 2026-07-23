@@ -1,7 +1,7 @@
 """Builder for notebooks/14_calibration_a_inline.ipynb (Ch12 — Calibrate, don't guess).
 
 Emits a valid nbformat-4 notebook WITHOUT executing it (no store / no Qwen).
-Run on CPU only:  ~/cluster/spark-venv/bin/python scripts/build_nb_12.py
+Run on CPU only:  python scripts/build_nb_12.py
 """
 from __future__ import annotations
 

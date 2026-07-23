@@ -4,7 +4,7 @@
 Emits a valid nbformat-4 notebook with nbformat. CPU-only; does NOT execute
 any cell (no store load, no Qwen). Run:
 
-    ~/cluster/spark-venv/bin/python scripts/build_nb_01.py
+    python scripts/build_nb_01.py
 """
 from __future__ import annotations
 

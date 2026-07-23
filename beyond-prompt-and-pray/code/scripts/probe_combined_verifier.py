@@ -19,7 +19,7 @@ Cascade (use the decisive measure; abstain when none is):
 Reports route-B-alone vs fused accuracy with 95% bootstrap CIs, and fused coverage.
 """
 import os, sys
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 import numpy as np
 import torch, torch.nn.functional as F
 from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore

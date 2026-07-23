@@ -9,7 +9,7 @@ Extraction uses a local Qwen3-4B on the GB10 GPU as the parse LLM. GEODE's
 structured/tabular documents and returns zero triples on this regulatory prose;
 the LLM extraction path is the appropriate reuse for prose sources.
 
-    ~/cluster/spark-venv/bin/python scripts/build_stores.py
+    python scripts/build_stores.py
 """
 
 from __future__ import annotations

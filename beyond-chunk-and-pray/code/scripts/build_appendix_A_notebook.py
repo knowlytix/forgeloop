@@ -4,7 +4,7 @@ CPU-only. Emits a valid nbformat-4 notebook via the ``nbformat`` package; it doe
 NOT execute any cell (no store load, no Qwen). The lead runs it in CI. Grounded
 entirely in data/corpus_facts.md (Northwind Industries FY2025).
 
-Run:  ~/cluster/spark-venv/bin/python scripts/build_appendix_A_notebook.py
+Run:  python scripts/build_appendix_A_notebook.py
 """
 
 from __future__ import annotations

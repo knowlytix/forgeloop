@@ -12,7 +12,7 @@ at or below tau). Compare the plain admissibility cap vs a calibrated tau.
 Usage: python calibrate_verify_threshold.py <store_path>
 """
 import os, sys, json
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 import torch
 from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 from knowlytix.embedding import FineTunedEmbedding

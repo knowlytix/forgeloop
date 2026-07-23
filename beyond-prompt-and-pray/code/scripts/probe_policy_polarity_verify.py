@@ -7,8 +7,8 @@ answer and a stance-reversed one, showing that a reversed stance is contradicted
 supported. This is the capability adopted from *Beyond Chunk and Pray* Ch10/Ch11.
 
 Run on spark-ef84 (offline):
-    HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 KNOWLYTIX_SRC=$HOME/jupyterlab/GMS-knowlytix \
-      PYTHONPATH=$HOME/jupyterlab/GMS-knowlytix \
+    HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 KNOWLYTIX_SRC=$HOME/GMS-knowlytix \
+      PYTHONPATH=$HOME/GMS-knowlytix \
       python scripts/probe_policy_polarity_verify.py
 """
 from __future__ import annotations
@@ -18,7 +18,7 @@ import sys
 
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, _ROOT)
-_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix"))
+_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix"))
 if os.path.isdir(_KNOW):
     sys.path.insert(0, _KNOW)
 

@@ -12,7 +12,7 @@ Test: for several trained entities, cosine(GMS model entity vector, v-encoder
 embedding of the entity name). High & uniform => text-aligned (B generalizes).
 
   HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
-    KNOWLYTIX_SRC=$HOME/jupyterlab/GMS-knowlytix PYTHONPATH=$HOME/jupyterlab/GMS-knowlytix \
+    KNOWLYTIX_SRC=$HOME/GMS-knowlytix PYTHONPATH=$HOME/GMS-knowlytix \
     python scripts/probe_entity_vspace_alignment.py --store-path data/gms_policy_store_cap
 """
 from __future__ import annotations
@@ -22,7 +22,7 @@ import os
 import sys
 from pathlib import Path
 
-_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix"))
+_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix"))
 if os.path.isdir(_KNOW):
     sys.path.insert(0, _KNOW)
 
