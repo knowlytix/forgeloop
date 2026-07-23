@@ -39,7 +39,7 @@ CELLS.append(md(
 CELLS.append(code(
     "import os, sys\n"
     "KNOWLYTIX_SRC = os.environ.get(\"KNOWLYTIX_SRC\", "
-    "\"/home/user/jupyterlab/GMS-knowlytix\")\n"
+    "\"/path/to/GMS-knowlytix\")\n"
     "sys.path.insert(0, KNOWLYTIX_SRC)"
 ))
 

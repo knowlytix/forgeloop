@@ -10,7 +10,7 @@ from nbformat import NO_CONVERT
 from nbclient import NotebookClient
 from pathlib import Path
 
-NB_PATH = "/home/user/jupyterlab/forgeloop/beyond-ship-and-pray/notebooks/12_7_operational.ipynb"
+NB_PATH = "/path/to/forgeloop/beyond-ship-and-pray/notebooks/12_7_operational.ipynb"
 
 cells = []
 

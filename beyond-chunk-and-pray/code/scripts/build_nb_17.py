@@ -26,7 +26,7 @@ def code(text: str) -> None:
 code(
     "import os, sys\n"
     'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", '
-    '"/home/user/jupyterlab/GMS-knowlytix")\n'
+    '"/path/to/GMS-knowlytix")\n'
     "sys.path.insert(0, KNOWLYTIX_SRC)"
 )
 
@@ -309,7 +309,7 @@ nb["metadata"] = {
     "language_info": {"name": "python"},
 }
 
-out = "/home/user/jupyterlab/forgeloop/beyond-chunk-and-pray/code/notebooks/17_external_persistence_kal_a_inline.ipynb"
+out = "/path/to/forgeloop/beyond-chunk-and-pray/code/notebooks/17_external_persistence_kal_a_inline.ipynb"
 with open(out, "w") as f:
     nbf.write(nb, f)
 print(f"wrote {out} ({len(cells)} cells)")

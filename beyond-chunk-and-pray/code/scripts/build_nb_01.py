@@ -36,7 +36,7 @@ cells.append(new_markdown_cell(
 # Cell 1 — the mandatory bootstrap (global brief, verbatim).
 cells.append(new_code_cell(
     "import os, sys\n"
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/home/user/jupyterlab/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
     "sys.path.insert(0, KNOWLYTIX_SRC)"
 ))
 

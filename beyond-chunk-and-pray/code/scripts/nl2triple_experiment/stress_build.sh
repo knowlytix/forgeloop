@@ -3,8 +3,8 @@
 # clobber of shipped artifacts), then retrain the Route B parser and re-run the
 # 3-route comparison at ~3x facts / +1 relation.
 set -e
-ROOT=/home/user/jupyterlab/forgeloop/beyond-chunk-and-pray/code
-PY=/home/user/cluster/spark-venv/bin/python
+ROOT=/path/to/forgeloop/beyond-chunk-and-pray/code
+PY=/path/to/venv/bin/python
 SCR=$ROOT/scripts
 EXP=$SCR/nl2triple_experiment
 

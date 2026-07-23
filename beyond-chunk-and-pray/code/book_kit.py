@@ -3,7 +3,7 @@
 loader that uses the *exact* build-time config.
 
 Notebooks import this so that:
-  * `import knowlytix` resolves (the licensed substrate, distributed separately),
+  * `import knowlytix` resolves (the licensed substrate; pip-installed or a checkout),
   * data paths resolve from the repo root (not the notebook's cwd), and
   * the trained store loads with the geometry/cap it was built with
     (GMSExpertStore.load rebuilds the model from config, so the config must
@@ -38,11 +38,12 @@ def resolve_knowlytix() -> str | None:
     """Make ``import knowlytix`` work; return the path added to ``sys.path`` (or
     None if it was already importable).
 
-    The GMS substrate is licensed and not on PyPI, so it usually lives in a
-    separate checkout. We honor ``$KNOWLYTIX_SRC`` first, then a few common
-    locations. When found, we also export ``KNOWLYTIX_SRC`` so child build
-    scripts (scripts/_bootstrap.py) inherit the same path. Raises with guidance
-    when it cannot be located.
+    The GMS substrate installs from PyPI (``pip install knowlytix``) but may also
+    live in a separate source checkout. If it is already importable we do nothing;
+    otherwise we honor ``$KNOWLYTIX_SRC`` first, then a few common checkout
+    locations. When found, we also export ``KNOWLYTIX_SRC`` so child build scripts
+    (scripts/_bootstrap.py) inherit the same path. Raises with guidance when it
+    cannot be located.
     """
     if importlib.util.find_spec("knowlytix") is not None:
         return None
@@ -51,7 +52,6 @@ def resolve_knowlytix() -> str | None:
         os.path.expanduser("~/source/GMS-knowlytix"),
         os.path.expanduser("~/GMS-knowlytix"),
         os.path.normpath(os.path.join(REPO, "..", "..", "GMS-knowlytix")),
-        "/home/user/jupyterlab/GMS-knowlytix",  # original author environment
     ]
     for c in candidates:
         if c and os.path.isdir(os.path.join(c, "knowlytix")):
@@ -60,11 +60,12 @@ def resolve_knowlytix() -> str | None:
             os.environ["KNOWLYTIX_SRC"] = c
             return c
     raise ModuleNotFoundError(
-        "The licensed `knowlytix` substrate was not found. It is distributed "
-        "separately (not on PyPI). Install it, or point KNOWLYTIX_SRC at your "
-        "GMS-knowlytix checkout and restart the kernel:\n"
+        "The licensed `knowlytix` substrate was not found. Install it with "
+        "`pip install knowlytix` (it needs a license key at ~/.knowlytix/"
+        "license.key; sign up at https://knowlytix.ai/signup/), or point "
+        "KNOWLYTIX_SRC at a source checkout and restart the kernel:\n"
         "    import os; os.environ['KNOWLYTIX_SRC'] = '/path/to/GMS-knowlytix'\n"
-        "See the repo README (\"GMS / Knowlytix (licensed)\")."
+        "See the repo README (\"The knowlytix substrate\")."
     )
 
 
