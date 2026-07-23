@@ -7,6 +7,8 @@ dependencies = [
     "knowlytix",          # source of truth: knowlytix.knowledge.rag / .geode
     "torch",
     "transformers",
+    "accelerate",         # transformers device_map / from_pretrained (Ch14, Ch16)
+    "sentence-transformers",  # dense-vector fallback baseline (Ch02, Ch16)
     "pandas",
     "jupyter",
     "nbconvert",
