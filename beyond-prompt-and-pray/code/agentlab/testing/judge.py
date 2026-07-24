@@ -58,7 +58,7 @@ class GeometricJudge:
     Parameters
     ----------
     store : GMSExpertStore
-        A trained GMS store (typically from `docgms.ingest.ingest_document`
+        A trained GMS store (typically from `knowlytix.knowledge.ingest.ingest_document`
         or `store.load()`).
     confidence_threshold : float
         Threshold for binary `passed`. Values >= this threshold are passing.
