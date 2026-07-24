@@ -42,7 +42,7 @@ class LoraInjectionClassifier:
     _cache: dict[str, str] = field(default_factory=dict, repr=False)
 
     @classmethod
-    def load(cls, path: Path | None = None, device=None) -> "LoraInjectionClassifier":
+    def load(cls, path: Path | None = None, device=None) -> LoraInjectionClassifier:
         from peft import PeftModel
         from transformers import AutoModelForSequenceClassification, AutoTokenizer
 

@@ -38,7 +38,7 @@ class EscalationRequest:
         return json.dumps(asdict(self), indent=indent, default=str)
 
     @classmethod
-    def from_json(cls, s: str) -> "EscalationRequest":
+    def from_json(cls, s: str) -> EscalationRequest:
         d = json.loads(s)
         return cls(**d)
 

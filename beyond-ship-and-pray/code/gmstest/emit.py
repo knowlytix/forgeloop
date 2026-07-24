@@ -18,8 +18,9 @@ so the format + validation logic here is dependency-light and testable.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from .compose import Scenario
 

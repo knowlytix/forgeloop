@@ -19,7 +19,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import torch
-import torch.nn as nn
+from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 from agentlab.models.tinygpt.configs import GPTConfig
@@ -149,7 +149,7 @@ class TinyGPTClassifier(nn.Module):
         path: str | Path,
         *,
         device: str | torch.device | None = None,
-    ) -> "TinyGPTClassifier":
+    ) -> TinyGPTClassifier:
         path = Path(path)
         meta = json.loads((path / "config.json").read_text())
         backbone = TinyGPT(GPTConfig(**meta["backbone_config"]))

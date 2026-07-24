@@ -48,7 +48,7 @@ class ComplaintClassifier:
         cls,
         path: str | Path | None = None,
         device: str | torch.device | None = None,
-    ) -> "ComplaintClassifier":
+    ) -> ComplaintClassifier:
         path = Path(path) if path is not None else _DEFAULT_DIR
         if device is None:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -130,7 +130,7 @@ class LoraComplaintClassifier:
         cls,
         path: str | Path | None = None,
         device: str | torch.device | None = None,
-    ) -> "LoraComplaintClassifier":
+    ) -> LoraComplaintClassifier:
         path = Path(path) if path is not None else _DEFAULT_DIR
         if device is None:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

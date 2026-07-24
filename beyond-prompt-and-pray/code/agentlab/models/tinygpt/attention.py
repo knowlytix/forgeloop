@@ -10,7 +10,7 @@ from __future__ import annotations
 import math
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 def scaled_dot_product_attention(
@@ -193,7 +193,7 @@ class MultiHeadCausalSelfAttention(nn.Module):
 
 
 def mha_forward_with_cache(
-    module: "MultiHeadCausalSelfAttention",
+    module: MultiHeadCausalSelfAttention,
     x: torch.Tensor,
     past_k: torch.Tensor | None = None,
     past_v: torch.Tensor | None = None,

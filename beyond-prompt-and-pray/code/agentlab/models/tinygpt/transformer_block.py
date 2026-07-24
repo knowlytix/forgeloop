@@ -16,10 +16,9 @@ from __future__ import annotations
 from typing import Literal
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 from agentlab.models.tinygpt.attention import MultiHeadCausalSelfAttention
-
 
 Activation = Literal["gelu", "relu", "swiglu"]
 NormStyle = Literal["pre", "post"]

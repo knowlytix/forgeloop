@@ -11,15 +11,15 @@ from __future__ import annotations
 import math
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 from agentlab.models.tinygpt.configs import GPTConfig
+from agentlab.models.tinygpt.losses import cross_entropy_loss
 from agentlab.models.tinygpt.positional import (
     LearnedPositionalEmbedding,
     SinusoidalPositionalEmbedding,
 )
 from agentlab.models.tinygpt.transformer_block import TransformerBlock
-from agentlab.models.tinygpt.losses import cross_entropy_loss
 
 
 class TinyGPT(nn.Module):

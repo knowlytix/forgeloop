@@ -42,7 +42,7 @@ class FactorSpec:
     applies_families: list[str]      # ["*"] means all
     applies_answer_types: list[str]  # ["*"] means all
 
-    def applies_to(self, base: "BaseSpec") -> bool:
+    def applies_to(self, base: BaseSpec) -> bool:
         fam_ok = "*" in self.applies_families or base.family in self.applies_families
         at_ok = "*" in self.applies_answer_types or base.answer_type in self.applies_answer_types
         return fam_ok and at_ok
@@ -68,7 +68,7 @@ class Catalog:
 
     # -- loading ------------------------------------------------------------
     @classmethod
-    def load(cls, catalogs_dir: str | Path | None = None) -> "Catalog":
+    def load(cls, catalogs_dir: str | Path | None = None) -> Catalog:
         d = Path(catalogs_dir) if catalogs_dir else _DEFAULT_CATALOGS
 
         base_doc = _read_yaml(d / "base_catalog.yaml")

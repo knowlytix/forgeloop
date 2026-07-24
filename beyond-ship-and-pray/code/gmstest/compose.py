@@ -17,8 +17,9 @@ knowlytix Sobol+refine generator for real space-filling coverage.
 from __future__ import annotations
 
 import random
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Any
 
 from .resolve import ResolvedSuite
 from .sources import QAItem

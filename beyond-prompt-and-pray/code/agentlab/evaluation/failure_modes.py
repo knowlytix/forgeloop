@@ -7,9 +7,10 @@ wild. Used by Chapter 11's adversarial test suite.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 Scenario = dict[str, Any]
 

@@ -35,9 +35,9 @@ from agentlab.evaluation.trajectory import Trajectory, collect
 
 __all__ = [
     "ALL_INJECTORS",
+    "DEFAULT_FACTORS",
     "Claim",
     "ClaimVerdict",
-    "DEFAULT_FACTORS",
     "FailureInjection",
     "FailureMode",
     "GroundednessResult",

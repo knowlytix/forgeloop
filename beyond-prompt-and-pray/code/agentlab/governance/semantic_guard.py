@@ -71,7 +71,7 @@ class SemanticIntentGuard:
     _cache: dict[str, str | None] = field(default_factory=dict)
 
     @classmethod
-    def load(cls, exemplars_path: Path | None = None, model: str | None = None) -> "SemanticIntentGuard":
+    def load(cls, exemplars_path: Path | None = None, model: str | None = None) -> SemanticIntentGuard:
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 

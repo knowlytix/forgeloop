@@ -65,7 +65,7 @@ _SAFE_EXPR = re.compile(r"^[\d+\-*/().\s]+$")
 def _calc_impl(expression: str) -> dict[str, Any]:
     if not _SAFE_EXPR.match(expression):
         raise ValueError("only basic arithmetic is permitted")
-    return {"result": float(eval(expression))}  # noqa: S307 - guarded by regex
+    return {"result": float(eval(expression))}
 
 
 calculator = Tool(

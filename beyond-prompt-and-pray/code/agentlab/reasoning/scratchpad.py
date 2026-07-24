@@ -49,7 +49,7 @@ class Entry(BaseModel):
         return v
 
     @model_validator(mode="after")
-    def _check_invariants(self) -> "Entry":
+    def _check_invariants(self) -> Entry:
         if self.kind == EntryType.OBSERVATION and not self.source:
             raise ValueError("observations require a source")
         if self.trust != TrustLevel.LOW and not self.evidence:

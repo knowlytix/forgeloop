@@ -72,7 +72,6 @@ def resolve_knowlytix() -> str | None:
 resolve_knowlytix()
 
 import torch  # noqa: E402
-
 from knowlytix.core.config import GeometryConfig, TrainConfig  # noqa: E402
 from knowlytix.knowledge.config import DocGMSConfig  # noqa: E402
 from knowlytix.knowledge.store import GMSExpertStore  # noqa: E402
