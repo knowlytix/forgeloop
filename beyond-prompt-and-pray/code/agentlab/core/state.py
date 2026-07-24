@@ -27,5 +27,5 @@ class AgentState(BaseModel):
         return self.model_dump()
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "AgentState":
+    def from_dict(cls, d: dict[str, Any]) -> AgentState:
         return cls.model_validate(d)

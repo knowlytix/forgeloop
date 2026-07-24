@@ -15,8 +15,9 @@ dependencies = [
 ]
 
 # The geometric substrate (knowlytix.core / .knowledge / .harness) is the
-# licensed dependency, resolved via the branch overlay as in the trilogy; it is
-# not declared here because it is not on public PyPI.
+# licensed dependency. It is on PyPI (`pip install knowlytix`) but gated by a
+# runtime license key (~/.knowlytix/license.key; sign up at
+# https://knowlytix.ai/signup/), so it is not declared as a hard dependency here.
 
 [tool.setuptools.packages.find]
 include = ["reasonloop*"]

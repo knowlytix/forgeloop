@@ -1,6 +1,6 @@
 """TinyGPT classifier vendored from the llm-tutorial repo.
 
-Source: /home/user/jupyterlab/llm-tutorial/lm_from_scratch/ at the
+Source: /path/to/llm-tutorial/lm_from_scratch/ at the
 commit current as of agent-tutorial's switch from a keyword classifier to
 the fine-tuned TinyGPT classifier. Files are byte-identical to upstream
 except for import rewrites (lm_from_scratch.X -> agentlab.models.tinygpt.X)

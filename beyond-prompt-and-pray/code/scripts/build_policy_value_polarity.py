@@ -25,7 +25,7 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, os.environ.get(
-    "KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+    "KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 
 import torch
 import torch.nn.functional as F

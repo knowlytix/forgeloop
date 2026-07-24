@@ -8,7 +8,7 @@ run train_gms with timing around _maybe_init_embeddings (the EmbeddingConfig
 Mode B warm-start) and the epoch loop, at a small epoch count so it returns fast.
 """
 import os, sys, time
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 
 import torch
 from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore

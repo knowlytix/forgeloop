@@ -41,15 +41,16 @@ _DOMAIN_ISSUE: dict[str, str | None] = {
     "udaap": None, "regulatory_escalation": None, "pii_handling": None,
 }
 _NONE = "__none__"
-_CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.I)
+_CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.IGNORECASE)
 _DEFAULT_STORE = Path(__file__).resolve().parents[2] / "data" / "gms_policy_store_geode"
 
 
 class EntityLinkExtractor:
     def __init__(self, store_path: Path | str | None = None,
                  threshold: float = 0.0) -> None:
-        from agentlab.capstone.policy_rag import PolicyRagRetriever
         from knowlytix.knowledge.rag import GeometricLabelClassifier
+
+        from agentlab.capstone.policy_rag import PolicyRagRetriever
 
         sp = Path(store_path) if store_path is not None else _DEFAULT_STORE
         self.retriever = PolicyRagRetriever(store_path=sp)

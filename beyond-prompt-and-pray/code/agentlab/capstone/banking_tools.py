@@ -233,7 +233,8 @@ def signal_from_query_facts(query_facts) -> dict[str, str]:
     for h, _r, _t in (query_facts or []):
         stem = str(h).split("/", 1)[0]
         if stem in _QF_ISSUE:
-            issues.append(_QF_ISSUE[stem]); products.append(_QF_PRODUCT[stem])
+            issues.append(_QF_ISSUE[stem])
+            products.append(_QF_PRODUCT[stem])
     if not issues:
         return {}
     # priority: a fee/UDAAP issue outranks a generic account issue

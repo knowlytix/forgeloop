@@ -36,14 +36,14 @@ dev = ["pytest>=8.0", "pytest-cov", "ruff", "black"]
 
 # GMS-backed features — the geometric plausibility gate, Exact Numerical Memory,
 # the regulatory guard, the policy Graph-RAG store and the DOE test harness — run
-# on the LICENSED `knowlytix` package. knowlytix is NOT on public PyPI and a
-# license is required; install it from the Knowlytix index (see the README,
-# "GMS / Knowlytix (licensed)"). `agentlab` imports it lazily, so everything
-# outside those features works without it.
+# on the LICENSED `knowlytix` package. knowlytix is on PyPI but gated by a license
+# key validated at runtime (~/.knowlytix/license.key; sign up at
+# https://knowlytix.ai/signup/). See the repo README, "The knowlytix substrate".
+# `agentlab` imports it lazily, so everything outside those features works without it.
 gms = ["knowlytix", "pandas"]
 
-# Everything pip-installable from public indexes (deliberately excludes `gms`,
-# which is license-gated and installed separately).
+# Everything pip-installable from public indexes without a license (excludes the
+# license-gated `gms` extra).
 all = [
     "torch>=2.0",
     "transformers>=4.40",
@@ -69,6 +69,24 @@ include = ["agentlab*"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+# Lint the importable package (agentlab) + tests; scripts/, benchmarks/ and the
+# data/ store trees are book companions ported verbatim and are not maintained
+# library code. Mirrors the root ruff.toml scope. (This per-topic config takes
+# precedence over the root one for files under code/, so the excludes are
+# repeated here.)
+extend-exclude = [
+    "scripts",
+    "benchmarks",
+    "configs",
+    "data",
+    "doe_tracing_store",
+]
+
+[tool.ruff.lint]
+# Repeated from the root ruff.toml for the same precedence reason: relying on
+# ruff's *default* rule selection is a trap (0.16 broadly expanded that default),
+# so name the rules explicitly and adopt new families deliberately.
+select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

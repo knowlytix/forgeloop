@@ -32,14 +32,14 @@ How to check, in order:
 2. **Grep the branch source** for the capability before assuming it's missing:
    ```bash
    grep -rn "def <thing>\|class <Thing>" \
-     /home/user/jupyterlab/GMS-knowlytix/knowlytix/
+     /path/to/GMS-knowlytix/knowlytix/
    ```
    Key modules: `knowlytix/knowledge/rag/` (config, pipeline, retrieve, binding,
    relevance, verify, eval, coverage, extraction, kal_sink), `knowlytix/knowledge/geode/`
    (loop, rag, provenance, canonicalize), `knowlytix/harness/testing/` (judge,
    hallucination), `knowlytix/core/` (geometry, graph, encoders).
 3. **It runs from the branch, not the wheel.** `knowlytix` resolves to the
-   `feat/cap-many-to-many` working tree at `/home/user/jupyterlab/GMS-knowlytix`
+   `feat/cap-many-to-many` working tree at `/path/to/GMS-knowlytix`
    via `scripts/_bootstrap.py` (`use_branch_library()` / `KNOWLYTIX_SRC`). The
    installed 0.2.0 wheel is stale — never reason from it. Notebooks copy the
    three bootstrap lines into their first cell.

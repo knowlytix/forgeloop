@@ -19,7 +19,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import torch
-import torch.nn as nn
+from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 from agentlab.models.tinygpt.configs import GPTConfig
@@ -149,7 +149,7 @@ class TinyGPTClassifier(nn.Module):
         path: str | Path,
         *,
         device: str | torch.device | None = None,
-    ) -> "TinyGPTClassifier":
+    ) -> TinyGPTClassifier:
         path = Path(path)
         meta = json.loads((path / "config.json").read_text())
         backbone = TinyGPT(GPTConfig(**meta["backbone_config"]))
@@ -225,7 +225,8 @@ def classification_train(
         tot_n = 0
         tot_correct = 0
         for x, y in loader:
-            x = x.to(device); y = y.to(device)
+            x = x.to(device)
+            y = y.to(device)
             logits, loss = model(x, y)
             opt.zero_grad(set_to_none=True)
             loss.backward()
@@ -235,7 +236,8 @@ def classification_train(
             tot_correct += int((logits.argmax(dim=-1) == y).sum().item())
         train_loss = tot_loss / max(1, tot_n)
         train_acc = tot_correct / max(1, tot_n)
-        v_loss = float("nan"); v_acc = float("nan")
+        v_loss = float("nan")
+        v_acc = float("nan")
         if valid_dataset is not None and (epoch % eval_every == 0):
             v_loss, v_acc = evaluate_classifier(
                 model, valid_dataset, batch_size=batch_size, device=device
@@ -265,7 +267,8 @@ def evaluate_classifier(
     tot_n = 0
     tot_correct = 0
     for x, y in loader:
-        x = x.to(device); y = y.to(device)
+        x = x.to(device)
+        y = y.to(device)
         logits, loss = model(x, y)
         tot_loss += float(loss.item()) * x.size(0)
         tot_n += x.size(0)

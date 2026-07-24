@@ -11,7 +11,7 @@ then train + save the production store, warm-started from the build's v_emb.pt s
 v_embed == the tuned-encoder frame (frozen).
 """
 import os, sys, time
-KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix"))
+KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix"))
 sys.path.insert(0, KNOW)
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__))))
 

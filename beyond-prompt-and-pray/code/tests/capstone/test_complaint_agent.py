@@ -5,11 +5,32 @@ and asserts the expected high-level behavior. The capstone is deliberately
 deterministic so these tests are fast and reproducible.
 """
 
-from agentlab.capstone import build_complaint_harness
-from agentlab.capstone.banking_policies import fee_waiver_policy
-from agentlab.core import ToolCall
-from agentlab.core.task import TaskSpec
-from agentlab.evaluation import summarize
+from pathlib import Path
+
+import pytest
+
+# The capstone harness needs two things that aren't available everywhere:
+#   1. the licensed `knowlytix` substrate (agentlab.capstone.policy_rag), and
+#   2. the trained GMS stores it loads (banking plausibility gate + policy RAG),
+#      which are build artifacts — git-ignored, not shipped in the package.
+# Skip the whole module when either is missing so the suite stays green in CI
+# (no knowlytix) and for a licensed dev who hasn't built the stores yet. Build
+# the stores (see the topic README) to actually exercise these end-to-end tests.
+pytest.importorskip("knowlytix")
+
+_BANKING_STORE = Path(__file__).resolve().parents[2] / "data" / "gms_banking_store"
+if not _BANKING_STORE.exists():
+    pytest.skip(
+        "GMS banking store not built (data/gms_banking_store) — run the store "
+        "build first; see the topic README.",
+        allow_module_level=True,
+    )
+
+from agentlab.capstone import build_complaint_harness  # noqa: E402
+from agentlab.capstone.banking_policies import fee_waiver_policy  # noqa: E402
+from agentlab.core import ToolCall  # noqa: E402
+from agentlab.core.task import TaskSpec  # noqa: E402
+from agentlab.evaluation import summarize  # noqa: E402
 
 
 def _run(message: str):
@@ -82,17 +103,9 @@ def test_pii_in_message_is_blocked():
 def test_fee_waiver_policy_blocks_draft_that_promises_waiver():
     """Direct unit test of the fee_waiver policy."""
     from agentlab.governance import GateDecision
-    action = ToolCall(
-        tool_name="draft_response",
-        arguments={
-            "category": "complaint",
-            "issue": "overdraft_fee",
-            "policy_evidence": [],
-            "_body_preview": "we will waive the fee for you",
-        },
-    )
-    # The policy inspects all stringified args, so any waiver promise triggers
-    # Construct a draft args dict whose serialization contains the waiver phrase
+
+    # The policy inspects all stringified args, so any waiver promise triggers.
+    # Construct a draft args dict whose serialization contains the waiver phrase.
     waiver_action = ToolCall(
         tool_name="draft_response",
         arguments={

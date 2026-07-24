@@ -48,7 +48,7 @@ class ManifoldFlagScorer:
     _encoder: Any = field(default=None, repr=False)   # cached (tokenizer, model)
 
     @classmethod
-    def load(cls, artifact_dir: Path | None = None, device=None) -> "ManifoldFlagScorer":
+    def load(cls, artifact_dir: Path | None = None, device=None) -> ManifoldFlagScorer:
         from knowlytix.core.config import GeometryConfig
         from knowlytix.core.graph.gkg import GeometricKnowledgeGraph
 

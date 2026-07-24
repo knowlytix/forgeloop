@@ -26,8 +26,9 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable, Protocol
+from typing import Protocol
 
 
 class _LLM(Protocol):
@@ -104,7 +105,7 @@ class HybridEntityExtractor:
             out = self.llm.complete(self._prompt(text))
         except Exception:
             return set()
-        match = re.search(r"\[.*?\]", out, re.S)
+        match = re.search(r"\[.*?\]", out, re.DOTALL)
         if not match:
             return set()
         try:

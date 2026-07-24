@@ -4,7 +4,7 @@
 categorical/polarity claims (synonym-tolerant, out-of-vocab) and leaves the numeric
 path exact. Run on the consistent store (out_dim==d_v)."""
 import os, sys
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 from knowlytix.embedding import FineTunedEmbedding
 from knowlytix.knowledge.rag.verify import AnswerVerifier

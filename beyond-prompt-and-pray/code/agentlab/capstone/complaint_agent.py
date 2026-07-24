@@ -11,10 +11,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from agentlab.capstone.banking_tools import register_all
 from agentlab.core import BaseAgent, Escalate, Finish, ToolCall
 from agentlab.core.action import Action
 from agentlab.core.state import AgentState
-from agentlab.reasoning import Scratchpad, TrustLevel
+from agentlab.gms_backend import GMSPlausibilityGate
 from agentlab.governance import (
     GovernanceHarness,
     PolicyEngine,
@@ -25,10 +26,8 @@ from agentlab.governance.semantic_guard import (
     semantic_prohibited_advice_policy,
     semantic_prompt_injection_policy,
 )
-from agentlab.gms_backend import GMSPlausibilityGate
+from agentlab.reasoning import Scratchpad, TrustLevel
 from agentlab.tools import GovernedToolExecutor, ToolRegistry
-
-from agentlab.capstone.banking_tools import register_all
 
 # Workflow node names as the GMS banking store knows them (its has_enables DAG),
 # in execution order. classify_complaint/extract_facts map to the store's short

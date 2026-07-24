@@ -13,7 +13,7 @@ Reports u-tension (2*sin(theta/2), high=contradictory) for:
 
 Run on spark-ef84 (offline):
     HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
-      PYTHONPATH=$HOME/jupyterlab/GMS-knowlytix \
+      PYTHONPATH=$HOME/GMS-knowlytix \
       python scripts/probe_uspace_polarity.py --store-path data/gms_policy_store_cap
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ import os
 import sys
 from pathlib import Path
 
-_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix"))
+_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix"))
 if os.path.isdir(_KNOW):
     sys.path.insert(0, _KNOW)
 

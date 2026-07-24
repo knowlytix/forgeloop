@@ -13,7 +13,7 @@ The two cuts (tau_ent, tau_contra) give the bands directly -- below tau_ent => a
     samples, score held-out tokens out-of-fold. Bootstrap CI on the pooled OOF.
 """
 import os, sys
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 import numpy as np
 import torch, torch.nn.functional as F
 from sklearn.model_selection import StratifiedKFold

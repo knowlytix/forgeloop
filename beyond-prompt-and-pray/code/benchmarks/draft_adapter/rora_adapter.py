@@ -26,7 +26,7 @@ import torch
 import torch.nn as nn
 
 # Import the RoRALayer implementation from the model-merging package (read-only).
-_RORA_SRC = "/home/user/jupyterlab/model_merging/rora_merge/src"
+_RORA_SRC = "/path/to/model_merging/rora_merge/src"
 if _RORA_SRC not in sys.path:
     sys.path.insert(0, _RORA_SRC)
 from adapters.rora import RoRALayer  # noqa: E402

@@ -7,12 +7,12 @@ against the target fact set (the values every policy fact must carry). Run this
 BEFORE building the store, so extraction accuracy is verified first.
 
 Run on spark-ef84:
-    KNOWLYTIX_SRC=$HOME/jupyterlab/GMS-knowlytix PYTHONPATH=$HOME/jupyterlab/GMS-knowlytix \
+    KNOWLYTIX_SRC=$HOME/GMS-knowlytix PYTHONPATH=$HOME/GMS-knowlytix \
       python scripts/probe_hybrid_extraction.py data/banking_policy_full.md
 """
 from __future__ import annotations
 import os, sys
-_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix"))
+_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix"))
 if os.path.isdir(_KNOW):
     sys.path.insert(0, _KNOW)
 

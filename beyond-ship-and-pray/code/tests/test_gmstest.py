@@ -10,7 +10,7 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 import gmstest as gt  # noqa: E402
-from gmstest.evaluate import MockSUT, SUTResult, run, summary, weak_link  # noqa: E402
+from gmstest.evaluate import MockSUT, run, summary, weak_link  # noqa: E402
 
 
 @pytest.fixture(scope="module")

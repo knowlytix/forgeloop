@@ -10,7 +10,7 @@ does not invent fees or deadlines -- and that an out-of-corpus question abstains
 rather than guess.
 
 Run on spark-ef84:
-    PYTHONPATH=$HOME/jupyterlab/GMS-knowlytix \
+    PYTHONPATH=$HOME/GMS-knowlytix \
       python scripts/probe_policy_synthesis.py --store-path data/gms_policy_store_cap
 """
 from __future__ import annotations
@@ -25,7 +25,7 @@ import sys
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, _ROOT)
 _KNOW = os.environ.get("KNOWLYTIX_SRC",
-                       os.path.expanduser("~/jupyterlab/GMS-knowlytix"))
+                       os.path.expanduser("~/GMS-knowlytix"))
 if os.path.isdir(_KNOW):
     sys.path.insert(0, _KNOW)
 

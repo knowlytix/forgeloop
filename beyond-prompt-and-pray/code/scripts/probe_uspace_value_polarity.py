@@ -10,7 +10,7 @@ verifier uses u-tension (synonym-tolerant by construction); if not, the u-encode
 needs SFT on value-polarity pairs (it was trained on RELATION phrasings).
 """
 import os, sys
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 import torch
 import torch.nn.functional as F
 from knowlytix.embedding import FineTunedEmbedding

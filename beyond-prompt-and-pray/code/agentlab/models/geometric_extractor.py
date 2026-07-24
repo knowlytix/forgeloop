@@ -30,8 +30,9 @@ from __future__ import annotations
 
 import json
 import os
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 # Hand-authored exemplar phrases per label. NOT drawn from data/eval_cases.
 _PRODUCT_EXEMPLARS: dict[str, list[str]] = {

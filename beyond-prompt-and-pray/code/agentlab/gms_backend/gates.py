@@ -34,7 +34,7 @@ class GMSPlausibilityGate:
     ----------
     store : object with `score_triple(head, relation, tail) -> float | None`
         A GMS-shaped store. In production this is a `GMSExpertStore` from
-        the `gms`/`docgms` library. In tests it is a mock.
+        the licensed `knowlytix` library. In tests it is a mock.
     theta : float
         Maximum admissible geodesic distance. Calibrated per domain in
         Appendix C; the GMS library's default is 1.5.

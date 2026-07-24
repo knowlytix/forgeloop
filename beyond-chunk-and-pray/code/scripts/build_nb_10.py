@@ -19,7 +19,7 @@ OUT = os.path.join(HERE, os.pardir, "notebooks", "10_answering_through_the_gms_a
 
 BOOTSTRAP = (
     "import os, sys\n"
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/home/user/jupyterlab/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
     "sys.path.insert(0, KNOWLYTIX_SRC)"
 )
 

@@ -58,7 +58,7 @@ class LoraPolarityClassifier:
     _cache: dict[str, tuple[str, float]] = field(default_factory=dict, repr=False)
 
     @classmethod
-    def load(cls, path: Path | None = None, device=None) -> "LoraPolarityClassifier":
+    def load(cls, path: Path | None = None, device=None) -> LoraPolarityClassifier:
         from peft import PeftModel
         from transformers import AutoModelForSequenceClassification, AutoTokenizer
 

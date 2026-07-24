@@ -1,6 +1,6 @@
 import pytest
 
-from agentlab.core import BaseAgent, Finish, TaskSpec
+from agentlab.core import BaseAgent, Finish
 from agentlab.governance import GovernanceHarness
 from agentlab.multiagent import MessageBus, Supervisor, Worker
 from agentlab.tools import GovernedToolExecutor, ToolRegistry

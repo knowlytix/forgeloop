@@ -4,4 +4,4 @@ from agentlab.audit.event import AuditEvent, SealedEvent
 from agentlab.audit.hash_chain import GENESIS, HashChain, verify_chain
 from agentlab.audit.logger import AuditLogger
 
-__all__ = ["AuditEvent", "AuditLogger", "GENESIS", "HashChain", "SealedEvent", "verify_chain"]
+__all__ = ["GENESIS", "AuditEvent", "AuditLogger", "HashChain", "SealedEvent", "verify_chain"]

@@ -4,7 +4,10 @@ The `gms_store` fixture loads the trained GMS store from `data/gms_demo_store`
 (built once from `data/model_risk_assessment.md`). Tests that exercise the
 GMS-backed adapters use this fixture instead of mocks.
 
-If the GMSH/docgms libraries are not installed, GMS-backed tests are skipped.
+If the licensed `knowlytix` substrate is not installed, GMS-backed tests are
+skipped. (This used to import `docgms`, the pre-rename name of what is now
+`knowlytix.knowledge` — so the fixture skipped as "docgms not installed" even
+when a working knowlytix was present.)
 """
 
 from __future__ import annotations
@@ -22,10 +25,10 @@ def gms_store():
     """Load the persisted demo GMS store. Session-scoped so we load once."""
     try:
         import torch
-        from docgms.config import DocGMSConfig
-        from docgms.store import GMSExpertStore
+        from knowlytix.knowledge.config import DocGMSConfig
+        from knowlytix.knowledge.store import GMSExpertStore
     except ImportError:
-        pytest.skip("docgms not installed")
+        pytest.skip("knowlytix not installed")
     if not STORE_PATH.exists():
         pytest.skip(f"GMS demo store not found at {STORE_PATH}")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
