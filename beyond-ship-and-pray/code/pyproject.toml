@@ -22,6 +22,11 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff"]
 
+# Running the chapter notebooks. matplotlib is imported directly by the DoE /
+# attribution notebooks to plot effect sizes; without it they fail on import.
+# Mirrors the `notebooks` extra in beyond-prompt-and-pray.
+notebooks = ["jupyterlab", "matplotlib", "pandas"]
+
 # GMS-backed evaluation (knowlytix.harness) runs on the licensed `knowlytix`
 # package: on PyPI but gated by a runtime license key (~/.knowlytix/license.key;
 # sign up at https://knowlytix.ai/signup/). `gmstest` imports it lazily, so the
