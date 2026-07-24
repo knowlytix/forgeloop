@@ -16,7 +16,7 @@ from __future__ import annotations
 import argparse, json, os, sys
 from collections import Counter
 
-_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix"))
+_KNOW = os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix"))
 if os.path.isdir(_KNOW):
     sys.path.insert(0, _KNOW)
 

@@ -52,7 +52,10 @@ def main() -> int:
     )
     print(f"ingest result: {result}")
     print(f"triples: {len(store.adapter.heads) if store.adapter else 0}")
-    print(f"enm:     {len(store.enm) if store.enm else 0}")
+    # ExactNumericalMemory is not Sized in current knowlytix — count its keys.
+    # (`len(store.enm)` raised TypeError here and aborted the run *before*
+    # store.save() below, leaving the store dir half-written.)
+    print(f"enm:     {len(list(store.enm.keys())) if store.enm else 0}")
     store.save()
     print(f"saved to {store_path}")
 

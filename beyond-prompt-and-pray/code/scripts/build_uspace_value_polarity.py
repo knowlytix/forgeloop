@@ -13,7 +13,7 @@ Saves value_polarity_encoder/ and validates synonym(low) vs antonym(high) separa
 Run on spark-ef84.
 """
 import os, sys, json
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 import torch
 import torch.nn.functional as F
 from pathlib import Path

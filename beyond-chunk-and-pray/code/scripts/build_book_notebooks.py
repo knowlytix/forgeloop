@@ -22,7 +22,7 @@ NBDIR = os.path.join(HERE, "..", "..", "notebooks")
 
 BOOT = (
     'import os, sys\n'
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/home/user/jupyterlab/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
     'sys.path.insert(0, KNOWLYTIX_SRC)\n'
     'REPO = os.path.join(os.path.dirname(os.getcwd()), "code") if os.path.basename(os.getcwd()) == "notebooks" else os.getcwd()\n'
     'sys.path.insert(0, os.path.join(REPO, "scripts"))'

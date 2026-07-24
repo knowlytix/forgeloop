@@ -104,7 +104,7 @@ class GMSRegulatoryGuard:
         cls,
         store_path: Path | None = None,
         device: torch.device | None = None,
-    ) -> "GMSRegulatoryGuard":
+    ) -> GMSRegulatoryGuard:
         from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 
         store_path = Path(store_path) if store_path is not None else _DEFAULT_STORE

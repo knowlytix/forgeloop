@@ -16,7 +16,7 @@ from nbformat.v4 import new_notebook, new_markdown_cell, new_code_cell, new_outp
 from nbformat import NO_CONVERT
 from pathlib import Path
 
-NB_PATH = "/home/user/jupyterlab/forgeloop/beyond-ship-and-pray/notebooks/09_agentic_capstone.ipynb"
+NB_PATH = "/path/to/forgeloop/beyond-ship-and-pray/notebooks/09_agentic_capstone.ipynb"
 
 # Embed computed outputs WITHOUT a Jupyter kernel: run each code cell's source in one
 # shared in-process namespace against the PINNED artifacts and capture stdout (see

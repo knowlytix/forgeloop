@@ -45,6 +45,7 @@ use_branch_library()
 
 import torch  # noqa: E402
 
+import knowlytix.harness.suite as _suite  # noqa: E402
 from knowlytix.harness.suite import (  # noqa: E402
     Catalog, CatalogBaseSource, compose, emit_classifier_sft, graphdoe_design,
     resolve, to_jsonl,
@@ -57,7 +58,9 @@ from knowlytix.knowledge.store import GMSExpertStore  # noqa: E402
 STORE = os.environ.get("GMS_STORE",
                        os.path.join(REPO_ROOT, "data", "gms_annual_report_store"))
 OUTDIR = os.environ.get("GMS_ENRICH", os.path.join(REPO_ROOT, "data", "enrichment"))
-CATALOGS = os.path.join(use_branch_library(), "knowlytix", "harness", "suite", "catalogs")
+# Resolve the DoE catalogs from the installed knowlytix package (works whether
+# it is pip-installed or a source checkout) rather than a hardcoded branch path.
+CATALOGS = os.path.join(os.path.dirname(_suite.__file__), "catalogs")
 
 # Content-retrieval base types only: questions a reader actually asks of the
 # report. (counting/cross_reference produce graph-STRUCTURE queries -- "how many

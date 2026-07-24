@@ -1,0 +1,63 @@
+[project]
+name = "gmstest"
+version = "0.1.0"
+description = "Beyond Ship and Pray — companion library for DoE-driven test design, component/system attribution, and resilience testing of agentic systems"
+requires-python = ">=3.12"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Knowlytix" }]
+keywords = ["testing", "design-of-experiments", "agentic-ai", "attribution", "gms"]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: Apache Software License",
+]
+
+# Core install: the DoE catalogs, the test runner and the attribution/resilience
+# analysis run on just these. Catalogs are YAML.
+dependencies = [
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff"]
+
+# Running the chapter notebooks. matplotlib is imported directly by the DoE /
+# attribution notebooks to plot effect sizes; without it they fail on import.
+# Mirrors the `notebooks` extra in beyond-prompt-and-pray.
+notebooks = ["jupyterlab", "matplotlib", "pandas"]
+
+# GMS-backed evaluation (knowlytix.harness) runs on the licensed `knowlytix`
+# package: on PyPI but gated by a runtime license key (~/.knowlytix/license.key;
+# sign up at https://knowlytix.ai/signup/). `gmstest` imports it lazily, so the
+# core test harness works without it and tests that need it `pytest.importorskip`.
+gms = ["knowlytix"]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["gmstest*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+# Lint the importable package (gmstest) + tests; scripts/ and apps/ are book
+# companions, catalogs/ is YAML data. Mirrors the root ruff.toml scope. (This
+# per-topic config takes precedence over the root one for files under code/.)
+extend-exclude = [
+    "scripts",
+    "apps",
+    "catalogs",
+]
+
+[tool.ruff.lint]
+# Repeated from the root ruff.toml for the same precedence reason: relying on
+# ruff's *default* rule selection is a trap (0.16 broadly expanded that default),
+# so name the rules explicitly and adopt new families deliberately.
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q"

@@ -33,9 +33,30 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install ruff
+        # Unpinned is safe: ruff.toml (and the per-topic [tool.ruff.lint]
+        # blocks) select the rule set explicitly, so a ruff release that expands
+        # its *default* selection — as 0.16 did — cannot redden CI on unchanged
+        # code.
         run: pip install -U pip ruff
       - name: Run ruff
         run: ruff check .
+
+  notebooks:
+    name: Notebook output guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Executed notebook output must not be committed: it bloats the repo,
+      # makes diffs unreadable, and re-renders stale results on GitHub. A local
+      # nbstripout hook only protects contributors who installed it, so gate it
+      # here. Fix with `python scripts/notebook_outputs.py --strip`.
+      # Stdlib only, no extra pip install needed.
+      - name: Assert no committed notebook output
+        run: python scripts/notebook_outputs.py --check
 
   test:
     name: Typecheck + test (${{ matrix.topic }})

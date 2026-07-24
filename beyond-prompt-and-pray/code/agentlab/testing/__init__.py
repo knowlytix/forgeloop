@@ -28,12 +28,12 @@ from agentlab.testing.judge import GeometricJudge, JudgeVerdict
 __all__ = [
     "CapstoneTestHarness",
     "CapstoneTestResult",
-    "FaultInjectionResult",
-    "RagTestResult",
-    "SubstrateTestResult",
     "FactorAttribution",
+    "FaultInjectionResult",
     "GeometricJudge",
     "GraphDOEHarness",
     "JudgeVerdict",
+    "RagTestResult",
+    "SubstrateTestResult",
     "TestResult",
 ]

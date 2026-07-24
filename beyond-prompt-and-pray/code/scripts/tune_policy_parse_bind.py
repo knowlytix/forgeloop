@@ -14,7 +14,7 @@ only the encoder learns from them. The resulting ``FineTunedEmbedding`` replaces
 to the right policy entity.
 
 Run on spark-ef84:
-    PYTHONPATH=$HOME/jupyterlab/GMS-knowlytix \
+    PYTHONPATH=$HOME/GMS-knowlytix \
       python scripts/tune_policy_parse_bind.py \
         --corpus data/banking_policy_full.md \
         --out data/gms_policy_store_cap/tuned_encoder

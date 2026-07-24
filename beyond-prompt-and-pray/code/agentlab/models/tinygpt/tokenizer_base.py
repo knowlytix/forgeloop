@@ -14,7 +14,6 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-
 SPECIAL_TOKENS: dict[str, int] = {
     "<pad>": 0,
     "<unk>": 1,
@@ -83,7 +82,7 @@ class BaseTokenizer(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def load(cls, path: str | Path) -> "BaseTokenizer":
+    def load(cls, path: str | Path) -> BaseTokenizer:
         """Load a tokenizer previously saved with :meth:`save`."""
 
     # --- Helpers for subclasses ---------------------------------------

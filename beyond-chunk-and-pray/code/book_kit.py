@@ -1,37 +1,77 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Shared notebook helper: branch-library bootstrap, repo-root paths and a
-store loader that uses the *exact* build-time config.
+"""Shared notebook helper: knowlytix bootstrap, repo-root paths and a store
+loader that uses the *exact* build-time config.
 
-Notebooks import this after the KNOWLYTIX_SRC bootstrap so that:
+Notebooks import this so that:
+  * `import knowlytix` resolves (the licensed substrate; pip-installed or a checkout),
   * data paths resolve from the repo root (not the notebook's cwd), and
   * the trained store loads with the geometry/cap it was built with
     (GMSExpertStore.load rebuilds the model from config, so the config must
     match scripts/build_store.py or the state_dict will not load).
 
-Both locations are configurable via environment variables:
-  KNOWLYTIX_SRC       -> the GMS-knowlytix branch library (default below)
-  GMS_RAG_TUTORIAL    -> this repo (default below)
+The store data itself is never committed or packaged — regenerate it with
+`notebooks/00_setup.ipynb` (which drives scripts/build_store.py and the rest of
+the pipeline). load_store() raises with that pointer when the store is absent.
+
+Locations are configurable via environment variables:
+  KNOWLYTIX_SRC     -> the GMS-knowlytix source checkout (auto-detected if unset)
+  GMS_RAG_TUTORIAL  -> this repo's code/ dir (defaults to this file's dir)
 """
 
 from __future__ import annotations
 
+import importlib.util
 import os
 import sys
 
-KNOWLYTIX_SRC = os.environ.get(
-    "KNOWLYTIX_SRC", "/home/user/jupyterlab/GMS-knowlytix")
 REPO = os.environ.get(
     "GMS_RAG_TUTORIAL", os.path.dirname(os.path.abspath(__file__)))
-for _p in (KNOWLYTIX_SRC, REPO):
-    if _p and _p not in sys.path:
-        sys.path.insert(0, _p)
+if REPO not in sys.path:
+    sys.path.insert(0, REPO)
 
 CORPUS = os.path.join(REPO, "data", "annual_report.md")
 STORE = os.path.join(REPO, "data", "gms_annual_report_store")
 EVAL_COHORT = os.path.join(REPO, "data", "eval_cohort.json")
 
-import torch  # noqa: E402
 
+def resolve_knowlytix() -> str | None:
+    """Make ``import knowlytix`` work; return the path added to ``sys.path`` (or
+    None if it was already importable).
+
+    The GMS substrate installs from PyPI (``pip install knowlytix``) but may also
+    live in a separate source checkout. If it is already importable we do nothing;
+    otherwise we honor ``$KNOWLYTIX_SRC`` first, then a few common checkout
+    locations. When found, we also export ``KNOWLYTIX_SRC`` so child build scripts
+    (scripts/_bootstrap.py) inherit the same path. Raises with guidance when it
+    cannot be located.
+    """
+    if importlib.util.find_spec("knowlytix") is not None:
+        return None
+    candidates = [
+        os.environ.get("KNOWLYTIX_SRC"),
+        os.path.expanduser("~/source/GMS-knowlytix"),
+        os.path.expanduser("~/GMS-knowlytix"),
+        os.path.normpath(os.path.join(REPO, "..", "..", "GMS-knowlytix")),
+    ]
+    for c in candidates:
+        if c and os.path.isdir(os.path.join(c, "knowlytix")):
+            if c not in sys.path:
+                sys.path.insert(0, c)
+            os.environ["KNOWLYTIX_SRC"] = c
+            return c
+    raise ModuleNotFoundError(
+        "The licensed `knowlytix` substrate was not found. Install it with "
+        "`pip install knowlytix` (it needs a license key at ~/.knowlytix/"
+        "license.key; sign up at https://knowlytix.ai/signup/), or point "
+        "KNOWLYTIX_SRC at a source checkout and restart the kernel:\n"
+        "    import os; os.environ['KNOWLYTIX_SRC'] = '/path/to/GMS-knowlytix'\n"
+        "See the repo README (\"The knowlytix substrate\")."
+    )
+
+
+resolve_knowlytix()
+
+import torch  # noqa: E402
 from knowlytix.core.config import GeometryConfig, TrainConfig  # noqa: E402
 from knowlytix.knowledge.config import DocGMSConfig  # noqa: E402
 from knowlytix.knowledge.store import GMSExpertStore  # noqa: E402
@@ -56,5 +96,8 @@ def load_store(device=None) -> GMSExpertStore:
     store = GMSExpertStore(store_config(), device or DEVICE)
     if not store.load():
         raise FileNotFoundError(
-            f"no trained store at {STORE}; run `python scripts/build_store.py`")
+            f"no trained store at {STORE}. The store data is not committed or "
+            "packaged — build it by running notebooks/00_setup.ipynb (or "
+            "`python scripts/build_store.py`), then re-run this cell."
+        )
     return store

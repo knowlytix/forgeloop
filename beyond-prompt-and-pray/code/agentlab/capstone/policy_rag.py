@@ -212,7 +212,9 @@ class PolicyRagRetriever:
         _model = getattr(store, "model", None)
         if getattr(_model, "cap_enabled", False):
             from knowlytix.core.graph.admissibility import (
-                calibrate_cap_margins_per_head, calibrate_tension_threshold)
+                calibrate_cap_margins_per_head,
+                calibrate_tension_threshold,
+            )
             self._cap_margins = calibrate_cap_margins_per_head(_model, store.adapter)
             self._tension_tau = calibrate_tension_threshold(_model, store.adapter)
 

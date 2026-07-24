@@ -21,8 +21,8 @@ import re
 from collections.abc import Iterable
 from pathlib import Path
 
-from agentlab.models.tinygpt.tokenizer_base import SPECIAL_TOKENS, BaseTokenizer
 from agentlab.models.tinygpt.bpe_internals import get_pair_counts, merge_pair
+from agentlab.models.tinygpt.tokenizer_base import SPECIAL_TOKENS, BaseTokenizer
 
 #: GPT-2 style pre-tokenization regex. Splits on word boundaries while keeping
 #: leading whitespace attached to the following word.
@@ -151,7 +151,7 @@ class BPETokenizer(BaseTokenizer):
         )
 
     @classmethod
-    def load(cls, path: str | Path) -> "BPETokenizer":
+    def load(cls, path: str | Path) -> BPETokenizer:
         data = cls._load_json(path)
         if data.get("type") != "BPETokenizer":
             raise ValueError(f"Not a BPETokenizer file: {path}")

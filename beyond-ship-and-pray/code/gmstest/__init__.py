@@ -25,22 +25,47 @@ and consumed two ways:
     emit_*     Chapter 15 — SFT / fine-tuning data (classifier, draft LoRA)
     evaluate   Chapter 16 — run through a SUT; score + attribute failures
 """
+from . import evaluate
 from .catalogs import BaseSpec, Catalog, FactorSpec, Profile
-from .resolve import ResolvedSuite, applicable_factors, resolve, resolve_profile
-from .sources import (
-    BaseSource, CatalogBaseSource, QAItem, SeedCaseSource, UserBaseSource,
-)
 from .compose import Scenario, compose, graphdoe_design, simple_design
 from .emit import (
-    draft_prompt, emit_classifier_sft, emit_draft_sft, passes_contract, to_jsonl,
+    draft_prompt,
+    emit_classifier_sft,
+    emit_draft_sft,
+    passes_contract,
+    to_jsonl,
 )
-from . import evaluate
+from .resolve import ResolvedSuite, applicable_factors, resolve, resolve_profile
+from .sources import (
+    BaseSource,
+    CatalogBaseSource,
+    QAItem,
+    SeedCaseSource,
+    UserBaseSource,
+)
 
 __all__ = [
-    "BaseSpec", "FactorSpec", "Profile", "Catalog",
-    "ResolvedSuite", "resolve", "resolve_profile", "applicable_factors",
-    "QAItem", "BaseSource", "UserBaseSource", "SeedCaseSource", "CatalogBaseSource",
-    "Scenario", "compose", "simple_design", "graphdoe_design",
-    "emit_classifier_sft", "emit_draft_sft", "draft_prompt", "passes_contract", "to_jsonl",
+    "BaseSource",
+    "BaseSpec",
+    "Catalog",
+    "CatalogBaseSource",
+    "FactorSpec",
+    "Profile",
+    "QAItem",
+    "ResolvedSuite",
+    "Scenario",
+    "SeedCaseSource",
+    "UserBaseSource",
+    "applicable_factors",
+    "compose",
+    "draft_prompt",
+    "emit_classifier_sft",
+    "emit_draft_sft",
     "evaluate",
+    "graphdoe_design",
+    "passes_contract",
+    "resolve",
+    "resolve_profile",
+    "simple_design",
+    "to_jsonl",
 ]

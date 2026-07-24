@@ -42,8 +42,8 @@ _DOMAIN_ISSUE: dict[str, str | None] = {
 # then product-specific issues, then the generic account issue.
 _ISSUE_RANK = {"overdraft_fee": 1, "mortgage_issue": 2, "loan_issue": 3,
                "credit_card_issue": 4, "account_issue": 5, "general": 6}
-_CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.I)
-_CLAUSE_SPLIT = re.compile(r"[.;!?]|\band\b|\bbut\b|,", re.I)
+_CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.IGNORECASE)
+_CLAUSE_SPLIT = re.compile(r"[.;!?]|\band\b|\bbut\b|,", re.IGNORECASE)
 
 _DEFAULT_STORE = Path(__file__).resolve().parents[2] / "data" / "gms_policy_store_geode"
 

@@ -135,3 +135,10 @@ Thumbs.db
 *.swo
 .vscode/
 .idea/
+
+# Book material is intentionally excluded from this repo (see CLAUDE.md).
+# Several chapter notebooks still write figures/exports into a sibling `book/`
+# tree when executed (e.g. beyond-ship-and-pray/book/figures/*.png), which would
+# silently re-introduce manuscript artifacts. Ignore those trees outright.
+book/
+beyond-*/book/

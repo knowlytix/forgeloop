@@ -5,7 +5,7 @@ de-collided regulation entities and the PII case -- the queries the isolated
 binding probe does not cover. Geometric parse, no LLM judge.
 
 Run on spark-ef84 (offline):
-    HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=$HOME/jupyterlab/GMS-knowlytix \
+    HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=$HOME/GMS-knowlytix \
       python scripts/probe_policy_extract_routing.py --store-path data/gms_policy_store_cap
 """
 from __future__ import annotations

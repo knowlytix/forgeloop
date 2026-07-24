@@ -9,7 +9,7 @@ from knowlytix.knowledge.config import DocGMSConfig
 from knowlytix.knowledge.store import GMSExpertStore
 from knowlytix.harness.testing.hallucination import HallucinationOracle
 
-sp = "/home/user/jupyterlab/forgeloop/beyond-chunk-and-pray/code/data/gms_annual_report_store"
+sp = "/path/to/forgeloop/beyond-chunk-and-pray/code/data/gms_annual_report_store"
 g = json.load(open(sp + "/model_dims.json"))["geometry"]
 store = GMSExpertStore(DocGMSConfig(store_path=sp, geometry=GeometryConfig(
     d_v=g["d_v"], d_u=g["d_u"], m=g["m"], d=g["d"])), device=torch.device("cuda"))

@@ -9,8 +9,9 @@ record with source=budget and sets state.status = "failed".
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Any, Iterator, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from agentlab.core.action import Action, Escalate
 from agentlab.core.agent import BaseAgent

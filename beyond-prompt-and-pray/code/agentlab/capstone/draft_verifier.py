@@ -47,7 +47,7 @@ class DraftVerifier:
     store: Any
 
     @classmethod
-    def load(cls, store_path: Path | None = None) -> "DraftVerifier":
+    def load(cls, store_path: Path | None = None) -> DraftVerifier:
         import torch
         from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 

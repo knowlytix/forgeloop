@@ -864,9 +864,10 @@ class CapstoneTestHarness:
         proceed on a faulted tool. Returns per-tool detection rates + a real
         GatewayTranscript-backed row log.
         """
+        from knowlytix.harness.testing import ToolGateway
+
         from agentlab.capstone import build_complaint_harness
         from agentlab.core import Budget, BudgetTracker, TaskSpec
-        from knowlytix.harness.testing import FaultProfile, ToolGateway
 
         cfg = self._load_config()
         budget_cfg = cfg.get("budget", {})
@@ -943,6 +944,7 @@ class CapstoneTestHarness:
         import torch
         from knowlytix.harness.testing import DOEGMSBenchmark, DOEHarnessConfig
         from knowlytix.harness.testing.audit import AuditReporter, RiskTierProfile
+
         from agentlab.models import QwenAdapter
 
         # substrate_test is a ship/no-ship gate on the knowledge SUBSTRATE, driven
@@ -1080,6 +1082,7 @@ class CapstoneTestHarness:
         """
         import torch
         from knowlytix.harness.testing import DOEGMSBenchmark, DOEHarnessConfig
+
         from agentlab.capstone.policy_rag import PolicyRagRetriever
 
         # search_policy is a policy-FACT RAG: it answers "what is the overdraft

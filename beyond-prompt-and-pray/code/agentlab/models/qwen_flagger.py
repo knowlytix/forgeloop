@@ -66,7 +66,7 @@ class QwenRegulatoryFlagger:
         cls,
         model: str | None = None,
         device: str | torch.device | None = None,
-    ) -> "QwenRegulatoryFlagger":
+    ) -> QwenRegulatoryFlagger:
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         model_id = model or _DEFAULT_MODEL

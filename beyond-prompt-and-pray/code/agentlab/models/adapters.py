@@ -10,7 +10,6 @@ from __future__ import annotations
 import os
 from typing import Any
 
-
 # Per-million-token prices in USD. Override for your account.
 DEFAULT_PRICING: dict[str, dict[str, float]] = {
     "claude-opus-4-6": {"input": 15.0, "output": 75.0},
@@ -29,7 +28,7 @@ class AnthropicAdapter:
         pricing: dict[str, dict[str, float]] | None = None,
     ) -> None:
         try:
-            from anthropic import Anthropic  # noqa: I001 - lazy import is the point
+            from anthropic import Anthropic
         except ImportError as e:
             raise ImportError(
                 "anthropic SDK is required for AnthropicAdapter. Install with `pip install anthropic`."

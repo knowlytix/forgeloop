@@ -26,7 +26,7 @@ Artifacts: a PEFT adapter saved to ``data/draft_response_lm_qwen/`` via
 ``save_pretrained``. Greedy decoding at inference -> deterministic drafts.
 
 Run:
-    ~/cluster/spark-venv/bin/python scripts/train_draft_response_lora.py
+    python scripts/train_draft_response_lora.py
 """
 
 from __future__ import annotations

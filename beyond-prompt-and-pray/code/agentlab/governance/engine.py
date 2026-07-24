@@ -9,7 +9,7 @@ class PolicyEngine:
     def __init__(self, policies: list[PolicyCheck] | None = None) -> None:
         self._policies: list[PolicyCheck] = list(policies or [])
 
-    def add(self, policy: PolicyCheck) -> "PolicyEngine":
+    def add(self, policy: PolicyCheck) -> PolicyEngine:
         self._policies.append(policy)
         return self
 

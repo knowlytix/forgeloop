@@ -8,9 +8,10 @@ that conform to the same protocol.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 from agentlab.core.action import ToolCall
 from agentlab.core.state import AgentState
@@ -50,7 +51,7 @@ class ToolHooks:
 
     on_tool_call: Callable[[str, dict], None] | None = None
     before_tool: Callable[[str, dict], bool] | None = None
-    intercept_tool: Callable[[str, dict], "tuple[bool, Any]"] | None = None
+    intercept_tool: Callable[[str, dict], tuple[bool, Any]] | None = None
     on_tool_result: Callable[[str, str, Any], None] | None = None
 
 

@@ -10,7 +10,7 @@ finetune_contradiction drives them to high tension and synonyms within a pole to
 low. Pure geometry at runtime.
 """
 import os, sys, re
-sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/jupyterlab/GMS-knowlytix")))
+sys.path.insert(0, os.environ.get("KNOWLYTIX_SRC", os.path.expanduser("~/GMS-knowlytix")))
 import torch, torch.nn.functional as F
 from pathlib import Path
 from collections import Counter

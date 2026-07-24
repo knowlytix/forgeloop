@@ -12,4 +12,4 @@ from agentlab.gms_backend.gates import GMSPlausibilityGate
 from agentlab.gms_backend.memory import GMSMemory
 from agentlab.gms_backend.plan_gate import GMSPlanGate, PlanVerdict
 
-__all__ = ["GMSMemory", "GMSPlausibilityGate", "GMSPlanGate", "PlanVerdict"]
+__all__ = ["GMSMemory", "GMSPlanGate", "GMSPlausibilityGate", "PlanVerdict"]

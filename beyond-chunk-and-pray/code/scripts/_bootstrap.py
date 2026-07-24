@@ -15,7 +15,7 @@ from __future__ import annotations
 import os
 import sys
 
-_DEFAULT = "/home/user/jupyterlab/GMS-knowlytix"
+_DEFAULT = "/path/to/GMS-knowlytix"
 
 KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", _DEFAULT)
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,5 +59,5 @@ def load_store_geo(store_path, dev):
 # this module (so a notebook is self-contained):
 #
 #     import os, sys
-#     KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/home/user/jupyterlab/GMS-knowlytix")
+#     KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")
 #     sys.path.insert(0, KNOWLYTIX_SRC)

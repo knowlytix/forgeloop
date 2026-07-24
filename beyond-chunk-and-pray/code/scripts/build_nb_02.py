@@ -44,7 +44,7 @@ CELLS.append(md(
 # --- Cell 1: bootstrap (verbatim from global brief) ---
 CELLS.append(code(
     "import os, sys\n"
-    "KNOWLYTIX_SRC = os.environ.get(\"KNOWLYTIX_SRC\", \"/home/user/jupyterlab/GMS-knowlytix\")\n"
+    "KNOWLYTIX_SRC = os.environ.get(\"KNOWLYTIX_SRC\", \"/path/to/GMS-knowlytix\")\n"
     "sys.path.insert(0, KNOWLYTIX_SRC)"
 ))
 
