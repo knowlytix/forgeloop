@@ -1,7 +1,0 @@
-Account Closure Process
-
-An account may be closed at customer request or by bank action.
-Customer-initiated closure requires verification of identity and
-settlement of any outstanding balance. Bank-initiated closure (for
-inactivity or suspected fraud) requires 30 days written notice except
-in cases of suspected fraud where shorter notice is permitted.
