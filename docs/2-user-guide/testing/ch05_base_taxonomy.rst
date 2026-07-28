@@ -1,5 +1,5 @@
-The Base Taxonomy
-=================
+Chapter 5 — The Base Taxonomy
+=============================
 
 This page shows how to load the base catalog, read what one category requires,
 and turn categories into scorable questions through the three base sources. The

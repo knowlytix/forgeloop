@@ -1,5 +1,5 @@
-Abstention and Coverage
-=======================
+Chapter 13 — Abstention and Coverage
+====================================
 
 This page shows how to make a triple-mediated pipeline decline a question it
 cannot ground, and how to measure the document regions the pipeline cannot

@@ -1,5 +1,5 @@
-Geometric Memory: the Store Primitives
-=======================================
+Chapter 2 — Geometric Memory: the Store Primitives
+==================================================
 
 The alternative to similarity search over chunks is a trained triple register,
 the GMS store. It is a small geometric model that has learned a knowledge graph,

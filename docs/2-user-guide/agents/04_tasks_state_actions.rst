@@ -1,5 +1,5 @@
-Typing the Task, State and Actions
-==================================
+Chapter 4 — Typing the Task, State and Actions
+==============================================
 
 This page shows how to replace the three loose parts of an early loop, a task
 that is a bare string, an action that is a free-form dict and state kept in

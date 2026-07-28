@@ -1,5 +1,5 @@
-Bounding a Run with a Budget
-============================
+Chapter 7 — Bounding a Run with a Budget
+========================================
 
 This page shows how to cap what a single run may consume and have
 :func:`~forgeloop.agents.core.run_loop` halt with an ordinary terminal record

@@ -1,5 +1,5 @@
-Safe Tool Execution and Tool Testing
-====================================
+Chapter 6 — Safe Tool Execution and Tool Testing
+================================================
 
 This page shows how to run a tool call through an ordered stack of gates with
 :class:`~forgeloop.agents.tools.GovernedToolExecutor`, write a custom policy gate,

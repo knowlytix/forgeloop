@@ -1,5 +1,5 @@
-Generating Data with a Designed Experiment
-==========================================
+Chapter 6 — Generating Data with a Designed Experiment
+======================================================
 
 The trained store serves as an oracle: every fact it holds is a known,
 graph-derived answer, so the store supplies the data that trains and tests the

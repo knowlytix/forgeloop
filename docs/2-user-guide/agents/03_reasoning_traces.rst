@@ -1,5 +1,5 @@
-Recording Reasoning as Typed Entries
-====================================
+Chapter 3 — Recording Reasoning as Typed Entries
+================================================
 
 This page shows how to record an agent's reasoning as typed, inspectable entries
 on a :class:`~forgeloop.agents.reasoning.Scratchpad` rather than as a free-form

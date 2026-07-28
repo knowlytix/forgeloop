@@ -1,5 +1,5 @@
-Building Agents
-===============
+Agent Builder (Beyond Prompt and Pray)
+======================================
 
 This part follows *Beyond Prompt and Pray*, one page per chapter and in the
 book's order. It develops a governed agent from the loop and its typed actions

@@ -21,18 +21,8 @@ function, and the :doc:`examples </examples>` show the entry points in use.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Building Agents
+   :caption: The Three Books
 
    agents/index
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Testing
-
    testing/index
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Governed RAG
-
    rag/index

@@ -1,5 +1,5 @@
-Pluggable LLMs and the Distrusted Dense Fallback
-================================================
+Chapter 16 — Pluggable LLMs and the Distrusted Dense Fallback
+=============================================================
 
 A deployment has three LLM-shaped jobs: extract the query triples from the
 question, synthesize the grounded answer from retrieved facts, and optionally

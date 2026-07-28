@@ -1,5 +1,5 @@
-Testing the Capstone Agent
-==========================
+Chapter 17 — Testing the Capstone Agent
+=======================================
 
 The twenty-case benchmark establishes that the capstone handles twenty
 anticipated situations. It does not establish how the agent behaves when a

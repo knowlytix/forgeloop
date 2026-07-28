@@ -1,5 +1,5 @@
-Trajectory Evaluation and Metrics
-=================================
+Chapter 10 — Trajectory Evaluation and Metrics
+==============================================
 
 The final answer of an agent run underdetermines whether the run was correct,
 because the same answer can be reached by a path that consulted the right policy

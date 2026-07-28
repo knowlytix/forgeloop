@@ -1,5 +1,5 @@
-Governed Retrieval
-==================
+Chapter 13 — Governed Retrieval
+===============================
 
 A single search tool that returns the fee schedule can also return a second
 customer's account, an employee file or the rationale behind a suspicious-activity

@@ -1,5 +1,5 @@
-Identifying Weakness: Logistic Attribution of Failure
-=====================================================
+Chapter 10 — Identifying Weakness: Logistic Attribution of Failure
+==================================================================
 
 This page shows how to turn a table of binary outcomes and factor levels into a
 ranked statement about which conditions cause failure. A run over the base and

@@ -1,5 +1,5 @@
-Memory: Types, Retrieval and Hybrid Stores
-==========================================
+Chapter 9 — Memory: Types, Retrieval and Hybrid Stores
+======================================================
 
 This page shows how to build the memory stores in
 :mod:`forgeloop.agents.memory`, one per question an agent asks about what it

@@ -1,5 +1,5 @@
-Human-in-the-Loop and Escalation UX
-===================================
+Chapter 14 — Human-in-the-Loop and Escalation UX
+================================================
 
 When a gate escalates a call the agent cannot clear on its own, the decision
 passes to a person, and the shape of the handoff determines whether that person

@@ -1,5 +1,5 @@
-Testing
-=======
+Testing (Beyond Ship and Pray)
+==============================
 
 This part follows *Beyond Ship and Pray*, one page per chapter and in the book's
 order. It develops testing agentic systems by design of experiments: why average

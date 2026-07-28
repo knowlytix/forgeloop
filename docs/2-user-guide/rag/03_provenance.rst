@@ -1,5 +1,5 @@
-Provenance: Span to Triple
-==========================
+Chapter 3 — Provenance: Span to Triple
+======================================
 
 A retrieved fact is only as trustworthy as the source it can point to. The
 chunk-and-pray recipe discards offsets at ingestion, so an answer can cite a

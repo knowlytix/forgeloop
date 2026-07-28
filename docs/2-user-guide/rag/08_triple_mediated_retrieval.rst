@@ -1,5 +1,5 @@
-Triple-Mediated Retrieval
-=========================
+Chapter 8 — Triple-Mediated Retrieval
+=====================================
 
 A chunk-and-pray pipeline hands a question verbatim to a vector index and trusts
 the model to read an answer from the nearest chunks. This page takes a different

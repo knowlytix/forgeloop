@@ -1,5 +1,5 @@
-Tools as Typed Actions
-======================
+Chapter 5 — Tools as Typed Actions
+==================================
 
 This page shows how to define a tool with explicit input and output schemas,
 register it so calls are validated against those schemas, and select a tool for a

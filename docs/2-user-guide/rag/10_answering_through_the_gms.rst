@@ -1,5 +1,5 @@
-Answering Through the GMS
-=========================
+Chapter 10 — Answering Through the GMS
+======================================
 
 Binding turns a question's words into the graph's vocabulary and leaves a list
 of bound query triples, each with the asked value as the bare variable ``?``

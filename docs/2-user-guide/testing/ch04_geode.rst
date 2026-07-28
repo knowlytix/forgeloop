@@ -1,5 +1,5 @@
-Building the Oracle
-===================
+Chapter 4 — Building the Oracle
+===============================
 
 This page shows how GEODE turns a raw document into the trained, calibrated store
 the primitives read. The primitives in :doc:`ch03_gms_primitives` assume a store

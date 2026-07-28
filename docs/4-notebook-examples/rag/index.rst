@@ -1,5 +1,5 @@
-Governed RAG (Beyond Chunk and Pray)
-====================================
+GMS RAG (Beyond Chunk and Pray)
+===============================
 
 Chapter notebooks for governed retrieval over geometric memory. Rendered as saved; run them locally (they use :mod:`forgeloop.rag` and the licensed GMS backend) to regenerate outputs.
 

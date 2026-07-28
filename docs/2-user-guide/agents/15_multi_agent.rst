@@ -1,5 +1,5 @@
-Multi-Agent: When, How and When Not To
-======================================
+Chapter 15 — Multi-Agent: When, How and When Not To
+===================================================
 
 This page shows how to build a supervisor-worker system from
 :mod:`forgeloop.agents.multiagent`, where each worker carries its own governance

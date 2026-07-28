@@ -1,5 +1,5 @@
-The Governed Agent Loop
-=======================
+Chapter 1 — The Governed Agent Loop
+===================================
 
 This page shows how to assemble a working agent from the primitives in
 :mod:`forgeloop.agents.core` and drive it with :func:`~forgeloop.agents.core.run_loop`,

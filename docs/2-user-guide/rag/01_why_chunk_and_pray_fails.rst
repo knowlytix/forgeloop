@@ -1,5 +1,5 @@
-Why "Chunk and Pray" Fails
-==========================
+Chapter 1 — Why "Chunk and Pray" Fails
+======================================
 
 This page reproduces the default retrieval recipe on a single numeric question,
 then runs the same question through the triple-mediated store so the two answers

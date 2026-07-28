@@ -1,5 +1,5 @@
-Generating Training Data
-========================
+Chapter 8 — Generating Training Data
+====================================
 
 This page shows how to consume composed scenarios as a supervised corpus. The
 same scenarios that drive evaluation drive training; only the consumer differs.

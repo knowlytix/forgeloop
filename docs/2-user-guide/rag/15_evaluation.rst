@@ -1,5 +1,5 @@
-Evaluating the RAG with a Designed Experiment
-=============================================
+Chapter 15 — Evaluating the RAG with a Designed Experiment
+==========================================================
 
 A single accuracy number rewards a confident guess as much as a verified answer.
 This page shows how to score the assembled RAG against the designed-experiment

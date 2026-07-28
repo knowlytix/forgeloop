@@ -1,5 +1,5 @@
-Why Average Accuracy Is Not Enough
-==================================
+Chapter 1 — Why Average Accuracy Is Not Enough
+==============================================
 
 This page shows how a single aggregate score hides a concentrated failure, and
 how :mod:`forgeloop.testing` reframes evaluation as a designed experiment that

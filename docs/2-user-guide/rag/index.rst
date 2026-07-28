@@ -1,5 +1,5 @@
-Governed RAG
-============
+GMS RAG (Beyond Chunk and Pray)
+===============================
 
 This part follows *Beyond Chunk and Pray*, one page per chapter and in the
 book's order. It develops governed retrieval over geometric memory: why chunking
