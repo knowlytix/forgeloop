@@ -1,9 +1,0 @@
-Transaction Dispute Process
-
-A customer who believes a posted transaction is unauthorized or incorrect
-may file a dispute within 60 days of the statement date. The bank
-investigates within 10 business days. During the investigation a
-provisional credit is issued. If the dispute is found in the customer's
-favor the credit becomes permanent.
-
-See: Regulation E §1005.11 and Regulation Z §1026.13.

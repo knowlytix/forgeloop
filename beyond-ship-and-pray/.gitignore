@@ -1,8 +1,0 @@
-book/*.aux
-book/*.log
-book/*.out
-book/*.toc
-book/gms-testing-tutorial.pdf
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
