@@ -1,5 +1,5 @@
-Grounded Synthesis
-==================
+Chapter 11 — Grounded Synthesis
+===============================
 
 Retrieval already decided the answer values through the graph: bound query
 triples resolved to asserted facts, each carrying its source span

@@ -1,5 +1,5 @@
-Tuning the Encoders: Embedding SFT
-==================================
+Chapter 7 — Tuning the Encoders: Embedding SFT
+==============================================
 
 Retrieval and the relevance gate both rest on an encoder that maps text to a
 vector. A frozen general-purpose encoder treats "topline" and "revenue" as

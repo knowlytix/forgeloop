@@ -1,5 +1,5 @@
-Testing a Governed Agent End to End
-===================================
+Chapter 12 — Testing a Governed Agent End to End
+================================================
 
 This page shows how to drive the whole apparatus against one system: the governed
 banking complaint agent of the companion volume *Beyond Prompt and Pray*. The

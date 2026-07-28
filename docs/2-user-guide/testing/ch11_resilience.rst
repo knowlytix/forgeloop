@@ -1,5 +1,5 @@
-Resilience Under Tool Faults
-============================
+Chapter 11 — Resilience Under Tool Faults
+=========================================
 
 This page shows how to probe whether a governed agent fails loud when a tool it
 relies on fails. In production a tool failure is a certainty, and a governed

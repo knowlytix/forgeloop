@@ -1,5 +1,5 @@
-Persisting to an External Store (KAL / Postgres)
-================================================
+Chapter 17 — Persisting to an External Store (KAL / Postgres)
+=============================================================
 
 A trained store is a directory on local disk: a model checkpoint, an adapter,
 an ENM table and the source markdown. To serve a fleet the graph — triples plus

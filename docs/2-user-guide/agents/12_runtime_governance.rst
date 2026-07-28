@@ -1,5 +1,5 @@
-Runtime Governance: Gates, Policy-as-Code and Audit
-===================================================
+Chapter 12 — Runtime Governance: Gates, Policy-as-Code and Audit
+================================================================
 
 A rule written into a system prompt, such as never place a Social Security number
 in an outgoing email, takes effect only when the model reads it as policy and

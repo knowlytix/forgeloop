@@ -1,5 +1,5 @@
-Agentic Systems and What to Test in Them
-========================================
+Chapter 9 — Agentic Systems and What to Test in Them
+====================================================
 
 This page shows how to run composed scenarios through an agent and score the run
 at three levels. When the system under test is an agent rather than a single

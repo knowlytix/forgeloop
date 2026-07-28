@@ -1,5 +1,5 @@
-Capstone: The Assembled Pipeline
-================================
+Chapter 18 — Capstone: The Assembled Pipeline
+=============================================
 
 Each preceding page built one stage of a governed RAG over a single annual
 report, run on the same corpus so the stages compose. This page introduces no

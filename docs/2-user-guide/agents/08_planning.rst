@@ -1,5 +1,5 @@
-Planning, Decomposition and Replanning
-======================================
+Chapter 8 — Planning, Decomposition and Replanning
+==================================================
 
 This page shows how to produce a plan with the three planner families in
 :mod:`forgeloop.agents.planning`, split a plan into subtasks with ``decompose``,

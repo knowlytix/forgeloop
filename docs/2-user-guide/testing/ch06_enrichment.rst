@@ -1,5 +1,5 @@
-The Enrichment Design Space
-===========================
+Chapter 6 — The Enrichment Design Space
+=======================================
 
 This page shows how to read the enrichment catalog, how a factor's ``applies_to``
 specification restricts it to the bases it is meaningful for, and how factor

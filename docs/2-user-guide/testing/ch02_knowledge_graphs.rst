@@ -1,5 +1,5 @@
-Knowledge Graphs and Exact Memory
-=================================
+Chapter 2 — Knowledge Graphs and Exact Memory
+=============================================
 
 This page shows how the ground truth the testing method reads is drawn from a
 knowledge graph, and why the geometric memory store replaces binary membership

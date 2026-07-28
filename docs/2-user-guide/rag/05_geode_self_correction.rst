@@ -1,5 +1,5 @@
-GEODE: Self-Correcting Extraction
-=================================
+Chapter 5 — GEODE: Self-Correcting Extraction
+=============================================
 
 Building a store by trusting the extractor sends whatever triples the ingest
 produced straight into the graph. GEODE screens them first. Before a triple is

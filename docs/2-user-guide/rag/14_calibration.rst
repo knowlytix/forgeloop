@@ -1,5 +1,5 @@
-Calibrate, Don't Guess
-======================
+Chapter 14 — Calibrate, Don't Guess
+===================================
 
 The embedding binder turns on a single similarity cut: above it a paraphrase is
 accepted as a graph entity, below it the term is refused and the query abstains

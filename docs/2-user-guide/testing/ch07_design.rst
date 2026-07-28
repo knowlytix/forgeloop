@@ -1,5 +1,5 @@
-Experimental Design and Composition
-===================================
+Chapter 7 — Experimental Design and Composition
+===============================================
 
 This page shows how to turn a resolved suite into concrete test scenarios: how a
 profile bundles a selection, how the two composition modes arrange a base against
@@ -7,6 +7,43 @@ a design, and which design generator to use. A fixed budget must cover a factor
 space that is high-dimensional and of mixed cardinality, so the design is
 space-filling rather than full-factorial, and the base enters it in one of two
 arrangements.
+
+The three catalog files
+-----------------------
+
+A suite is authored as three YAML files. The split keeps the ground truth in one
+place and everything that only changes presentation in another.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 26 22 52
+
+   * - File
+     - Defines
+     - Role
+   * - ``base_catalog.yaml``
+     - *what* is asked and *what* is true
+     - Domain-agnostic question types mined from a GMS store, each with a ground
+       truth computed by a GMS primitive and therefore provably correct. A base
+       entry names the graph capabilities it needs (``enm``, ``triples``,
+       ``path`` and so on) and binds to whatever store is ingested.
+   * - ``factor_catalog.yaml``
+     - *how* a question is presented
+     - The design-of-experiments factors: query paraphrase, added context,
+       entity stress, adversarial noise. Every factor carries a ``gt_invariant``
+       that must hold, so a factor changes the surface of a question but never
+       its answer. These factors are the columns of the design matrix.
+   * - ``profiles.yaml``
+     - which bases and factors to combine
+     - Named bundles pairing a base selection with a factor selection and a
+       composition mode, so an application selects a profile rather than listing
+       every base and factor by hand.
+
+The invariant that separates the first two files is that ``base`` defines the
+ground truth while ``factor`` preserves it: anything that could change an answer
+belongs in the base catalog, and a validator rejects a factor that fails its
+``gt_invariant``. A profile draws from both, and only the factors whose
+``applies_to`` matches a selected base are kept.
 
 Profiles
 --------

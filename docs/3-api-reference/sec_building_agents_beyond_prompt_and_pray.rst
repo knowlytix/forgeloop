@@ -1,5 +1,5 @@
-Building Agents (Beyond Prompt and Pray)
-========================================
+Agent Builder (Beyond Prompt and Pray)
+======================================
 
 Building a governed agent: the loop, tools, memory, planning, evaluation, governance and the capstone. One subpackage per area, ordered to follow the book's chapters.
 

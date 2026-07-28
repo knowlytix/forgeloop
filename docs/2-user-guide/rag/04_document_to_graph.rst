@@ -1,5 +1,5 @@
-From Document to Graph
-======================
+Chapter 4 — From Document to Graph
+==================================
 
 This page turns a markdown document into a trained, queryable
 :class:`~knowlytix.knowledge.store.GMSExpertStore`. One call ingests the

@@ -1,5 +1,5 @@
-Knowledge Graphs and the Geometric Memory Substrate
-===================================================
+Chapter 2 — Knowledge Graphs and the Geometric Memory Substrate
+===============================================================
 
 This page shows how to record domain facts as typed triples and query them,
 first with the in-process triple store :class:`~forgeloop.agents.memory.GraphMemory`
@@ -85,6 +85,42 @@ is not executed on this page; it is the exact sequence the notebook runs.
                                         lr=5e-3, lr_riemannian=2e-3))
    store = GMSExpertStore(cfg, device=device)
    store.load()                       # built once by build_rag_store, loaded thereafter
+
+How facts are extracted: three ingest modes
+-------------------------------------------
+
+How each triple is extracted from the source document is set by
+``DocGMSConfig.ingest_mode``. The three modes trade reproducibility against
+recall on unstructured prose. The build above pins ``regex`` so it reproduces
+byte-for-byte; a policy document whose facts live in numeric tables is recovered
+by the deterministic path alone.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 18 16 66
+
+   * - ``ingest_mode``
+     - LLM
+     - Behavior
+   * - ``regex``
+     - not invoked
+     - Deterministic extraction from the document's structure and tables.
+       Reproduces byte-for-byte across runs and needs no language model, so it
+       is the mode to pin when a build must be auditable.
+   * - ``hybrid`` (default)
+     - required
+     - The regex backbone plus a language model at the column, entity and prose
+       decisions it cannot resolve alone. A strict superset of ``regex`` on
+       numeric values, so exact figures are never lost to the model.
+   * - ``llm_only``
+     - required
+     - The language model extracts every triple and the regex path is disabled.
+       Recall on structured content drops sharply (about 12.5% in the source
+       study), so it is reserved for prose with no structure to exploit.
+
+When ``ingest_mode`` is ``hybrid`` or ``llm_only`` a language-model backend must
+be supplied; passing none raises rather than silently falling back to ``regex``,
+so a build never degrades to a weaker extractor without the caller choosing it.
 
 Query the triples by pattern
 ----------------------------

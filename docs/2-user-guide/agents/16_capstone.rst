@@ -1,5 +1,5 @@
-Capstone: Governed Banking Complaint Agent
-==========================================
+Chapter 16 — Capstone: Governed Banking Complaint Agent
+=======================================================
 
 This page shows how to assemble and run the governed complaint agent from
 :mod:`forgeloop.agents.capstone`. The agent reads a customer message, finds the

@@ -1,5 +1,5 @@
-Self-Verification: The GMS as a Hallucination Detector
-======================================================
+Chapter 12 — Self-Verification: The GMS as a Hallucination Detector
+===================================================================
 
 Grounded synthesis constrains the model; it does not prove the model obeyed
 (:doc:`11_grounded_synthesis`). A small local model can still drop a digit, swap

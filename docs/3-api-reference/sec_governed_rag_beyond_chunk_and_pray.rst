@@ -1,5 +1,5 @@
-Governed RAG (Beyond Chunk and Pray)
-====================================
+GMS RAG (Beyond Chunk and Pray)
+===============================
 
 Governed retrieval over geometric memory: extraction, embedding fine-tuning, triple-mediated retrieval, evaluation, pluggable LLMs and external persistence.
 

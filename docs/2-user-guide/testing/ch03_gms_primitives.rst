@@ -1,5 +1,5 @@
-Geometric Memory Systems and Their Primitives
-=============================================
+Chapter 3 — Geometric Memory Systems and Their Primitives
+=========================================================
 
 This page shows the primitives a trained ``GMSExpertStore`` exposes, how a raw
 distance becomes a calibrated decision read from the store, and how the two

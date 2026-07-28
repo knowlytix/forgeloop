@@ -1,5 +1,5 @@
-Failure Modes, Adversarial Testing and Design of Experiments
-============================================================
+Chapter 11 — Failure Modes, Adversarial Testing and Design of Experiments
+=========================================================================
 
 A hand-written test suite covers the cases someone thought to enumerate, and the
 failures that reach production are usually the ones no one enumerated. This page

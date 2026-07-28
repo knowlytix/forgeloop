@@ -1,5 +1,5 @@
-Binding Query Terms to the Graph
-================================
+Chapter 9 — Binding Query Terms to the Graph
+============================================
 
 Query triples are written in the user's vocabulary, not the graph's. A user
 typing "topline" addresses a store that holds ``has_revenue``; a user saying
