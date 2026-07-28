@@ -1,0 +1,31 @@
+[project]
+name = "gms-rag-tutorial"
+version = "0.0.1"
+description = "Beyond Chunk and Pray — Building Trustworthy RAG with Geometric Memory (tutorial book + notebooks)"
+requires-python = ">=3.12"
+dependencies = [
+    "knowlytix",          # source of truth: knowlytix.knowledge.rag / .geode
+    "torch",
+    "transformers",
+    "accelerate",         # transformers device_map / from_pretrained (Ch14, Ch16)
+    "sentence-transformers",  # dense-vector fallback baseline (Ch02, Ch16)
+    "pandas",
+    "jupyter",
+    "nbconvert",
+]
+
+[tool.pytest.ini_options]
+# Files under scripts/ are runnable book companions, not tests. Some are named
+# *_test.py (e.g. rag_doe_test.py) and import the licensed `knowlytix`, so the
+# default *_test.py glob would collect them and error at import. Restrict
+# collection to real test modules (test_*.py) — there are none yet, so the suite
+# is an empty pass without the proprietary substrate.
+python_files = ["test_*.py"]
+addopts = "-ra -q"
+
+[tool.gms-rag-tutorial]
+# The library is the source of truth. Notebooks import knowlytix.knowledge.rag
+# and knowlytix.knowledge.geode; the book's listings are copied verbatim from the
+# notebooks. The corpus + trained store live in data/.
+corpus = "data/annual_report.md"
+store = "data/gms_annual_report_store"

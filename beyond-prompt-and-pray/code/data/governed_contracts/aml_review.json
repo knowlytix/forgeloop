@@ -1,0 +1,20 @@
+{
+  "workflow": "aml_review",
+  "business_purpose": "review a suspicious-activity filing under AML authority",
+  "allowed_zones": [
+    "aml",
+    "case",
+    "policy"
+  ],
+  "needed_relations": null,
+  "redact_relations": {
+    "has_account_number": "last4",
+    "has_ssn": "mask_ssn",
+    "has_date_of_birth": "year_only",
+    "has_home_address": "region_only"
+  },
+  "max_sensitivity": "regulated",
+  "zone_flags": {
+    "aml": "aml_authorized"
+  }
+}

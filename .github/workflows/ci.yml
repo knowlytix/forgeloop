@@ -1,0 +1,101 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel redundant runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The licensed `knowlytix` substrate is not available in CI, and no notebook
+  # or test may reach the network for models. Force HF offline as a guard.
+  HF_HUB_OFFLINE: "1"
+  TRANSFORMERS_OFFLINE: "1"
+
+# Least-privilege token; CI only reads the repo.
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Ruff lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install ruff
+        # Unpinned is safe: ruff.toml (and the per-topic [tool.ruff.lint]
+        # blocks) select the rule set explicitly, so a ruff release that expands
+        # its *default* selection — as 0.16 did — cannot redden CI on unchanged
+        # code.
+        run: pip install -U pip ruff
+      - name: Run ruff
+        run: ruff check .
+
+  notebooks:
+    name: Notebook output guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Executed notebook output must not be committed: it bloats the repo,
+      # makes diffs unreadable, and re-renders stale results on GitHub. A local
+      # nbstripout hook only protects contributors who installed it, so gate it
+      # here. Fix with `python scripts/notebook_outputs.py --strip`.
+      # Stdlib only, no extra pip install needed.
+      - name: Assert no committed notebook output
+        run: python scripts/notebook_outputs.py --check
+
+  test:
+    name: Typecheck + test (${{ matrix.topic }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        topic:
+          - beyond-prompt-and-pray
+          - beyond-ship-and-pray
+          - beyond-chunk-and-pray
+          - beyond-vibe-and-pray
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install CPU-only torch
+        # CPU wheels keep install ~2 min instead of pulling full CUDA torch.
+        run: |
+          pip install -U pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Install topic package (public deps only)
+        # `knowlytix` is licensed and not on PyPI; it stays absent in CI. Tests
+        # that need it must `pytest.importorskip("knowlytix")`. A missing
+        # pyproject (some topics) or dev extra is non-fatal.
+        working-directory: ${{ matrix.topic }}/code
+        run: |
+          pip install mypy pytest
+          pip install -e ".[dev]" 2>/dev/null \
+            || pip install -e . 2>/dev/null \
+            || echo "no installable package in ${{ matrix.topic }}/code — skipping install"
+      - name: Mypy (advisory)
+        working-directory: ${{ matrix.topic }}/code
+        # Non-blocking until types stabilize.
+        run: mypy --ignore-missing-imports . || true
+      - name: Pytest
+        working-directory: ${{ matrix.topic }}/code
+        # No-op success if a topic has no tests yet.
+        run: pytest -q || [ $? -eq 5 ]

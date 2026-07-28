@@ -1,0 +1,18 @@
+{
+  "name": "banking-complaint-agent",
+  "version": "0.1.0",
+  "policies_dir": "data/policies",
+  "eval_cases": "data/eval_cases/cases.json",
+  "max_steps": 16,
+  "budget": {
+    "tokens": 200000,
+    "tool_calls": 20,
+    "seconds": 120
+  },
+  "policies": [
+    "pii",
+    "prompt_injection",
+    "prohibited_advice",
+    "fee_waiver"
+  ]
+}

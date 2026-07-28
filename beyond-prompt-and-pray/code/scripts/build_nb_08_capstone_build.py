@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+"""Builder for notebooks/08_capstone_build.ipynb.
+
+Capstone BUILD series, Chapter 8 (Planning). The complaint agent runs a fixed workflow:
+classify -> extract -> search_policy -> flag_regulatory -> draft/escalate -> finish.
+This notebook expresses that workflow as a Plan (via WorkflowPlanner), then shows the
+capstone's ComplaintAgent is that plan made executable -- propose_action is a function
+of the step index over the same ordered nodes.
+
+Planning is pure (no model load). Teaching notebook: real imports, no pre-embedded
+outputs (the reader runs it).
+"""
+from pathlib import Path
+import nbformat
+from nbformat.v4 import new_notebook, new_markdown_cell, new_code_cell
+
+OUT = Path(__file__).resolve().parents[2] / "notebooks" / "08_capstone_build.ipynb"
+
+cells = [
+    new_markdown_cell(
+        "# Capstone build --- Chapter 8: Planning\n"
+        "\n"
+        "The minimal agent of Chapter~1 proposed one tool then finished. The complaint "
+        "agent runs a longer, fixed sequence: classify the message, extract its facts, "
+        "search the governing policy, flag regulatory risk, then either draft a reply or "
+        "escalate. Chapter~8 makes that sequence a plan --- an ordered set of steps, each "
+        "naming the action it expects and what it produces --- and shows the capstone's "
+        "agent is that plan made executable."
+    ),
+    new_markdown_cell(
+        "## The workflow as an ordered plan\n"
+        "\n"
+        "A `Plan` is a list of `PlanStep`s. Each step names an action hint, the type of "
+        "output it is expected to produce and the steps it requires. A `WorkflowPlanner` "
+        "wraps a fixed ordered plan and returns it for any task, which is the right "
+        "planner for a workflow that does not vary from case to case."
+    ),
+    new_code_cell(
+        "from agentlab.planning.plan import Plan, PlanStep\n"
+        "from agentlab.planning.planner import WorkflowPlanner\n"
+        "from agentlab.core.task import TaskSpec\n"
+        "\n"
+        "steps = [\n"
+        "    PlanStep(id='classify',        description='classify the message',        action_hint='classify_complaint'),\n"
+        "    PlanStep(id='extract',         description='extract grounded facts',       action_hint='extract_facts',   requires=('classify',)),\n"
+        "    PlanStep(id='search_policy',   description='retrieve governing policy',     action_hint='search_policy',   requires=('extract',)),\n"
+        "    PlanStep(id='flag_regulatory', description='flag regulatory risk',          action_hint='flag_regulatory', requires=('extract',)),\n"
+        "    PlanStep(id='draft_response',  description='draft the reply or escalate',   action_hint='draft_response',  requires=('search_policy', 'flag_regulatory')),\n"
+        "]\n"
+        "planner = WorkflowPlanner(steps)\n"
+        "plan = planner.plan(TaskSpec(goal='handle a complaint', inputs={}))\n"
+        "for i, s in enumerate(plan.steps):\n"
+        "    print(f'{i}: {s.id:16s} -> {s.action_hint:18s} requires={s.requires}')"
+    ),
+    new_markdown_cell(
+        "## The agent is the plan made executable\n"
+        "\n"
+        "The capstone hard-codes this fixed order in `ComplaintAgent.propose_action`, a "
+        "function from state to the next action. It proposes the tool for the current "
+        "step index, reuses earlier results rather than recomputing them, and diverts to "
+        "an escalation when a prior step failed or a regulatory flag demands it. "
+        "Instantiating the agent and stepping a state through it shows the plan running."
+    ),
+    new_code_cell(
+        "from agentlab.capstone.complaint_agent import ComplaintAgent\n"
+        "from agentlab.core.state import AgentState\n"
+        "\n"
+        "agent = ComplaintAgent()\n"
+        "task = TaskSpec(goal='handle a complaint',\n"
+        "                inputs={'message': 'I was charged a $35 overdraft fee I did not authorize.'})\n"
+        "state = AgentState(task=task)\n"
+        "# With no tool results yet, the first proposed action is the plan's first step.\n"
+        "first = agent.propose_action(state)\n"
+        "print('step 0 proposes:', first.kind, '->', getattr(first, 'tool_name', None))"
+    ),
+    new_markdown_cell(
+        "## The plan diverts to escalation on failure\n"
+        "\n"
+        "The plan is not a straight line. Before proposing the next step the agent scans "
+        "the results so far, and a failed tool result --- the shape a denied gate returns "
+        "in Chapter~6 --- makes it propose an `Escalate` instead of continuing. Injecting "
+        "a failed result into the state shows the diversion."
+    ),
+    new_code_cell(
+        "state_with_failure = AgentState(task=task)\n"
+        "state_with_failure.tool_results.append({'success': False, 'error': 'denied by PolicyGate: PII'})\n"
+        "diverted = agent.propose_action(state_with_failure)\n"
+        "print('proposes:', diverted.kind, '| reason:', getattr(diverted, 'reason', None))"
+    ),
+    new_markdown_cell(
+        "The fixed workflow is the capstone's plan: an ordered sequence of typed actions "
+        "with escape hatches to escalation. Chapter~9 gives the agent the memory that "
+        "lets a later step reuse an earlier step's result, Chapter~10 evaluates the "
+        "trajectory the plan produces, and Chapter~12 runs the plan inside the "
+        "governance harness."
+    ),
+]
+
+nb = new_notebook(cells=cells)
+nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
+OUT.parent.mkdir(parents=True, exist_ok=True)
+with open(OUT, "w") as f:
+    nbformat.write(nb, f)
+print("wrote", OUT, "cells", len(nb.cells))

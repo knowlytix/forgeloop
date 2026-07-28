@@ -1,0 +1,281 @@
+#!/usr/bin/env python
+"""Builder for notebook 12.6 System-level failure attribution.
+
+Attribution is PER-COMPONENT (which input breaks which tool, so it is clear which
+component to fix) reported as EMPIRICAL per-level failure rates -- robust to the
+separation that corrupts logistic odds ratios when failures are sparse. The
+per-query DECISION (right classification AND right escalation) is kept as a separate
+OVERALL summary plus the weak-link decomposition. On this retrained agent no factor
+is significant after correction (clarity p_adj=0.96), reversing the old finding.
+
+Outputs are computed and embedded WITHOUT a Jupyter kernel: each code cell's source
+is run once in a shared in-process namespace against the PINNED artifact and its
+stdout captured (see memory: never exec the notebook via a kernel on drifting data).
+The data is pinned, so this is deterministic; the self-check asserts run here too.
+"""
+import contextlib
+import io
+from pathlib import Path
+import nbformat
+from nbformat.v4 import new_notebook, new_markdown_cell, new_code_cell, new_output
+from nbformat import NO_CONVERT
+
+REPO = Path(__file__).resolve().parents[1]
+OUT = REPO / "notebooks" / "12_6_system_attribution.ipynb"
+_NS = {}
+
+
+def code_cell(src):
+    cell = new_code_cell(src)
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        exec(src, _NS)
+    text = buf.getvalue()
+    if text:
+        cell.outputs = [new_output("stream", name="stdout", text=text)]
+    return cell
+
+
+cells = []
+
+cells.append(new_markdown_cell(
+    "# 12.6 System-level failure attribution\n\n"
+    "The components are each sound in isolation; the system question is what drives "
+    "failure when they run together. The framework answers it two ways. The actionable "
+    "analysis is **per component** -- the attribution of Chapter~10 run on each tool's own "
+    "correctness, so it is clear **which component to fix**. Because the failures are "
+    "few (nine of ninety-two classifier runs, one of eighteen flag runs) a logistic fit is "
+    "unstable and its odds ratios can diverge at zero-failure levels, so the robust report is "
+    "the **empirical failure rate** at each factor level. The per-query **decision** is kept "
+    "as a separate **overall** summary plus the weak-link decomposition."
+))
+
+cells.append(new_markdown_cell(
+    "**Reference (run separately):** the calls that produced these numbers. The seed case "
+    "is excluded from each attribution - it was a blocking factor, not a property under test.\n\n"
+    "```python\n"
+    "# Reference only - NOT executed here (needs agentlab/gmstest, models, a store).\n"
+    "from gmstest import evaluate\n\n"
+    "# PER-COMPONENT: which input breaks which tool (empirical per-level failure rates).\n"
+    "# search_policy is graded by graph-truth (Sec. 12.5), so it is not label-attributed here.\n"
+    "for col in ('c_classify_complaint', 'c_flag_regulatory'):\n"
+    "    sub = [r for r in rows if r[col] is not None]\n"
+    "    evaluate.attribute(sub, suite.factor_names, metric=col)\n\n"
+    "# OVERALL per-query decision (right classification AND escalation) + weak-link.\n"
+    "overall = evaluate.attribute(rows, suite.factor_names)   # metric defaults to 'correct'\n"
+    "blame   = evaluate.weak_link(rows, workflow)\n"
+    "```"
+))
+
+cells.append(new_markdown_cell(
+    "**What the next cell does** -- load the pinned artifact and define a table printer:\n\n"
+    "1. **Find the artifact.** Walk up from `Path.cwd()` to `data/capstone_run.json` and `json.loads` it into `D`.\n"
+    "2. **Pull the views.** `by_component = D['attribution_by_component']` (per-tool empirical rates), "
+    "`overall = D['overall']` (the conjunction) and `weak_link = D['weak_link']`.\n"
+    "3. **Define `show_factor_table`.** Prints the overall logistic attribution -- one row per factor "
+    "(`G2`, `p_adj`, `pseudo_r2`, `significant_adj`) with the worst level by odds ratio for a significant factor."
+))
+cells.append(code_cell(
+    "import json\n"
+    "from pathlib import Path\n\n"
+    "root = Path.cwd()\n"
+    "while not (root/'data'/'capstone_run.json').exists() and root != root.parent:\n"
+    "    root = root.parent\n"
+    "D = json.loads((root/'data'/'capstone_run.json').read_text())\n"
+    "by_component = D['attribution_by_component']\n"
+    "overall = D['overall']\n"
+    "weak_link = D['weak_link']\n"
+    "WORKFLOW = ['classify_complaint', 'extract_facts', 'search_policy',\n"
+    "            'flag_regulatory', 'draft_response']\n"
+    "FACTOR_ORDER = ['reasoning_cue', 'clarity', 'entity_aliasing']\n\n"
+    "def show_factor_table(tbl, indent='  '):\n"
+    "    print(f\"{indent}{'factor':16s}{'G2':>8s}{'p_adj':>9s}{'pseudoR2':>10s}{'sig':>6s}   worst level (odds ratio)\")\n"
+    "    for r in tbl:\n"
+    "        ors = r['odds_ratios']; worst = min(ors, key=ors.get)\n"
+    "        worst_str = f\"{worst} ({ors[worst]})\" if r['significant_adj'] else '---'\n"
+    "        print(f\"{indent}{r['factor']:16s}{r['G2']:>8.2f}{r['p_adj']:>9.4f}{r['pseudo_r2']:>10.3f}\"\n"
+    "              f\"{str(r['significant_adj']):>6s}   {worst_str}\")\n"
+    "print('loaded per-component + overall attribution from', root/'data')"
+))
+
+cells.append(new_markdown_cell(
+    "## Which input breaks which component\n\n"
+    "Each label-scored tool is analyzed on its own correctness, on the runs where it was "
+    "graded. For each factor we report the **failure rate at each level** -- failed / graded "
+    "-- which never diverges, unlike a logistic odds ratio on so few failures. If a level "
+    "concentrates the failures it is the input condition to fix for that tool; if the rates "
+    "are flat, no presentation factor drives the tool. (`search_policy` is graded against the "
+    "graph ground truth in Section 12.5, not by a label match, so it does not enter this "
+    "label-attribution loop.)"
+))
+cells.append(new_markdown_cell(
+    "**What the next cell does** -- print each label-scored tool's per-level failure rates:\n\n"
+    "1. **Loop the two label-scored tools.** For each, read `by_component[tool]` and print its `scored` and `failures`.\n"
+    "2. **Per factor, per level.** For each factor (reasoning cue first) print `level=failed/n` across its levels.\n"
+    "3. **No fit forced.** The rates stand on their own; a clean tool simply shows zero failures."
+))
+cells.append(code_cell(
+    "for tool in ('classify_complaint', 'flag_regulatory'):\n"
+    "    a = by_component[tool]\n"
+    "    print(f\"{tool}  (graded {a['scored']}, failures {a['failures']})\")\n"
+    "    for f in FACTOR_ORDER:\n"
+    "        levels = a['by_factor'][f]\n"
+    "        cells_str = '  '.join(f\"{lvl}={v['failed']}/{v['n']}\" for lvl, v in levels.items())\n"
+    "        print(f\"    {f:16s}{cells_str}\")\n"
+    "    print()"
+))
+cells.append(new_markdown_cell(
+    "The reading is direct. The classifier's nine failures spread across the levels: the "
+    "nearest thing to a gradient is `clarity` (ambiguous 5/22 against clear 1/35), and the "
+    "reasoning cue is flat (four failures with a `misleading_cue`, four without). No level "
+    "concentrates the failures, and with only nine the logistic deviance test certifies "
+    "nothing after correction (`clarity` is the nearest at $p_{adj}=0.96$). This reverses the "
+    "finding on the previous agent, where a downplaying cue was the dominant failure driver; "
+    "the retrained classifier no longer breaks on the presentation factors the design varies. "
+    "The flagger fails once in eighteen and has nothing to attribute."
+))
+
+cells.append(new_markdown_cell(
+    "## The overall decision, as a summary\n\n"
+    "Read as a whole, the question is whether the agent reached the right decision on each "
+    "query -- the right classification and the right escalate/don't-escalate call. Its rate, "
+    "its logistic factor attribution and the weak-link blame say how often the pipeline "
+    "decides right and where it breaks. The per-tool numbers are scored separately, not folded "
+    "in here."
+))
+cells.append(new_markdown_cell(
+    "**What the next cell does** -- summarize the decision:\n\n"
+    "1. **Rate.** Print `overall['accuracy']` and its `definition`.\n"
+    "2. **Attribution.** `show_factor_table(overall['attribution'])` -- the logistic fit on 120 runs.\n"
+    "3. **Weak-link.** Walk `WORKFLOW` and print each tool's blame count from `weak_link`, then the total."
+))
+cells.append(code_cell(
+    "print(f\"Overall decision accuracy: {overall['accuracy']:.3f}\")\n"
+    "print(f\"  {overall['definition']}\\n\")\n"
+    "print('Overall factor attribution (logistic, BH-corrected)')\n"
+    "show_factor_table(overall['attribution'])\n"
+    "print()\n"
+    "print('Weak-link blame (wrongly-decisioned runs -> first erring tool)')\n"
+    "for tool in WORKFLOW:\n"
+    "    if tool in weak_link:\n"
+    "        print(f\"  {tool:20s} {weak_link[tool]}\")\n"
+    "print(f\"  {'total tool-attributed':20s} {sum(weak_link.values())}\")"
+))
+cells.append(new_markdown_cell(
+    "The agent decides right on about two runs in three (0.675). Run on the decision bit, the "
+    "factor attribution finds **nothing** significant after correction, which agrees with the "
+    "per-component view: the retrained agent does not break on the presentation factors the "
+    "design varies. The weak-link decomposition charges the wrongly-decisioned runs to the "
+    "first tool that erred -- nine to `classify_complaint`, one to the flagger; the rest carry "
+    "no erring graded step and turn on the end decision itself, a property of the whole "
+    "trajectory. There is no single input condition to harden against here: the failures are "
+    "few and spread."
+))
+
+cells.append(new_markdown_cell(
+    "## Where the 81 correctly-decisioned and 39 wrong runs come from\n\n"
+    "The decision collapses each run to a single bit, so it is worth seeing *which* runs "
+    "make up the 81 that decide right and the 39 that do not. A run is judged on the "
+    "steps that applied to it, plus the end escalate/don't-escalate decision, and it is "
+    "never required to reach every tool. A short inquiry is scored on classification alone; a "
+    "complaint that implicates no regulation is scored on classification and policy search; only "
+    "a regulation-implicating complaint is also scored on `flag_regulatory`; and the PII and "
+    "prompt-injection inputs are intercepted by the policy gate before any component is graded. "
+    "That is why the flagger is graded on just 18 of the 120 runs."
+))
+
+cells.append(new_markdown_cell(
+    "**What the next cell does** -- load the per-run rows (`capstone_rows.json`), group every run "
+    "by the steps that were actually graded on it, and then trace the failing side: how many "
+    "failures a graded component owns versus how many turn on the end decision alone."
+))
+cells.append(code_cell(
+    "# Where the 81 correctly-decisioned and the 39 wrong runs come from -- per run, from the pinned rows.\n"
+    "rows = json.loads((root/'data'/'capstone_rows.json').read_text())['rows']\n"
+    "ccols = ['c_classify_complaint', 'c_search_policy', 'c_flag_regulatory']\n"
+    "\n"
+    "def graded(r):                      # the scored steps that actually applied to this run\n"
+    "    return [c[2:] for c in ccols if r[c] is not None]\n"
+    "\n"
+    "def path(r):                        # name the route by the last step that was graded\n"
+    "    g = graded(r)\n"
+    "    if not g:                       return 'escalated / refused (no component graded)'\n"
+    "    if 'flag_regulatory' in g:      return 'complaint implicating a regulation'\n"
+    "    if 'search_policy'  in g:       return 'complaint, no regulation'\n"
+    "    return 'inquiry / other (classify only)'\n"
+    "\n"
+    "from collections import Counter\n"
+    "ORDER = ['inquiry / other (classify only)', 'complaint, no regulation',\n"
+    "         'complaint implicating a regulation', 'escalated / refused (no component graded)']\n"
+    "runs_by = Counter(path(r) for r in rows)\n"
+    "ok_by   = Counter(path(r) for r in rows if r['correct'] == 1)\n"
+    "\n"
+    "print(f\"{'path the run took':48s}{'runs':>6s}{'correct':>9s}\")\n"
+    "for p in ORDER:\n"
+    "    print(f\"  {p:46s}{runs_by[p]:>6d}{ok_by[p]:>9d}\")\n"
+    "print(f\"  {'TOTAL':46s}{sum(runs_by.values()):>6d}{sum(ok_by.values()):>9d}\")\n"
+    "\n"
+    "# The failing side, traced.\n"
+    "fail     = [r for r in rows if r['correct'] == 0]\n"
+    "comp_err = [r for r in fail if any(r[c] == 0 for c in ccols)]   # a graded step was wrong\n"
+    "end_only = [r for r in fail if r not in comp_err]               # graded steps ok; end decision wrong\n"
+    "esc_path = [r for r in fail if not graded(r)]                   # took the escalation / refusal path\n"
+    "print(f\"\\nfailing runs: {len(fail)}\")\n"
+    "print(f\"  a graded component erred           : {len(comp_err):2d}   weak-link {D['weak_link']}\")\n"
+    "print(f\"  graded steps OK, end decision wrong: {len(end_only):2d}\")\n"
+    "print(f\"    of those, on the escalation path : {len(esc_path):2d}   (nothing graded -> rides on the end decision)\")\n"
+    "\n"
+    "# Structure only -- bounds the partition, not the volatile point estimates.\n"
+    "assert sum(runs_by[p] for p in ORDER) == len(rows) and set(runs_by) <= set(ORDER)\n"
+    "assert all(ok_by[p] <= runs_by[p] for p in ORDER)\n"
+    "assert sum(ok_by.values()) == sum(1 for r in rows if r['correct'] == 1)\n"
+    "assert len(comp_err) + len(end_only) == len(fail)"
+))
+cells.append(new_markdown_cell(
+    "Read down the table. Only **18** runs are regulation-implicating complaints, so "
+    "`flag_regulatory` is graded on 18; the other correctly-decisioned runs decide on "
+    "classification alone (23 of 32) or on classification plus policy search (41 of 42), and "
+    "never need the flagger. The 81 correct are therefore 23 + 41 + 17.\n\n"
+    "The **28** PII and prompt-injection inputs are intercepted at the policy gate before a "
+    "classification is emitted, so they carry no matching taxonomy label and enter the joint "
+    "criterion as zero; the gate handles them correctly, graded on its own in Section 12.5.\n\n"
+    "The failing side: of the 39 wrong runs, the weak-link decomposition charges **10** to the "
+    "first tool that erred (nine to `classify_complaint`, one to the flagger). The remaining "
+    "**29** have every graded step correct and turn on the end decision instead, and **28** of "
+    "those took the gate-intercepted path, where no component is graded at all. That is the "
+    "whole-trajectory outcome the decision bit folds in and the per-component view cannot see."
+))
+
+cells.append(new_markdown_cell(
+    "**What the next cell does** -- pin the SHAPE of the analysis (the campaign is reproducible on the "
+    "pinned inputs, but the checks bound structure, not volatile point estimates): each tool's per-level "
+    "failure rates sum to its failure and graded counts; the overall conjunction is a valid rate with a "
+    "well-formed logistic table; weak-link blame falls only on workflow tools."
+))
+cells.append(code_cell(
+    "FACTORS = {'clarity', 'entity_aliasing', 'reasoning_cue'}\n"
+    "assert set(by_component) == {'classify_complaint', 'search_policy', 'flag_regulatory'}\n"
+    "for tool, a in by_component.items():\n"
+    "    assert set(a['by_factor']) == FACTORS\n"
+    "    for f, levels in a['by_factor'].items():\n"
+    "        assert sum(v['failed'] for v in levels.values()) == a['failures']\n"
+    "        assert sum(v['n'] for v in levels.values()) == a['scored']\n"
+    "FACT_KEYS = {'factor', 'G2', 'p_adj', 'pseudo_r2', 'significant_adj', 'odds_ratios'}\n"
+    "assert 0.0 <= overall['accuracy'] <= 1.0\n"
+    "assert {r['factor'] for r in overall['attribution']} == FACTORS\n"
+    "for r in overall['attribution']:\n"
+    "    assert FACT_KEYS <= set(r) and 0.0 <= r['p_adj'] <= 1.0\n"
+    "assert set(weak_link) <= set(WORKFLOW) and all(v > 0 for v in weak_link.values())\n"
+    "print('self-check passed')"
+))
+
+nb = new_notebook(cells=cells, metadata={
+    "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+    "language_info": {"name": "python"},
+})
+
+# Outputs computed and embedded above (no kernel); just write the notebook.
+OUT.parent.mkdir(parents=True, exist_ok=True)
+with open(OUT, "w") as f:
+    nbformat.write(nb, f, version=NO_CONVERT)
+print("wrote", OUT, "cells", len(nb.cells))

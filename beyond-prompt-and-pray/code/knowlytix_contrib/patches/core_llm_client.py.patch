@@ -1,0 +1,31 @@
+--- a/knowlytix/core/llm/client.py
++++ b/knowlytix/core/llm/client.py
+@@ -97,6 +97,28 @@
+         response = litellm.completion(**params)
+         return _extract_text(response)
+ 
++    def complete_batch(
++        self,
++        messages_list: Sequence[Sequence[ChatMessage]],
++        **kwargs: Any,
++    ) -> list[str]:
++        """Complete many chat conversations and return their texts in order.
++
++        Provider-agnostic batch entry point. ``messages_list`` is a sequence
++        of message sequences (one conversation per element); the return is a
++        list of assistant texts aligned by index. ``kwargs`` are forwarded to
++        each :meth:`complete` call.
++
++        The base implementation dispatches sequentially, so it is correct for
++        every provider and for :class:`DemoLLMClient`. Adapters backed by a
++        local engine that can decode a batch in a single forward pass (a
++        Hugging Face model, vLLM, TGI, ...) should override this method to
++        exploit that parallelism — callers and higher-level helpers such as
++        :class:`~knowlytix.harness.graphdoe.QuestionRephraser` only depend on
++        this signature, so overriding here is transparent to them.
++        """
++        return [self.complete(messages, **kwargs) for messages in messages_list]
++
+ 
+ class DemoLLMClient(LLMClient):
+     """LLMClient replacement used when ``KNOWLYTIX_DEMO_MODE=1``.
