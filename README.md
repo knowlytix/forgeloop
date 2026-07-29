@@ -123,6 +123,12 @@ cd docs/docs && make html                    # output in docs/docs/_build/html
 The API reference documents the package via autodoc, so docstrings written in the
 books render straight through — no `.rst` regeneration needed.
 
+It also documents the `knowlytix` substrate itself: 87 of its ~194 pages are
+knowlytix, so `docs/docs/requirements.txt` installs it. No license is needed to
+build them — the key gates runtime use, not import, and autodoc only reads
+signatures. Without the package installed the site still builds, but those pages
+render as empty stubs.
+
 ## Development
 
 ```bash

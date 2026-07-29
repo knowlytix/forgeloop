@@ -2,17 +2,29 @@
 #
 # Install the forgeloop package first, then these:
 #
-#   python -m pip install -e ../..          # the forgeloop package (repo root)
+#   python -m pip install -e ../..              # the forgeloop package (repo root)
 #   python -m pip install -r requirements.txt
 #
-# Build:  cd forgeloop-docs/docs && make html   (output in docs/_build/html)
+# Build:  cd docs/docs && make html             (output in docs/docs/_build/html)
 #
-# The API reference imports forgeloop with torch / knowlytix / transformers /
-# peft / anthropic / huggingface_hub / pandas mocked (see autodoc_mock_imports
-# in conf.py), so a plain docs environment does not need those installed. numpy,
-# pydantic and pyyaml are real, light dependencies pulled in by the package.
+# `make` assembles the notebook gallery from the books before running sphinx,
+# so ../4-notebook-examples/ does not need to exist beforehand.
 
 sphinx>=8.0
-sphinx-gallery>=0.19
 sphinx-rtd-theme>=3.0
+# Renders the book chapter notebooks (.ipynb) in-theme. conf.py loads this as an
+# extension, so the build fails outright without it.
+myst-nb>=1.1
 # napoleon (Google/NumPy docstring parsing) ships with Sphinx; no extra dep.
+
+# The API reference documents the licensed GMS substrate as well as forgeloop:
+# 87 of its ~194 pages are knowlytix. conf.py mocks any of torch / knowlytix /
+# transformers / peft / anthropic / huggingface_hub / pandas that is *absent*,
+# so the build still succeeds without them -- but the knowlytix pages then
+# render as empty stubs. Installing it here means the published site carries
+# real signatures and docstrings.
+#
+# knowlytix is free to install from PyPI; its license key gates runtime use, not
+# import, so autodoc reads it without a license. Building these pages therefore
+# needs the package installed, but no license.
+knowlytix
