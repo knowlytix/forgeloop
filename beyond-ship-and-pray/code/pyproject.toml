@@ -38,7 +38,15 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["gmstest*"]
+# apps/ and catalogs/ ship too: apps.complaint_sut is the system under test the
+# chapter notebooks drive, and the catalogs are the YAML the test framework
+# loads. Including only gmstest* installed the library but not the thing it
+# tests, so `import apps.complaint_sut` failed on a clean install.
+include = ["gmstest*", "apps*", "catalogs*"]
+
+[tool.setuptools.package-data]
+"catalogs" = ["*.yaml", "*.yml"]
+"apps" = ["*.yaml", "*.yml"]
 
 [tool.ruff]
 line-length = 100

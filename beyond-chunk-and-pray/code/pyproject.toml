@@ -14,6 +14,17 @@ dependencies = [
     "nbconvert",
 ]
 
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# book_kit.py is a single top-level module, not a package. Without naming it
+# here setuptools' auto-discovery finds nothing to install, so the install
+# succeeds but `import book_kit` fails -- and every notebook in this book
+# imports it.
+py-modules = ["book_kit"]
+
 [tool.pytest.ini_options]
 # Files under scripts/ are runnable book companions, not tests. Some are named
 # *_test.py (e.g. rag_doe_test.py) and import the licensed `knowlytix`, so the

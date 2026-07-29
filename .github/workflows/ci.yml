@@ -96,8 +96,13 @@ jobs:
         # packages are installed too because the test suites import them by
         # their book-local names (agentlab, gmstest) -- the books are the
         # source under test, forgeloop is the assembled distribution of it.
-        # `knowlytix` is licensed and not on PyPI; it stays absent in CI, so
-        # tests needing it must `pytest.importorskip("knowlytix")`.
+        #
+        # Deliberately NOT `make install`, which also installs
+        # beyond-chunk-and-pray. That book declares knowlytix as a core
+        # dependency, and knowlytix IS on PyPI (free to install, licence-gated
+        # at runtime), so `make install` pulls it in along with torch and
+        # transformers. Here we want it absent: the suites assert that
+        # knowlytix-gated tests skip cleanly, and the install stays quick.
         run: |
           pip install mypy pytest
           pip install -e ".[dev]"

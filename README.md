@@ -26,14 +26,10 @@ beyond-*/                    ← edit here
 Each book directory holds:
 
 - **`code/`** — the companion Python package plus supporting scripts, data and
-  tests. Install a topic editable to work on it:
+  tests. `make install` installs all of them; see [Install](#install).
 
-  ```bash
-  python -m pip install -e beyond-prompt-and-pray/code
-  ```
-
-- **`notebooks/`** — the runnable notebooks, one per chapter, importing only
-  from that book's package and the stdlib.
+- **`notebooks/`** — the runnable notebooks, one per chapter, importing from that
+  book's package and the stdlib.
 
 Assembling rewrites import statements book-local → package (`agentlab` →
 `forgeloop.agents`, `gmstest` → `forgeloop.testing`, `book_kit` →
@@ -58,10 +54,25 @@ verbatim.
 
 ## Install
 
+One command installs every book's package plus `forgeloop`, in the right order:
+
+```bash
+git clone https://github.com/knowlytix/forgeloop.git && cd forgeloop
+make install
+```
+
+After that you can start in **any** book and run its notebooks — `agentlab`,
+`gmstest`, `book_kit`, `apps.complaint_sut` and `forgeloop` all import with no
+`PYTHONPATH` set. Order matters and `make` handles it: Ship-and-Pray's system
+under test imports `agentlab`, which is not declared as a dependency because it
+is not published to PyPI.
+
+`make install-dev` adds the test and lint extras. To consume the assembled
+package on its own, without the book sources:
+
 ```bash
 pip install forgeloop-<version>-py3-none-any.whl   # from a Release asset
 pip install "forgeloop[ml]"                        # + torch/transformers/peft for the model tools
-pip install -e .                                   # or editable, from a checkout
 ```
 
 ## The `knowlytix` substrate (licensed)
@@ -165,14 +176,16 @@ every push.
 ## Development
 
 ```bash
-ruff check .                        # from the repo root
-python -m pip install -e "beyond-prompt-and-pray/code[dev]"
-pytest -q                           # from a book's code/ directory
+make install-dev    # every package, plus pytest and ruff
+make check          # exactly what CI runs
+make assemble       # rebuild forgeloop/ and the docs gallery from the books
+make docs           # build the documentation site
 ```
 
-CI gates four things: `ruff`, no committed notebook output
+`make check` runs the same four gates as CI: `ruff`, no committed notebook output
 (`scripts/notebook_outputs.py --check`), `forgeloop/` matching the books
-(`scripts/build_forgeloop.py --package --check`), and per-book typecheck + tests.
+(`scripts/build_forgeloop.py --package --check`), and the test suites. A green
+`make check` locally means a green CI run.
 
 Tests that require the licensed `knowlytix` substrate are skipped automatically
 when it is not installed.
