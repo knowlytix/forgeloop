@@ -1,16 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Shared notebook helper: branch-library bootstrap, repo-root paths and a
-store loader that uses the *exact* build-time config.
+"""Shared notebook helper: repo-root paths and a store loader that uses the
+*exact* build-time config. knowlytix is used from the installed wheel.
 
-Notebooks import this after the KNOWLYTIX_SRC bootstrap so that:
-  * data paths resolve from the repo root (not the notebook's cwd), and
-  * the trained store loads with the geometry/cap it was built with
+Importing this gives notebooks:
+  * data paths resolved through ``forgeloop.data_root`` (not the notebook's cwd), and
+  * a store loader that rebuilds the model with the geometry/cap it was built with
     (GMSExpertStore.load rebuilds the model from config, so the config must
     match scripts/build_store.py or the state_dict will not load).
 
-Both locations are configurable via environment variables:
-  KNOWLYTIX_SRC       -> the GMS-knowlytix branch library (default below)
-  GMS_RAG_TUTORIAL    -> this repo (default below)
+Optional environment overrides (developer use only):
+  KNOWLYTIX_SRC       -> a local knowlytix checkout to prepend to sys.path
+  GMS_RAG_TUTORIAL    -> a specific repo data root (defaults to data_root())
 """
 
 from __future__ import annotations
@@ -20,9 +20,8 @@ import sys
 
 from forgeloop._paths import data_root
 
-# Optional: a local GMS-knowlytix source checkout on sys.path (dev only). The
-# packaged knowlytix is used when this is unset; the old default machine path
-# is no longer assumed.
+# Optional: a local knowlytix source checkout on sys.path (dev only). The
+# installed knowlytix wheel is used when this is unset.
 KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC")
 if KNOWLYTIX_SRC and KNOWLYTIX_SRC not in sys.path:
     sys.path.insert(0, KNOWLYTIX_SRC)

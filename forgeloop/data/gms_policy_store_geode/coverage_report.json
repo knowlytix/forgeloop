@@ -1,0 +1,218 @@
+{
+  "coverage_ratio": 0.6923076923076923,
+  "regions": [
+    {
+      "title": "Consumer Banking Policy and Fee Manual",
+      "lines": [
+        1,
+        7
+      ],
+      "body_lines": 4,
+      "triples": 0,
+      "blind_spot": true
+    },
+    {
+      "title": "1. Purpose and Scope",
+      "lines": [
+        8,
+        17
+      ],
+      "body_lines": 7,
+      "triples": 0,
+      "blind_spot": true
+    },
+    {
+      "title": "2. Deposit Account Fees",
+      "lines": [
+        18,
+        37
+      ],
+      "body_lines": 16,
+      "triples": 14,
+      "blind_spot": false
+    },
+    {
+      "title": "3. Overdraft and Non-Sufficient-Funds Policy",
+      "lines": [
+        38,
+        50
+      ],
+      "body_lines": 9,
+      "triples": 3,
+      "blind_spot": false
+    },
+    {
+      "title": "4. Transaction Dispute and Provisional Credit Policy",
+      "lines": [
+        51,
+        63
+      ],
+      "body_lines": 9,
+      "triples": 5,
+      "blind_spot": false
+    },
+    {
+      "title": "5. Fee Reversal and Authority Policy",
+      "lines": [
+        64,
+        86
+      ],
+      "body_lines": 17,
+      "triples": 8,
+      "blind_spot": false
+    },
+    {
+      "title": "6. Account Closure Policy",
+      "lines": [
+        87,
+        98
+      ],
+      "body_lines": 8,
+      "triples": 3,
+      "blind_spot": false
+    },
+    {
+      "title": "7. Personal Information and Data Handling Policy",
+      "lines": [
+        99,
+        110
+      ],
+      "body_lines": 8,
+      "triples": 3,
+      "blind_spot": false
+    },
+    {
+      "title": "8. Regulatory Escalation Policy",
+      "lines": [
+        111,
+        121
+      ],
+      "body_lines": 7,
+      "triples": 4,
+      "blind_spot": false
+    },
+    {
+      "title": "9. Loan Servicing Policy",
+      "lines": [
+        122,
+        130
+      ],
+      "body_lines": 5,
+      "triples": 2,
+      "blind_spot": false
+    },
+    {
+      "title": "10. Regulatory Flags and Escalation Routing",
+      "lines": [
+        131,
+        148
+      ],
+      "body_lines": 14,
+      "triples": 12,
+      "blind_spot": false
+    },
+    {
+      "title": "11. Products Governed by Each Policy",
+      "lines": [
+        149,
+        173
+      ],
+      "body_lines": 21,
+      "triples": 0,
+      "blind_spot": true
+    },
+    {
+      "title": "Appendix A: Customer Terminology and Aliases",
+      "lines": [
+        174,
+        212
+      ],
+      "body_lines": 35,
+      "triples": 0,
+      "blind_spot": true
+    }
+  ],
+  "blind_spots": [
+    "Consumer Banking Policy and Fee Manual",
+    "1. Purpose and Scope",
+    "11. Products Governed by Each Policy",
+    "Appendix A: Customer Terminology and Aliases"
+  ],
+  "unaligned_triples": 14,
+  "graph": {
+    "n_entities": 117,
+    "n_subject_entities": 32,
+    "n_fact_entities": 25,
+    "orphan_ratio": 0.21875,
+    "orphan_entities": [
+      "late_payment/per_event",
+      "nsf_check/per_event",
+      "overdraft/per_occurrence",
+      "paper_statement/per_month",
+      "stop_payment/per_request",
+      "wire_domestic/per_transaction",
+      "wire_international/per_transaction"
+    ],
+    "relation_fact_counts": {
+      "has_policy": 14,
+      "has_fee_amount": 7,
+      "has_type": 7,
+      "has_applies_when": 4,
+      "has_escalates_to": 4,
+      "has_max_reversal": 4,
+      "has_threshold": 4,
+      "has_above_cap_authorization": 1,
+      "has_account_tenure_required_months": 1,
+      "has_bank_initiated_notice_days": 1,
+      "has_escalation_window_days": 1,
+      "has_filing_window_days": 1,
+      "has_fraud_notice_exception": 1,
+      "has_harm_threshold_usd": 1,
+      "has_identity_verification": 1,
+      "has_investigation_window_days": 1,
+      "has_late_fee_amount": 1,
+      "has_mortgage_regulation": 1,
+      "has_notification_window_days": 1,
+      "has_primary_regulation": 1,
+      "has_prior_reversals_same_year": 1,
+      "has_privacy_notification_window_hours": 1,
+      "has_provisional_credit": 1,
+      "has_redaction": 1,
+      "has_regulation_reference": 1,
+      "has_representative_reversal_cap_usd": 1,
+      "has_reversal_frequency_per_year": 1,
+      "has_secondary_regulation": 1,
+      "has_servicing_regulation": 1,
+      "has_udaap_authority": 1,
+      "has_unencrypted_channel_pii": 1
+    },
+    "singleton_relations": [
+      "has_above_cap_authorization",
+      "has_account_tenure_required_months",
+      "has_bank_initiated_notice_days",
+      "has_escalation_window_days",
+      "has_filing_window_days",
+      "has_fraud_notice_exception",
+      "has_harm_threshold_usd",
+      "has_identity_verification",
+      "has_investigation_window_days",
+      "has_late_fee_amount",
+      "has_mortgage_regulation",
+      "has_notification_window_days",
+      "has_primary_regulation",
+      "has_prior_reversals_same_year",
+      "has_privacy_notification_window_hours",
+      "has_provisional_credit",
+      "has_redaction",
+      "has_regulation_reference",
+      "has_representative_reversal_cap_usd",
+      "has_reversal_frequency_per_year",
+      "has_secondary_regulation",
+      "has_servicing_regulation",
+      "has_udaap_authority",
+      "has_unencrypted_channel_pii"
+    ],
+    "declared_relations": [],
+    "unpopulated_declared": []
+  }
+}

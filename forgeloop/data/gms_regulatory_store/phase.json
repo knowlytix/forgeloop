@@ -1,0 +1,10 @@
+{
+  "rate": {
+    "v_min": 0.0,
+    "v_max": 1.0
+  },
+  "importance": {
+    "v_min": 0.0,
+    "v_max": 1.0
+  }
+}

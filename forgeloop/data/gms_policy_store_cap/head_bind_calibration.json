@@ -1,0 +1,9 @@
+{
+  "method": "head_bind_floor_balanced_acc",
+  "head_bind_floor": 0.44,
+  "max_false_accept": 0.05,
+  "recall": 0.9545,
+  "false_accept": 0.0,
+  "n_pos": 22,
+  "n_neg": 6
+}

@@ -1,6 +1,6 @@
 [project]
 name = "forgeloop"
-version = "0.2.2"
+version = "0.2.4"
 description = "Companion library for the Beyond Prompt / Ship / Chunk and Pray trilogy — building, testing and grounding governed agents."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -53,8 +53,13 @@ include = ["forgeloop*"]
 [tool.setuptools.package-data]
 "forgeloop.catalogs" = ["*.yaml", "*.yml"]
 "forgeloop.apps" = ["*.yaml", "*.yml"]
-# The three books' chapter/capstone notebooks ship with the package.
-forgeloop = ["notebooks/**/*.ipynb", "notebooks/**/*.py"]
+# The three books' chapter/capstone notebooks, plus the small data bundle
+# (GMS stores, calibrations, pinned results and text inputs incl.
+# banking_policy.md) ship with the package. The large model adapters do not.
+forgeloop = [
+    "notebooks/**/*.ipynb", "notebooks/**/*.py",
+    "data/**/*", "data/*", "data/.forgeloop_book",
+]
 
 [tool.ruff]
 line-length = 100

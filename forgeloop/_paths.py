@@ -19,12 +19,17 @@ A candidate only counts if it contains one of the marker entries in
 from __future__ import annotations
 
 import os
+import shutil
 from pathlib import Path
 
 from forgeloop._env import getenv
 
 _PKG_ROOT = Path(__file__).resolve().parent          # .../forgeloop
 _INSTALL_PARENT = _PKG_ROOT.parent
+# Small data shipped inside the wheel (GMS stores, calibrations, pinned results
+# and the authored text inputs incl. banking_policy.md). The large model
+# adapters are not here; they are fetched on demand (see forgeloop.artifacts).
+_BUNDLED = _PKG_ROOT / "data"
 
 # Entries that identify a book's data directory (union across the trilogy).
 _MARKERS = (
@@ -57,11 +62,37 @@ def _discover() -> Path | None:
     return None
 
 
+def _materialize_bundled() -> Path | None:
+    """Copy the wheel-bundled data to a writable cache once, and return it.
+
+    A pip install with no repository checkout still has the small data shipped
+    in the wheel (`forgeloop/data`), but that lives under ``site-packages`` and
+    is treated as read-only. Copy it to ``~/.forgeloop/data`` (override with
+    ``FORGELOOP_CACHE_DIR``) so a notebook can build a store or fetch the large
+    adapters into the same directory.
+    """
+    if not _looks_like_data(_BUNDLED):
+        return None
+    cache = getenv("CACHE_DIR")
+    dest = (Path(cache).expanduser() if cache else Path.home() / ".forgeloop") / "data"
+    if not (dest / ".forgeloop_bundled").exists():
+        dest.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(_BUNDLED, dest, dirs_exist_ok=True)
+        (dest / ".forgeloop_bundled").write_text("materialized from the forgeloop wheel\n")
+    return dest
+
+
 def data_root() -> Path:
-    """Return the resolved ``data/`` directory for the current book."""
+    """Return the resolved ``data/`` directory for the current book.
+
+    Order: explicit override, then discovery from the working directory (a repo
+    checkout), then the small data bundled in the wheel (materialized to a
+    writable cache), then the install-parent fallback.
+    """
     global _DATA_ROOT
     if _DATA_ROOT is None:
-        _DATA_ROOT = _from_env() or _discover() or (_INSTALL_PARENT / "data")
+        _DATA_ROOT = (_from_env() or _discover() or _materialize_bundled()
+                      or (_INSTALL_PARENT / "data"))
     return _DATA_ROOT
 
 

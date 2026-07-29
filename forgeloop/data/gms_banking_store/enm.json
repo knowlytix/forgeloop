@@ -1,0 +1,17 @@
+{
+  "fee_schedule::overdraft/per_occurrence": 35.0,
+  "fee_schedule::nsf_check/per_event": 35.0,
+  "fee_schedule::late_payment/per_event": 25.0,
+  "fee_schedule::wire_domestic/per_transaction": 30.0,
+  "fee_schedule::wire_international/per_transaction": 45.0,
+  "fee_schedule::stop_payment/per_request": 30.0,
+  "fee_schedule::paper_statement/per_month": 3.0,
+  "regulatory_flags::UDAAP/unfair_or_abusive_fee/compliance": 500.0,
+  "regulatory_flags::Reg_X/mortgage_servicing_issue/compliance": 0.0,
+  "regulatory_flags::Reg_E/unauthorized_electronic_transfer/dispute_unit": 50.0,
+  "regulatory_flags::Reg_Z/credit_card_billing_error/dispute_unit": 0.0,
+  "reversal_authority::representative": 35.0,
+  "reversal_authority::supervisor": 100.0,
+  "reversal_authority::manager": 500.0,
+  "reversal_authority::compliance_officer": 99999.0
+}

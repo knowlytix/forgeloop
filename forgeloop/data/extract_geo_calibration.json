@@ -1,0 +1,11 @@
+{
+  "encoder": "minilm",
+  "false_accept_ceiling": 0.1,
+  "product_threshold": 0.4582722783088684,
+  "issue_threshold": 0.6747015118598938,
+  "cohort": {
+    "n_cases": 20,
+    "n_product_abstain_class": 10,
+    "n_issue_abstain_class": 10
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "store_path": "data/gms_policy_store_geode",
+  "calibrated_at": "2026-06-08",
+  "method": "accept_threshold_balanced_acc_v2",
+  "max_false_accept": 0.05,
+  "false_accept_ceiling_met": true,
+  "accept_threshold": 0.0956,
+  "balanced_accuracy": 0.78125,
+  "accuracy": 0.7083333333333334,
+  "recall": 0.5625,
+  "false_accept": 0.0,
+  "ci_lo": 0.5083193634129031,
+  "ci_hi": 0.8508553966583573,
+  "cohort_n": 24,
+  "cohort_n_pos": 16,
+  "cohort_n_neg": 8
+}

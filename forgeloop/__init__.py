@@ -16,7 +16,7 @@ from pathlib import Path
 from forgeloop._paths import data_path, data_root, set_data_dir
 from forgeloop.artifacts import ensure_artifacts, missing_artifacts
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 
 def notebooks_dir() -> Path:

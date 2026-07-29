@@ -1,28 +1,49 @@
-"""Fetch the trained artifacts the trilogy's notebooks load.
+"""Fetch the large trained artifacts the trilogy's notebooks load.
 
-``forgeloop`` ships code; the trained artifacts each book's notebooks read
-(classifier and drafter adapters, calibrated GMS stores, fine-tuned encoders,
-and pinned result files) are large and are not committed or bundled in the
-wheel. :func:`ensure_artifacts` fetches only what is missing under
-:func:`forgeloop.data_root`, from a local directory
-(``FORGELOOP_ARTIFACTS_DIR``) or the Hugging Face Hub dataset repo named by
-``FORGELOOP_ARTIFACTS_REPO`` (default :data:`DEFAULT_REPO`).
+The small data --- the calibrated GMS stores, the fine-tuned encoders, the
+calibration files, the pinned result files and the authored text inputs such as
+``banking_policy.md`` --- ships inside the wheel (see :mod:`forgeloop._paths`),
+so the store-building and governed-retrieval chapters run straight after
+``pip install`` with no download. The large model adapters (the Qwen classifier
+and drafter LoRAs, roughly 200 MB together) are not in the wheel;
+:func:`ensure_artifacts` fetches only those, and only the ones still missing
+under :func:`forgeloop.data_root`.
 
-Each book has its own manifest; the book is inferred from the resolved data
-directory. On the Hub the bundle is laid out one sub-directory per book, so an
-entry is fetched from ``<book>/<entry>``.
+Fetch order: a local directory (``FORGELOOP_ARTIFACTS_DIR``), then a tarball URL
+(``FORGELOOP_ARTIFACTS_URL``, default :data:`DEFAULT_URL` on the ForgeLoop
+distribution), then a Hugging Face Hub dataset if ``FORGELOOP_ARTIFACTS_REPO``
+is set. In every source the layout is one sub-directory per book, so an entry is
+read from ``<book>/<entry>``.
 """
 
 from __future__ import annotations
 
 import os
 import shutil
+import tarfile
+import tempfile
+import urllib.request
 from pathlib import Path
 
 from forgeloop._env import getenv
 from forgeloop._paths import data_root
 
 DEFAULT_REPO = "knowlytix/forgeloop-artifacts"
+# The large adapters are published as one tarball on the ForgeLoop distribution
+# (linked from the docs). Override with FORGELOOP_ARTIFACTS_URL.
+DEFAULT_URL = ("https://github.com/asudjianto-xml/ForgeLoop/releases/download/"
+               "artifacts-v0.2.3/forgeloop-artifacts.tar.gz")
+
+# Entries shipped inside the wheel (present under data_root without any fetch).
+WHEEL_BUNDLED: tuple[str, ...] = (
+    "gms_banking_store", "gms_policy_store_cap", "gms_policy_store_geode",
+    "gms_regulatory_store", "gms_regulatory_cap",
+    "extract_encoder_issue", "extract_encoder_product",
+    "extract_geo_calibration.json", "entity_link_calibration.json",
+    "capstone_run.json", "capstone_retrieval.json",
+    "capstone_companions.json", "capstone_rows.json",
+    "banking_policy.md", "banking_policy_full.md",
+)
 
 # Manifests per book, keyed by the marker substring of the book's directory.
 BOOK_MANIFESTS: dict[str, tuple[str, ...]] = {
@@ -48,6 +69,7 @@ BOOK_MANIFESTS: dict[str, tuple[str, ...]] = {
 
 _ENV_REPO = ("FORGELOOP_ARTIFACTS_REPO", "AGENTLAB_ARTIFACTS_REPO")
 _ENV_LOCAL = ("FORGELOOP_ARTIFACTS_DIR", "AGENTLAB_ARTIFACTS_DIR")
+_ENV_URL = ("FORGELOOP_ARTIFACTS_URL",)
 
 
 def _env(names: tuple[str, ...]) -> str | None:
@@ -59,10 +81,18 @@ def _env(names: tuple[str, ...]) -> str | None:
 
 
 def _detect_book(root: Path | None = None) -> str | None:
-    s = str(root or data_root())
+    root = root or data_root()
+    s = str(root)
     for book in BOOK_MANIFESTS:
         if book in s:
             return book
+    # the wheel-bundled data (and its materialized cache) records its book here,
+    # since the cache path does not carry the book name.
+    marker = root / ".forgeloop_book"
+    if marker.exists():
+        name = marker.read_text().strip()
+        if name in BOOK_MANIFESTS:
+            return name
     return None
 
 
@@ -112,12 +142,24 @@ def _download_from_hub(repo_id: str, book: str, names: list[str], root: Path) ->
         return _copy_from_local(Path(tmp), book, names, root)
 
 
+def _download_from_url(url: str, book: str, names: list[str], root: Path) -> list[str]:
+    with tempfile.TemporaryDirectory() as tmp:
+        tarball = Path(tmp) / "artifacts.tar.gz"
+        urllib.request.urlretrieve(url, tarball)  # noqa: S310 — documented https source
+        with tarfile.open(tarball) as tf:
+            tf.extractall(tmp)  # noqa: S202 — trusted first-party archive
+        return _copy_from_local(Path(tmp), book, names, root)
+
+
 def ensure_artifacts(book: str | None = None, *, repo_id: str | None = None,
                      local_source: str | os.PathLike | None = None,
-                     quiet: bool = False) -> list[str]:
-    """Ensure the current book's trained artifacts are present under data_root.
+                     url: str | None = None, quiet: bool = False) -> list[str]:
+    """Ensure the current book's large adapters are present under data_root.
 
-    Returns the entries fetched (empty when all were already present).
+    The small data already ships in the wheel, so this fetches only the entries
+    still missing (in practice the model adapters). Returns the entries fetched
+    (empty when nothing was missing). Source order: a local directory, then a
+    tarball URL on the ForgeLoop distribution, then a Hugging Face Hub dataset.
     """
     root = data_root()
     book, _ = _manifest(book)
@@ -125,6 +167,7 @@ def ensure_artifacts(book: str | None = None, *, repo_id: str | None = None,
     if not need:
         return []
     local = local_source or _env(_ENV_LOCAL)
+    repo = repo_id or _env(_ENV_REPO)
     if local:
         src = Path(local).expanduser().resolve()
         if not src.is_dir():
@@ -132,11 +175,15 @@ def ensure_artifacts(book: str | None = None, *, repo_id: str | None = None,
         if not quiet:
             print(f"fetching {len(need)} {book} artifact(s) from {src} -> {root}")
         fetched = _copy_from_local(src, book, need, root)
-    else:
-        repo = repo_id or _env(_ENV_REPO) or DEFAULT_REPO
+    elif repo:
         if not quiet:
             print(f"downloading {len(need)} {book} artifact(s) from hf://{repo} -> {root}")
         fetched = _download_from_hub(repo, book, need, root)
+    else:
+        src_url = url or _env(_ENV_URL) or DEFAULT_URL
+        if not quiet:
+            print(f"downloading {len(need)} {book} artifact(s) from {src_url} -> {root}")
+        fetched = _download_from_url(src_url, book, need, root)
     still = missing_artifacts(book)
     if still and not quiet:
         print(f"warning: {len(still)} artifact(s) still missing: {', '.join(still)}")

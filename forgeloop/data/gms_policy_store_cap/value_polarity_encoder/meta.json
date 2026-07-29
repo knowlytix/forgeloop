@@ -1,0 +1,19 @@
+{
+  "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+  "base_dim": null,
+  "label_order": [
+    "denied",
+    "forbidden",
+    "issued",
+    "optional",
+    "permitted",
+    "required"
+  ],
+  "temperature": 0.07,
+  "val_accuracy": 0.0,
+  "d_in": 384,
+  "out_dim": 384,
+  "rank": 8,
+  "mode": "full",
+  "has_base_ft": false
+}
