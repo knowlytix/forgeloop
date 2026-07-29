@@ -9,6 +9,22 @@
 PYTHON ?= python3
 PIP    := $(PYTHON) -m pip
 
+# Checked before installing, because both failure modes are confusing after the
+# fact: an interpreter older than the 3.12 these packages require fails partway
+# through with pip's "requires a different Python", and a system interpreter
+# refuses `pip install` under PEP 668 with a wall of text about
+# --break-system-packages. Create the venv from the README instead.
+define require_venv
+@$(PYTHON) -c 'import sys; sys.exit(0 if sys.version_info >= (3, 12) else 1)' 2>/dev/null || { \
+	    echo "error: $(PYTHON) is $$($(PYTHON) -V 2>&1); forgeloop needs Python 3.12+."; \
+	    echo "       python3.12 -m venv .venv && source .venv/bin/activate"; \
+	    exit 1; }
+@$(PYTHON) -c 'import sys; sys.exit(0 if sys.prefix != sys.base_prefix else 1)' 2>/dev/null || { \
+	    echo "error: not in a virtual environment; refusing to install into $(PYTHON)."; \
+	    echo "       python3.12 -m venv .venv && source .venv/bin/activate"; \
+	    exit 1; }
+endef
+
 .PHONY: help install install-dev assemble check lint test docs clean
 
 help:
@@ -24,8 +40,9 @@ help:
 # a few GB, mostly torch and transformers. Chunk-and-Pray in particular is not
 # usable without them -- 27 of its 40 notebooks load the substrate and only 4
 # are plain Python -- so making its readers run a second command to get anything
-# working would be the wrong default. Use `make install-lite` to skip them.
+# working would be the wrong default.
 install:
+	$(require_venv)
 	$(PIP) install -e "beyond-prompt-and-pray/code[gms,ml,notebooks]"
 	$(PIP) install -e "beyond-ship-and-pray/code[gms,notebooks]"
 	$(PIP) install -e "beyond-chunk-and-pray/code[gms,ml,notebooks]"
@@ -36,6 +53,7 @@ install:
 
 
 install-dev:
+	$(require_venv)
 	$(PIP) install -e "beyond-prompt-and-pray/code[dev]"
 	$(PIP) install -e "beyond-ship-and-pray/code[dev]"
 	$(PIP) install -e "beyond-chunk-and-pray/code[dev]"

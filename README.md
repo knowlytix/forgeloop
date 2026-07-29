@@ -13,12 +13,17 @@ a geometric memory substrate.
 
 ## Setup
 
+Needs Python 3.12+.
+
 ```bash
 git clone https://github.com/knowlytix/forgeloop.git && cd forgeloop
+
+python3.12 -m venv .venv && source .venv/bin/activate
+
 make install
 ```
 
-Installs everything the notebooks need.
+Installs everything the notebooks need. Activate the same venv in any new shell.
 
 ---
 
