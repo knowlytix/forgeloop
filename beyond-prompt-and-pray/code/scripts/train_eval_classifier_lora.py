@@ -20,10 +20,11 @@ import json
 from pathlib import Path
 
 import torch
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _ROOT = Path(__file__).resolve().parents[1]
 _DATA = _ROOT / "data" / "training" / "complaint_classification"
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+_MODEL_ID = DEFAULT_QWEN_MODEL
 _MAX_LEN = 128
 _EVAL = {
     "test_doe.jsonl": _DATA / "test_doe.jsonl",

@@ -27,9 +27,10 @@ from typing import Any
 import torch
 
 from agentlab._paths import data_path
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _DEFAULT_DIR = data_path("draft_response_lm_qwen")
-_BASE_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
+_BASE_MODEL = DEFAULT_QWEN_MODEL
 
 # One-line policy summaries taken verbatim from the SFT corpus
 # (data/training/bank_policy/draft_response_sft*.jsonl). Keying off the

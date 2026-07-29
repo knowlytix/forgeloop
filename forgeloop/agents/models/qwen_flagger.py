@@ -36,7 +36,9 @@ from typing import Any
 
 import torch
 
-_DEFAULT_MODEL = os.environ.get("AGENTLAB_FLAGGER_MODEL", "Qwen/Qwen3-4B-Instruct-2507")
+from forgeloop.agents.models.constants import DEFAULT_QWEN_MODEL
+
+_DEFAULT_MODEL = os.environ.get("AGENTLAB_FLAGGER_MODEL", DEFAULT_QWEN_MODEL)
 
 ALLOWED_FLAGS = ("UDAAP", "Reg_X", "Reg_E", "Reg_Z", "FCRA")
 

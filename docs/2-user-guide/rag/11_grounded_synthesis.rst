@@ -42,7 +42,7 @@ Synthesize from the facts
 :class:`~knowlytix.knowledge.llm_backend.LLMBackend`. In deployment the backend
 is a local model. :class:`~knowlytix.knowledge.llm_backend.LocalTransformersBackend`
 loads the tutorial's synthesis model, :data:`~knowlytix.knowledge.geode.QWEN_3B`
-(``Qwen/Qwen2.5-3B-Instruct``), and needs no API key.
+(``Qwen/Qwen3-4B-Instruct-2507``), and needs no API key.
 
 .. code-block:: python
 

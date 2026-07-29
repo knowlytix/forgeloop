@@ -3,7 +3,7 @@
 Variants, all generating a reply for each case in the held-out draft eval set
 (``data/training/bank_policy/draft_response_eval.jsonl``):
 
-  - ``base``         : Qwen2.5-3B-Instruct *prompted* (no adapter) --- the
+  - ``base``         : Qwen3-4B-Instruct *prompted* (no adapter) --- the
     baseline the shipped LoRA must beat.
   - ``lora_shipped`` : the currently shipped adapter (data/draft_response_lm_qwen).
   - ``lora_v3``      : the retuned LoRA on MeMo v3.
@@ -31,10 +31,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import torch
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 REPO = Path(__file__).resolve().parents[2]
 EVAL = REPO / "data" / "training" / "bank_policy" / "draft_response_eval.jsonl"
-MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
+MODEL_ID = DEFAULT_QWEN_MODEL
 SHIPPED_LORA = REPO / "data" / "draft_response_lm_qwen"
 LORA_V3 = REPO / "data" / "draft_response_lora_memo_v3"
 RORA_V3 = REPO / "data" / "draft_response_rora_memo_v3"

@@ -2,7 +2,7 @@
 """Benchmark: conventional dense-embedding RAG vs the GMS/GEODE retriever.
 
 Both systems answer the SAME questions over the SAME policy corpus with the SAME
-LLM (Qwen2.5-3B-Instruct); both are scored by the SAME oracle
+LLM (Qwen3-4B-Instruct); both are scored by the SAME oracle
 (``CapstoneTestHarness.rag_test`` -- questions reversed from the GEODE graph,
 answers decomposed into typed claims and verified against the GMS). The only
 variable is the retrieval engine:

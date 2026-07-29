@@ -36,7 +36,9 @@ from typing import Any
 
 import torch
 
-_DEFAULT_MODEL = os.environ.get("AGENTLAB_EXTRACTOR_MODEL", "Qwen/Qwen3-4B-Instruct-2507")
+from forgeloop.agents.models.constants import DEFAULT_QWEN_MODEL
+
+_DEFAULT_MODEL = os.environ.get("AGENTLAB_EXTRACTOR_MODEL", DEFAULT_QWEN_MODEL)
 
 _SYSTEM_PROMPT = (
     "You extract structured facts from a retail-bank customer message. "

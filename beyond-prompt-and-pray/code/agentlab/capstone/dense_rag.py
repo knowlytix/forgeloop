@@ -38,6 +38,7 @@ import numpy as np
 import torch
 
 from agentlab._paths import data_path
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _DEFAULT_DOC = data_path("banking_policy_full.md")
 # The frozen base encoder the GEODE store also starts from -- so the baseline
@@ -175,7 +176,7 @@ class DenseRagRetriever:
 
         prompt = f"Policy excerpts:\n{context}\n\nQuestion: {query}\n\nAnswer:"
         return QwenAdapter(
-            model="Qwen/Qwen3-4B-Instruct-2507", system=_SYSTEM, max_new_tokens=256,
+            model=DEFAULT_QWEN_MODEL, system=_SYSTEM, max_new_tokens=256,
             device=self._device,
         ).complete(prompt, max_tokens=256).strip()
 

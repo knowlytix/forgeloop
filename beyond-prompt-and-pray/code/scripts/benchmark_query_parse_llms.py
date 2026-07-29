@@ -21,9 +21,10 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _REPO = Path(__file__).resolve().parents[1]
-_DEFAULT_MODELS = ["Qwen/Qwen2.5-3B-Instruct", "Qwen/Qwen2.5-7B-Instruct"]
+_DEFAULT_MODELS = [DEFAULT_QWEN_MODEL, "Qwen/Qwen2.5-7B-Instruct"]
 
 
 def main() -> int:

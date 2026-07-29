@@ -50,7 +50,7 @@ The book runs in two tiers, with different hardware needs:
   machine once the base store is built. No GPU, no Qwen.
 - **Tier 2 — answer synthesis (GPU + Qwen).** The chapters that generate and verify
   prose answers, the calibration/evaluation chapters, and the full data-enrichment +
-  encoder-fine-tuning pipeline run a local **Qwen2.5-3B-Instruct** (no API key).
+  encoder-fine-tuning pipeline run a local **Qwen3-4B-Instruct** (no API key).
   These **expect a CUDA GPU**: the model loads in float16 and the synthesis cells
   assume a GPU device, so CPU inference is not supported out of the box.
 

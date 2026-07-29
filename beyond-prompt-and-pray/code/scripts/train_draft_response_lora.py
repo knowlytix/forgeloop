@@ -1,7 +1,7 @@
-"""LoRA fine-tune Qwen2.5-3B-Instruct for the draft_response tool.
+"""LoRA fine-tune Qwen3-4B-Instruct for the draft_response tool.
 
 Qwen port of the Chapter-31 draft-response LoRA (replaces the TinyGPT LoRA).
-The base Qwen2.5-3B-Instruct is frozen; a small LoRA adapter on the attention
+The base Qwen3-4B-Instruct is frozen; a small LoRA adapter on the attention
 projections is trained by supervised fine-tuning on (complaint, issue, policy
 summary) -> grounded reply pairs. Loss is masked to the completion only — the
 prompt tokens are ignored so the adapter learns to *write the reply*, not to
@@ -37,11 +37,12 @@ import re
 from pathlib import Path
 
 import torch
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _DATA_DIR = _REPO_ROOT / "data" / "training" / "bank_policy"
 _OUT_DIR = _REPO_ROOT / "data" / "draft_response_lm_qwen"
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+_MODEL_ID = DEFAULT_QWEN_MODEL
 _MAX_LEN = 256
 
 

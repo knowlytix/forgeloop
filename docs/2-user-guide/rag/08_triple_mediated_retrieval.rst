@@ -194,7 +194,7 @@ requires a GPU and a licensed knowlytix build.
    dev = "cuda" if torch.cuda.is_available() else "cpu"
 
    vocab = schema_from_store(store)
-   qwen = LocalTransformersBackend("Qwen/Qwen2.5-3B-Instruct", device=dev)
+   qwen = LocalTransformersBackend("Qwen/Qwen3-4B-Instruct-2507", device=dev)
    extractor = QueryTripleExtractor(qwen, vocab=vocab)
 
    qts = extractor.extract("How many people work in Logistics?")

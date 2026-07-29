@@ -17,10 +17,11 @@ import json
 from pathlib import Path
 
 import torch
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _REPO = Path(__file__).resolve().parents[1]
 _OUT = _REPO / "data" / "training"
-_MODEL = "Qwen/Qwen2.5-3B-Instruct"
+_MODEL = DEFAULT_QWEN_MODEL
 
 _PRODUCT = {
     "checking_account": "a checking or savings account, a debit card, or an overdraft on a bank account",

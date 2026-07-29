@@ -20,7 +20,9 @@ from typing import Any
 
 import torch
 
-_DEFAULT_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
+
+_DEFAULT_MODEL = DEFAULT_QWEN_MODEL
 _CACHE: dict[tuple[str, str], tuple[Any, Any]] = {}
 
 

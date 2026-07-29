@@ -116,7 +116,7 @@ beyond-chunk-and-pray/notebooks/00_setup.ipynb
 ```
 
 Tier 1 is CPU-only and covers what most chapters need; Tier 2 downloads
-Qwen2.5-3B-Instruct and expects a CUDA GPU for the retrieval chapters. Both
+Qwen3-4B-Instruct and expects a CUDA GPU for the retrieval chapters. Both
 require the licensed `knowlytix` substrate.
 
 ## Reading the documentation

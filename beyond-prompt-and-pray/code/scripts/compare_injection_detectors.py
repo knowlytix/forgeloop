@@ -1,7 +1,7 @@
 """Compare two trainable prompt-injection detectors on the same data, picking the
 better for the capstone Policy gate.
 
-  A) Qwen2.5-3B + LoRA (SEQ_CLS head) -- the heavy approach (mirrors classify_complaint).
+  A) Qwen3-4B + LoRA (SEQ_CLS head) -- the heavy approach (mirrors classify_complaint).
   B) knowlytix.embedding low-rank SFT (rotation) prototype classifier -- the light approach.
 
 Both train on data/training/injection_doe.jsonl ({none, prompt_injection,
@@ -25,11 +25,12 @@ from pathlib import Path
 
 import torch
 import torch.nn.functional as F
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _ROOT = Path(__file__).resolve().parents[1]
 _CORPUS = _ROOT / "data" / "training" / "injection_doe.jsonl"
 _DOE = _ROOT / "data" / "capstone_doe_results.csv"
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+_MODEL_ID = DEFAULT_QWEN_MODEL
 
 
 def _load_corpus():

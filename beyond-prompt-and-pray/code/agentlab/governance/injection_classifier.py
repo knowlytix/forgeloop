@@ -27,9 +27,10 @@ from typing import Any
 import torch
 
 from agentlab._paths import data_path
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _DEFAULT_DIR = data_path("injection_classifier_lora")
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+_MODEL_ID = DEFAULT_QWEN_MODEL
 
 
 @dataclass

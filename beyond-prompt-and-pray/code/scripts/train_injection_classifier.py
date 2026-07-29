@@ -14,11 +14,12 @@ import random
 from pathlib import Path
 
 import torch
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _ROOT = Path(__file__).resolve().parents[1]
 _CORPUS = _ROOT / "data" / "training" / "injection_doe.jsonl"
 _SAVE = _ROOT / "data" / "injection_classifier_lora"
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+_MODEL_ID = DEFAULT_QWEN_MODEL
 
 
 def main() -> int:

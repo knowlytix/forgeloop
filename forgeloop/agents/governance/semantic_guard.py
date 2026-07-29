@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Any
 
 from forgeloop.agents._paths import data_path
+from forgeloop.agents.models.constants import DEFAULT_QWEN_MODEL
 
 _DEFAULT_EXEMPLARS = data_path("governance_exemplars.json")
 
@@ -98,7 +99,7 @@ class SemanticIntentGuard:
 
         exemplars = json.loads(Path(exemplars_path or _DEFAULT_EXEMPLARS).read_text())
         exemplars = {k: v for k, v in exemplars.items() if not k.startswith("_")}
-        model_id = model or "Qwen/Qwen3-4B-Instruct-2507"
+        model_id = model or DEFAULT_QWEN_MODEL
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         lm = AutoModelForCausalLM.from_pretrained(

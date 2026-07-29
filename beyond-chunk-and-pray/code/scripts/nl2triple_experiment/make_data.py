@@ -98,7 +98,7 @@ def _gt_value(expected):
 
 
 def make_rewriter(dev):
-    """The same batched greedy Qwen2.5-3B rewrite the book uses for phrasings."""
+    """The same batched greedy Qwen3-4B rewrite the book uses for phrasings."""
     backend = LocalTransformersBackend(QWEN_3B, device=str(dev))
     tok, model = backend._tokenizer, backend._model
     if tok.pad_token_id is None:
