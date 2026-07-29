@@ -73,6 +73,10 @@ release = forgeloop.__version__
 # Source dir holds only authored docs plus the generated gallery; exclude build
 # scratch and environments.
 exclude_patterns = [
+    # Internal working notes. Being git-ignored keeps PLAN.md out of the repo
+    # but NOT out of the build: the Sphinx source dir is docs/, myst picks up
+    # .md there, and it was rendering to PLAN.html in the published site.
+    'PLAN.md',
     'docs/_build',
     '**/_build/**',
     # Gallery SOURCE scripts and their headers live under the config dir; they
