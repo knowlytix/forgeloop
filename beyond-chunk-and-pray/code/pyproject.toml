@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 # decided they want the GMS material. This book was the only package declaring
 # knowlytix as a core dependency; the other three, and the root package, all put
 # it behind a `gms` extra, so this now matches them.
-dependencies = []
+dependencies = ["numpy"]
 
 [project.optional-dependencies]
 # The licensed GMS substrate: knowlytix.knowledge.rag / .geode, the source of
@@ -20,6 +20,10 @@ ml = [
     "transformers",
     "accelerate",             # transformers device_map / from_pretrained (Ch14, Ch16)
     "sentence-transformers",  # dense-vector fallback baseline (Ch02, Ch16)
+    # scripts/nl2triple_experiment imports PeftModel and get_peft_model at module
+    # level. This book worked only because installing it alongside
+    # beyond-prompt-and-pray pulled peft in transitively.
+    "peft>=0.10",
 ]
 notebooks = ["jupyter", "nbconvert", "pandas"]
 dev = ["pytest>=8.0", "ruff"]

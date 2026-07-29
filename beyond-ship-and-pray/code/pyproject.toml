@@ -31,7 +31,8 @@ notebooks = ["jupyterlab", "matplotlib", "pandas"]
 # package: on PyPI but gated by a runtime license key (~/.knowlytix/license.key;
 # sign up at https://knowlytix.ai/signup/). `gmstest` imports it lazily, so the
 # core test harness works without it and tests that need it `pytest.importorskip`.
-gms = ["knowlytix"]
+# apps.complaint_sut imports torch to select a device before loading a store.
+gms = ["knowlytix", "torch"]
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
