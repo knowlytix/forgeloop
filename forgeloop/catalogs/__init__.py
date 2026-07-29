@@ -1,1 +1,1 @@
-"""forgeloop.catalogs"""
+"""Bundled catalogs shipped with forgeloop."""

@@ -11,10 +11,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from forgeloop.agents.capstone.banking_tools import register_all
 from forgeloop.agents.core import BaseAgent, Escalate, Finish, ToolCall
 from forgeloop.agents.core.action import Action
 from forgeloop.agents.core.state import AgentState
-from forgeloop.agents.reasoning import Scratchpad, TrustLevel
+from forgeloop.agents.gms_backend import GMSPlausibilityGate
 from forgeloop.agents.governance import (
     GovernanceHarness,
     PolicyEngine,
@@ -25,10 +26,8 @@ from forgeloop.agents.governance.semantic_guard import (
     semantic_prohibited_advice_policy,
     semantic_prompt_injection_policy,
 )
-from forgeloop.agents.gms_backend import GMSPlausibilityGate
+from forgeloop.agents.reasoning import Scratchpad, TrustLevel
 from forgeloop.agents.tools import GovernedToolExecutor, ToolRegistry
-
-from forgeloop.agents.capstone.banking_tools import register_all
 
 # Workflow node names as the GMS banking store knows them (its has_enables DAG),
 # in execution order. classify_complaint/extract_facts map to the store's short

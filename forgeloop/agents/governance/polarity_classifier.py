@@ -31,6 +31,7 @@ from typing import Any
 import torch
 
 from forgeloop.agents._paths import data_path
+
 # The NL (premise+claim) adapter: it reads prose, which is what a disclosure
 # scanner receives. The tuple adapter exists for the Chapter 13 ablation.
 _DEFAULT_DIR = data_path("polarity_classifier_qwen_nl")

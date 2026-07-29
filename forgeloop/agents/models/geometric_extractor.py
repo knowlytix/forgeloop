@@ -33,6 +33,8 @@ import os
 from pathlib import Path
 from typing import Any, Callable
 
+from forgeloop.agents._paths import data_path
+
 # Hand-authored exemplar phrases per label. NOT drawn from data/eval_cases.
 _PRODUCT_EXEMPLARS: dict[str, list[str]] = {
     "checking_account": [
@@ -95,7 +97,6 @@ _ISSUE_EXEMPLARS: dict[str, list[str]] = {
     ],
 }
 
-from forgeloop.agents._paths import data_path
 
 _CALIB_PATH = data_path("extract_geo_calibration.json")
 

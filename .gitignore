@@ -9,6 +9,11 @@
 # working notes inside it stay out.
 docs/PLAN.md
 
+# The docs notebook gallery is assembled from the books by
+# scripts/build_forgeloop.py at docs-build time. The books are the source; a
+# committed copy here would be a third duplicate of every chapter notebook.
+docs/4-notebook-examples/
+
 # --- Python ---
 __pycache__/
 *.py[cod]

@@ -58,6 +58,24 @@ jobs:
       - name: Assert no committed notebook output
         run: python scripts/notebook_outputs.py --check
 
+  assembled:
+    name: forgeloop/ matches the books
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # The three beyond-*/ book directories are the source of truth; the
+      # forgeloop/ package is assembled from them and committed as a build
+      # artifact. Editing forgeloop/ by hand would be silently undone by the
+      # next assembly, so gate it: rebuild into a temp dir and diff.
+      # Fix with `python scripts/build_forgeloop.py` and commit the result.
+      # Stdlib only, no extra pip install needed.
+      - name: Assert forgeloop/ is in sync with the books
+        run: python scripts/build_forgeloop.py --package --check
+
   test:
     name: Typecheck + test (${{ matrix.topic }})
     runs-on: ubuntu-latest

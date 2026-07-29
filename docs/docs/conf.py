@@ -16,7 +16,7 @@ _REPO_ROOT = os.path.abspath(os.path.join(_HERE, "..", ".."))   # agent-tutorial
 
 sys.path.insert(0, _REPO_ROOT)
 
-import forgeloop
+import forgeloop  # noqa: E402  (must follow the sys.path setup above)
 
 extensions = [
     'sphinx.ext.napoleon',   # forgeloop docstrings mix Google and NumPy styles
@@ -47,7 +47,7 @@ myst_heading_anchors = 2
 # missing ones are mocked so the forgeloop pages still build (the knowlytix
 # pages then require the licensed package). numpy, pydantic and pyyaml are light
 # real dependencies and are never mocked.
-import importlib.util as _ilu
+import importlib.util as _ilu  # noqa: E402  (must follow the sys.path setup above)
 
 _CANDIDATE_MOCKS = [
     'torch', 'knowlytix', 'transformers', 'peft',

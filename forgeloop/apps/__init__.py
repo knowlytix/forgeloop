@@ -1,1 +1,1 @@
-"""forgeloop.apps"""
+"""Bundled apps shipped with forgeloop."""

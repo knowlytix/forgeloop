@@ -25,7 +25,6 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
-from forgeloop._env import getenv
 from forgeloop._paths import data_root
 
 DEFAULT_REPO = "knowlytix/forgeloop-artifacts"
@@ -130,8 +129,9 @@ def _copy_from_local(source: Path, book: str, names: list[str], root: Path) -> l
 
 
 def _download_from_hub(repo_id: str, book: str, names: list[str], root: Path) -> list[str]:
-    from huggingface_hub import snapshot_download
     import tempfile
+
+    from huggingface_hub import snapshot_download
 
     patterns = []
     for name in names:

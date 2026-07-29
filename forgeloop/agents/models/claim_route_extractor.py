@@ -23,6 +23,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from forgeloop.agents._paths import data_path
+
 # Policy domain -> coarse issue taxonomy. `disputes` is deposit-side by default
 # and re-routed to credit_card_issue under card context (mirrors the dual
 # has_product edge). Cross-product domains (udaap/escalation/pii) imply no single
@@ -45,7 +47,6 @@ _ISSUE_RANK = {"overdraft_fee": 1, "mortgage_issue": 2, "loan_issue": 3,
 _CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.I)
 _CLAUSE_SPLIT = re.compile(r"[.;!?]|\band\b|\bbut\b|,", re.I)
 
-from forgeloop.agents._paths import data_path
 
 _DEFAULT_STORE = data_path("gms_policy_store_geode")
 

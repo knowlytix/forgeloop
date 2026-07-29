@@ -2,7 +2,7 @@
 
 This is the bridge that lets the gmstest `evaluate` consumer drive the *real*
 Chapter-15 agent (`build_complaint_harness`). It reuses the shipped scoring
-helpers from agentlab.testing.capstone_harness so the trajectory -> SUTResult
+helpers from forgeloop.agents.testing.capstone_harness so the trajectory -> SUTResult
 mapping matches the harness exactly (the point of behavioral parity).
 
 The core gmstest package stays dependency-light; this agentlab/Qwen-dependent

@@ -10,7 +10,6 @@ from __future__ import annotations
 import os
 from typing import Any
 
-
 # Per-million-token prices in USD. Override for your account.
 DEFAULT_PRICING: dict[str, dict[str, float]] = {
     "claude-opus-4-6": {"input": 15.0, "output": 75.0},

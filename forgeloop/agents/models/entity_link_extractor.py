@@ -27,6 +27,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from forgeloop.agents._paths import data_path
+
 # Policy entity -> coarse issue taxonomy (disputes re-routed to credit_card under
 # card context). Cross-product domains map to None (no specific product issue).
 _DOMAIN_ISSUE: dict[str, str | None] = {
@@ -42,7 +44,6 @@ _DOMAIN_ISSUE: dict[str, str | None] = {
 }
 _NONE = "__none__"
 _CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.I)
-from forgeloop.agents._paths import data_path
 
 _DEFAULT_STORE = data_path("gms_policy_store_geode")
 
@@ -52,8 +53,9 @@ class EntityLinkExtractor:
 
     def __init__(self, store_path: Path | str | None = None,
                  threshold: float = 0.0) -> None:
-        from forgeloop.agents.capstone.policy_rag import PolicyRagRetriever
         from knowlytix.knowledge.rag import GeometricLabelClassifier
+
+        from forgeloop.agents.capstone.policy_rag import PolicyRagRetriever
 
         sp = Path(store_path) if store_path is not None else _DEFAULT_STORE
         self.retriever = PolicyRagRetriever(store_path=sp)

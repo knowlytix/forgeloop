@@ -40,9 +40,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from forgeloop.agents.testing.harness import FactorAttribution, TestResult
-
 from forgeloop.agents._paths import data_path, data_root
+from forgeloop.agents.testing.harness import FactorAttribution, TestResult
 
 _DEFAULT_STORE = data_path("gms_banking_store")
 _DEFAULT_CASES = data_path("eval_cases", "cases.json")
@@ -890,9 +889,10 @@ class CapstoneTestHarness:
         proceed on a faulted tool. Returns per-tool detection rates + a real
         GatewayTranscript-backed row log.
         """
+        from knowlytix.harness.testing import ToolGateway
+
         from forgeloop.agents.capstone import build_complaint_harness
         from forgeloop.agents.core import Budget, BudgetTracker, TaskSpec
-        from knowlytix.harness.testing import FaultProfile, ToolGateway
 
         cfg = self._load_config()
         budget_cfg = cfg.get("budget", {})
@@ -969,6 +969,7 @@ class CapstoneTestHarness:
         import torch
         from knowlytix.harness.testing import DOEGMSBenchmark, DOEHarnessConfig
         from knowlytix.harness.testing.audit import AuditReporter, RiskTierProfile
+
         from forgeloop.agents.models import QwenAdapter
 
         # substrate_test is a ship/no-ship gate on the knowledge SUBSTRATE, driven
@@ -1106,6 +1107,7 @@ class CapstoneTestHarness:
         """
         import torch
         from knowlytix.harness.testing import DOEGMSBenchmark, DOEHarnessConfig
+
         from forgeloop.agents.capstone.policy_rag import PolicyRagRetriever
 
         # search_policy is a policy-FACT RAG: it answers "what is the overdraft

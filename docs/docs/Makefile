@@ -13,9 +13,15 @@ BUILDDIR      = _build
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: help Makefile
+# The notebook gallery under ../4-notebook-examples/ is assembled from the
+# books rather than committed. 47 user-guide pages :doc:-link into it, so it
+# must exist before sphinx-build runs or those links fail as unknown documents.
+gallery:
+	@python3 ../../scripts/build_forgeloop.py --docs
+
+.PHONY: help gallery Makefile
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
+%: Makefile gallery
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
