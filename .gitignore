@@ -120,6 +120,9 @@ coverage.xml
 # and 09_agentic_capstone.ipynb reads the trajectory directly.
 !**/data/capstone_testset.json
 !**/data/capstone_trajectory_example.json
+# Completes the seven-entry Ship-and-Pray set that artifacts.py declares, so
+# missing_artifacts() can actually come back empty.
+!**/data/capstone_newprops.json
 **/data/*_calibration.json
 **/data/*_results.json
 **/*_augmented.jsonl
