@@ -11,14 +11,14 @@ a geometric memory substrate.
 | [`beyond-chunk-and-pray/`](beyond-chunk-and-pray/) | `book_kit` | Trustworthy RAG with geometric memory: triple-mediated retrieval, grounded synthesis, self-verification, calibrated abstention. |
 | [`beyond-vibe-and-pray/`](beyond-vibe-and-pray/) | `reasonloop` | A semantic execution substrate: the LLM as compiler and grounded synthesizer over a deterministic reasoning engine. *(Work in progress.)* |
 
-## Setup — once, for everything
+## Setup
 
 ```bash
 git clone https://github.com/knowlytix/forgeloop.git && cd forgeloop
 make install
 ```
 
-Installs all four books and their dependencies. A few GB, mostly `torch`.
+Installs everything the notebooks need.
 
 ---
 
@@ -56,9 +56,8 @@ Idempotent, and it reports what it will build before starting. Tier 1 is CPU-onl
 and covers most chapters; Tier 2 downloads `Qwen3-4B-Instruct` (~8 GB) and wants a
 CUDA GPU.
 
-Weights and stores are not committed — `00_setup` builds them from the corpora in
-the repo. The pinned campaign results they are evaluated against *are* committed,
-so the analysis chapters work without re-running a campaign.
+Weights and stores are not committed; `00_setup` builds them from the corpora in
+the repo.
 
 > *`litellm` wheel fails to build?* Recent versions need a Rust toolchain and have
 > no prebuilt wheel on some platforms. `knowlytix` only requires `litellm>=1.40`,
@@ -76,17 +75,13 @@ make docs
 open docs/docs/_build/html/index.html      # xdg-open on Linux, start on Windows
 ```
 
-Takes a few minutes. The site is ~130 MB, so it is built locally rather than
-hosted or committed.
-
-Or read the sources on GitHub:
+Takes a few minutes. Or read the sources on GitHub:
 
 - User Guide — [`docs/2-user-guide/`](docs/2-user-guide/), one file per chapter
 - Chapter notebooks — `beyond-*/notebooks/`
 
-The API Reference comes from the docstrings via autodoc. It covers `knowlytix`
-too (87 of ~194 pages); building those needs the package installed but no licence
-key, since autodoc only reads signatures.
+The API Reference comes from the docstrings via autodoc, and covers `knowlytix`
+too. Building it needs no licence key.
 
 ---
 
@@ -103,10 +98,9 @@ beyond-*/                    ← edit here
 ```
 
 Assembly rewrites imports book-local → package (`agentlab` → `forgeloop.agents`,
-and so on), so the books run from a checkout while the package ships one
-namespace. `forgeloop/` is committed so `pip install` and autodoc need no build
-step — **do not edit it by hand**; CI checks it against the books. Files with no
-book source live in [`packaging/`](packaging/).
+and so on). `forgeloop/` is committed, so **do not edit it by hand** — CI checks
+it against the books. Files with no book source live in
+[`packaging/`](packaging/).
 
 ```bash
 make install-dev    # everything, plus pytest and ruff
