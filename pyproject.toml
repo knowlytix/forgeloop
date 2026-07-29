@@ -4,15 +4,14 @@ version = "0.2.4"
 description = "Companion library for the Beyond Prompt / Ship / Chunk and Pray trilogy — building, testing and grounding governed agents."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "Proprietary" }
+license = { text = "Apache-2.0" }
 authors = [{ name = "Knowlytix" }]
 keywords = ["agents", "agentic-ai", "llm", "governance", "gms", "rag", "testing", "banking"]
 classifiers = [
     "Programming Language :: Python :: 3.12",
     "Intended Audience :: Developers",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "License :: Other/Proprietary License",
-    "Private :: Do Not Upload",
+    "License :: OSI Approved :: Apache Software License",
 ]
 
 # Core install is light; heavier and licensed pieces are optional extras.
