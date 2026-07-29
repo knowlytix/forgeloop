@@ -11,12 +11,20 @@ resolve a book's ``data/`` directory, and :func:`ensure_artifacts` fetches the
 trained artifacts that are not committed.
 """
 
+from importlib.metadata import PackageNotFoundError, version as _version
 from pathlib import Path
 
 from forgeloop._paths import data_path, data_root, set_data_dir
 from forgeloop.artifacts import ensure_artifacts, missing_artifacts
 
-__version__ = "0.2.3"
+# Read from installed package metadata rather than hardcoding, so pyproject.toml
+# is the single source of truth. A hardcoded literal here silently drifts: it
+# said 0.2.3 while pyproject said 0.2.4, and the docs build reports
+# forgeloop.__version__ as the site version.
+try:
+    __version__ = _version("forgeloop")
+except PackageNotFoundError:  # running from a checkout without an install
+    __version__ = "0.0.0+unknown"
 
 
 def notebooks_dir() -> Path:

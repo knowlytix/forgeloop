@@ -12,7 +12,7 @@ import sys
 
 _HERE = os.path.dirname(os.path.abspath(__file__))              # forgeloop-docs/docs
 _SOURCE = os.path.abspath(os.path.join(_HERE, ".."))            # forgeloop-docs (Sphinx source dir)
-_REPO_ROOT = os.path.abspath(os.path.join(_HERE, "..", ".."))   # agent-tutorial-private (holds the forgeloop package)
+_REPO_ROOT = os.path.abspath(os.path.join(_HERE, "..", ".."))   # repo root (holds the forgeloop package)
 
 sys.path.insert(0, _REPO_ROOT)
 

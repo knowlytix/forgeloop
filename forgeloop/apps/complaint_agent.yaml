@@ -17,7 +17,7 @@
 app: complaint_agent
 description: "Governed banking complaint agent — test + SFT data generation."
 
-# Data the app binds to (paths relative to the agent-tutorial-private repo root).
+# Data the app binds to (paths relative to the repository root).
 data:
   cases: data/eval_cases/cases.json          # 20 labeled seed cases (SeedCaseSource)
   policy_store: data/gms_policy_store         # Policy GMS (source of truth / oracle)
