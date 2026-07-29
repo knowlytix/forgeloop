@@ -25,7 +25,7 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
-from agentlab._datapaths import data_root
+from agentlab._datapaths import book_data_root, data_root
 
 DEFAULT_REPO = "knowlytix/forgeloop-artifacts"
 # The large adapters are published as one tarball on the ForgeLoop distribution
@@ -53,6 +53,10 @@ BOOK_MANIFESTS: dict[str, tuple[str, ...]] = {
         "gms_policy_store_cap", "gms_policy_store_geode",
         "extract_encoder_issue", "extract_encoder_product",
         "extract_geo_calibration.json", "entity_link_calibration.json",
+        # Produced by Ship-and-Pray's capstone_run.py and shipped with that
+        # book, but listed here too because this book's evaluation notebooks
+        # read them. _roots() below searches every book's data directory, so
+        # naming them here does not make them look missing.
         "capstone_run.json", "capstone_retrieval.json",
         "capstone_companions.json", "capstone_rows.json",
     ),
@@ -104,11 +108,35 @@ def _manifest(book: str | None) -> tuple[str, tuple[str, ...]]:
     return book, BOOK_MANIFESTS[book]
 
 
+def _roots(book: str) -> list[Path]:
+    """Every data directory an artifact could legitimately live in.
+
+    An artifact is not missing just because it sits with a different book. The
+    campaign results are produced by Ship-and-Pray and read by Prompt-and-Pray's
+    evaluation notebooks, so a per-book root reports false positives in whichever
+    book does not own them. Checking each book's directory plus the caller's
+    resolves that, and in an installed package all of these collapse to the one
+    bundled ``data/``.
+    """
+    seen: list[Path] = []
+    for cand in [book_data_root(b) for b in BOOK_MANIFESTS] + [data_root()]:
+        if cand not in seen:
+            seen.append(cand)
+    return seen
+
+
 def missing_artifacts(book: str | None = None) -> list[str]:
-    """Return the manifest entries not yet present under :func:`data_root`."""
-    root = data_root()
-    _, entries = _manifest(book)
-    return [e for e in entries if not (root / e).exists()]
+    """Return the manifest entries not present in any book's data directory.
+
+    Reports only what genuinely has to be built or fetched. Previously this
+    checked the caller-anchored :func:`data_root` alone, which from a checkout
+    takes the editable-install fallback and lands in one book's ``code/data`` --
+    so entries belonging to another book were reported missing even when they
+    were on disk.
+    """
+    book, entries = _manifest(book)
+    roots = _roots(book)
+    return [e for e in entries if not any((r / e).exists() for r in roots)]
 
 
 def _copy_from_local(source: Path, book: str, names: list[str], root: Path) -> list[str]:
@@ -161,8 +189,8 @@ def ensure_artifacts(book: str | None = None, *, repo_id: str | None = None,
     (empty when nothing was missing). Source order: a local directory, then a
     tarball URL on the ForgeLoop distribution, then a Hugging Face Hub dataset.
     """
-    root = data_root()
     book, _ = _manifest(book)
+    root = book_data_root(book)          # same per-book anchoring as the check
     need = missing_artifacts(book)
     if not need:
         return []
