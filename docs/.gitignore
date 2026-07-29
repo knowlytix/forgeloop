@@ -1,0 +1,6 @@
+# Generated Sphinx build output
+docs/_build/
+
+# python scratch
+**/__pycache__/
+*.pyc

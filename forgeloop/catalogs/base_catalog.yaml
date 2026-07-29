@@ -1,0 +1,299 @@
+# GMS-Testing Base Catalog
+# =============================================================================
+# WHAT is asked, and WHAT is true.
+#
+# A base entry defines a question TYPE that is mined from a GMS store and whose
+# ground truth is computed by a GMS primitive (and is therefore provably
+# correct). Base entries are domain-agnostic templates: they bind to whatever
+# store you ingest, given the graph capabilities they require.
+#
+# This is the complement of factor_catalog.yaml (which defines HOW a base
+# question is presented, never changing its answer). The invariant that splits
+# the two files:
+#
+#     base    -> defines the ground truth      (content + expected behavior)
+#     factor  -> preserves the ground truth     (presentation + context)
+#
+# Pick-and-choose: select the base families/categories your domain supports
+# (see `requires` and `applicability`), then enrich them with factors whose
+# `applies_to` matches (see factor_catalog.yaml). Profiles in profiles.yaml
+# bundle common selections.
+#
+# Schema (per entry):
+#   name           unique snake_case id
+#   family         one of: retrieval_recall | comparison_ranking |
+#                  reasoning_composition | consistency_integrity |
+#                  behavioral_operational
+#   category       canonical taxonomy label (provenance), free text
+#   description    one-line definition
+#   requires       graph capabilities the store must expose; subset of:
+#                  [enm, triples, path, threshold, ordered_sequence,
+#                   negatives, provenance, policy]
+#   generator      knowlytix generator class, or null if not yet implemented
+#   answer_type    float|int|bool|set_str|str|tuple|mcq|list|decision
+#   ground_truth   GMS primitive / procedure that defines the answer
+#   multiplicity   how the generator mines the graph (how many Qs it emits)
+#   applicability  domain tags for selection; subset of:
+#                  [numeric, relational, hierarchical, tabular, procedural,
+#                   temporal, regulatory, operational]
+#   status         implemented | partial | build
+#   source         where the category comes from: [jasa, substack, knowlytix]
+# =============================================================================
+
+# =============================================================================
+# A. RETRIEVAL / RECALL  — single grounded fact
+# =============================================================================
+retrieval_recall:
+  - name: exact_recall
+    family: retrieval_recall
+    category: "Exact recall"
+    description: "Return the exact stored value of a specific entity/metric."
+    requires: [enm]
+    generator: ExactRecallGenerator
+    answer_type: float
+    ground_truth: lookup_enm
+    multiplicity: per_enm_entry
+    applicability: [numeric, tabular]
+    status: implemented
+    source: [jasa, knowlytix]
+
+  - name: fact_completion
+    family: retrieval_recall
+    category: "Fact completion"
+    description: "Fill the blank in a partial fact; distractors drawn from similar entities."
+    requires: [triples, enm, negatives]
+    generator: null
+    answer_type: mcq
+    ground_truth: query_triples
+    multiplicity: per_triple
+    applicability: [relational, numeric]
+    status: partial          # extend ExactRecallGenerator with distractor synthesis
+    source: [substack]
+
+  - name: plausibility
+    family: retrieval_recall
+    category: "Plausibility"
+    description: "Is the claim (head, relation, tail) supported by the source?"
+    requires: [triples, negatives]
+    generator: null
+    answer_type: bool
+    ground_truth: score_triple
+    multiplicity: per_triple   # one positive per asserted edge + sampled negatives
+    applicability: [relational, regulatory]
+    status: build
+    source: [substack]
+
+  - name: absence_detection
+    family: retrieval_recall
+    category: "Absence detection"
+    description: "Is a claimed fact/edge absent from the source? (honest 'not stated')"
+    requires: [triples]
+    generator: null
+    answer_type: bool
+    ground_truth: query_triples_empty
+    multiplicity: per_relation
+    applicability: [relational, regulatory]
+    status: build
+    source: [jasa]
+
+# =============================================================================
+# B. COMPARISON / RANKING / AGGREGATION  — over a set of facts
+# =============================================================================
+comparison_ranking:
+  - name: ranking
+    family: comparison_ranking
+    category: "Ranking"
+    description: "Order entities by a metric, or name the argmin/argmax."
+    requires: [enm]
+    generator: null          # MultiHopGenerator already does argmin/argmax
+    answer_type: str
+    ground_truth: enm_sort
+    multiplicity: per_type
+    applicability: [numeric, tabular]
+    status: partial
+    source: [jasa]
+
+  - name: comparative_discrimination
+    family: comparison_ranking
+    category: "Comparative discrimination"
+    description: "Pick the correct candidate among similar ones by graph distance."
+    requires: [enm, triples]
+    generator: null
+    answer_type: str
+    ground_truth: graph_distance
+    multiplicity: per_candidate_set
+    applicability: [relational, numeric]
+    status: partial
+    source: [substack]
+
+  - name: counting
+    family: comparison_ranking
+    category: "Counting"
+    description: "Count relationships or entities matching a pattern."
+    requires: [triples]
+    generator: CountingGenerator
+    answer_type: int
+    ground_truth: triple_count
+    multiplicity: per_relation
+    applicability: [relational, tabular]
+    status: implemented
+    source: [jasa, knowlytix]
+
+  - name: cross_reference
+    family: comparison_ranking
+    category: "Cross-reference"
+    description: "Entities appearing in both of two relations (set intersection)."
+    requires: [triples]
+    generator: CrossReferenceGenerator
+    answer_type: set_str
+    ground_truth: set_intersection
+    multiplicity: per_relation_pair
+    applicability: [relational]
+    status: implemented
+    source: [jasa, knowlytix]
+
+  - name: numeric_computation
+    family: comparison_ranking
+    category: "Numeric computation"
+    description: "Compute a derived value over stored numbers (sum, ratio, difference)."
+    requires: [enm]
+    generator: null
+    answer_type: float
+    ground_truth: arithmetic
+    multiplicity: per_enm_group
+    applicability: [numeric, tabular]
+    status: build
+    source: [jasa]
+
+  - name: cross_table_aggregation
+    family: comparison_ranking
+    category: "Cross-table aggregation"
+    description: "Synthesize a value across multiple tables/sections."
+    requires: [enm, provenance]
+    generator: null
+    answer_type: float
+    ground_truth: aggregate
+    multiplicity: per_section_group
+    applicability: [numeric, tabular]
+    status: build
+    source: [jasa]
+
+# =============================================================================
+# C. REASONING / COMPOSITION  — chained or conditional inference
+# =============================================================================
+reasoning_composition:
+  - name: multi_hop
+    family: reasoning_composition
+    category: "Multi-hop reasoning"
+    description: "Trace connected facts across two or more edges (A->B, B->C)."
+    requires: [path]
+    generator: MultiHopGenerator
+    answer_type: tuple
+    ground_truth: path_compose
+    multiplicity: per_path
+    applicability: [relational, hierarchical]
+    status: implemented
+    source: [jasa, substack, knowlytix]
+
+  - name: reasoning_path_consistency
+    family: reasoning_composition
+    category: "Reasoning-path consistency"
+    description: "Two distinct chains to the same conclusion must agree (no drift)."
+    requires: [path]
+    generator: null
+    answer_type: bool
+    ground_truth: check_holonomy
+    multiplicity: per_path_pair
+    applicability: [relational, hierarchical]
+    status: build
+    source: [substack]
+
+  - name: conditional_rule
+    family: reasoning_composition
+    category: "Conditional / rule-based (threshold)"
+    description: "When a condition holds (value vs threshold), what should happen?"
+    requires: [threshold]
+    generator: ThresholdGenerator
+    answer_type: bool
+    ground_truth: check_threshold
+    multiplicity: per_encoder
+    applicability: [numeric, regulatory]
+    status: implemented
+    source: [jasa, substack, knowlytix]
+
+  - name: procedural_ordering
+    family: reasoning_composition
+    category: "Procedural ordering"
+    description: "Validate the correct sequencing of an ordered, multi-step process."
+    requires: [ordered_sequence]
+    generator: null
+    answer_type: list
+    ground_truth: sequence_check
+    multiplicity: per_sequence
+    applicability: [procedural]
+    status: build
+    source: [substack]
+
+# =============================================================================
+# D. CONSISTENCY / INTEGRITY  — internal coherence of the source
+# =============================================================================
+consistency_integrity:
+  - name: contradiction
+    family: consistency_integrity
+    category: "Contradiction detection"
+    description: "Does the source simultaneously support conflicting claims?"
+    requires: [triples]
+    generator: ContradictionGenerator
+    answer_type: bool          # also emitted as int (count) and set_str (which)
+    ground_truth: find_contradictions   # geometric check: tension_energy
+    multiplicity: per_entity
+    applicability: [relational, regulatory]
+    status: implemented
+    source: [jasa, substack, knowlytix]
+
+  - name: boundary
+    family: consistency_integrity
+    category: "Boundary"
+    description: "Behavior at threshold edges: min, max, empty, just-exceeding."
+    requires: [threshold, enm]
+    generator: null            # a boundary-valued variant of ThresholdGenerator
+    answer_type: bool
+    ground_truth: check_threshold
+    multiplicity: per_encoder_boundary
+    applicability: [numeric, regulatory]
+    status: partial
+    source: [substack]
+    # NOTE: content-boundary lives here (it changes WHICH value is asked).
+    # The presentation-side `edge_case` factor (Normal/Boundary/Extreme) lives
+    # in factor_catalog.yaml. Same word, two layers, distinct names.
+
+# =============================================================================
+# E. BEHAVIORAL / OPERATIONAL  — ground truth is the EXPECTED BEHAVIOR
+# =============================================================================
+behavioral_operational:
+  - name: recovery
+    family: behavioral_operational
+    category: "Recovery"
+    description: "On ill-formed / unanswerable input, refuse, defer, or repair — not hallucinate."
+    requires: [triples]
+    generator: null
+    answer_type: decision      # expected: abstain | defer | repair
+    ground_truth: expected_abstain
+    multiplicity: per_illformed_template
+    applicability: [regulatory, operational]
+    status: build
+    source: [substack]
+
+  - name: governance_policy
+    family: behavioral_operational
+    category: "Governance / policy compliance"
+    description: "Adherence to stated rules: escalation triggers, disclosure requirements."
+    requires: [policy, triples]
+    generator: null
+    answer_type: decision      # expected: escalate | disclose | allow
+    ground_truth: policy_rule
+    multiplicity: per_policy_rule
+    applicability: [regulatory, operational]
+    status: partial            # exercised by the complaint-agent capstone harness
+    source: [substack]
+    # NOTE: ground truth comes from the Policy GMS store (the compliance oracle).

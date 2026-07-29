@@ -1,0 +1,70 @@
+# GMS-Testing Profiles
+# =============================================================================
+# Pick-and-choose bundles that pair base categories (base_catalog.yaml) with
+# enrichment factor groups (factor_catalog.yaml) for a given application.
+#
+# A profile is consumed two ways (see notebooks 05-06):
+#   mode: cross     -> Option 1: base x DOE. Factors form the design matrix;
+#                      every selected base instance is crossed with every row.
+#                      suite size = (#base instances) * n_runs
+#   mode: embedded  -> Option 2: base in DOE. Selected base instances become
+#                      the levels of a synthetic `base_question` factor, sampled
+#                      jointly with the factors (the JASA Table 1 construction).
+#                      suite size = n_runs
+#
+# `bases`   : list of base names, family names, or "*" (all). Family names
+#             expand to every base in that family.
+# `factors` : list of factor names, factor-group names, or "*" (all).
+# `mode`    : default scenario-generation mode for this profile.
+#
+# Only factors whose applies_to matches a selected base are kept; the harness
+# filters automatically, so over-selecting factors is safe.
+# =============================================================================
+
+profiles:
+
+  numeric_screen:
+    description: "Numeric recall + threshold stress for tabular/financial reports."
+    bases: [exact_recall, conditional_rule, numeric_computation, boundary, ranking]
+    factors: [query_core, entity_stress, robustness]
+    mode: embedded
+
+  relational_reasoning:
+    description: "Graph-structure reasoning: hops, cross-refs, path consistency."
+    bases: [multi_hop, reasoning_path_consistency, cross_reference, counting]
+    factors: [agentic, variability]
+    mode: embedded
+
+  integrity_audit:
+    description: "Internal-consistency audit: contradictions and boundaries."
+    bases: [contradiction, boundary, plausibility, absence_detection]
+    factors: [adversarial, robustness]
+    mode: cross
+
+  regulatory_full:
+    description: "Compliance-oriented suite for the complaint-agent / Policy GMS."
+    bases: [governance_policy, conditional_rule, contradiction, recovery, boundary]
+    factors: [comprehensive]
+    mode: embedded
+
+  jasa_reproduction:
+    description: "Reproduce the JASA 21-factor experiment (base_question as a 44-level factor)."
+    bases: ["*"]
+    factors: [clarity, length, specificity, answer_format, role, expertise, style,
+              reasoning_cue, context_scope, distractor_content, entity_aliasing,
+              numeric_format, instruction_conflict, answer_anchoring,
+              confidence_pressure, paraphrase_depth, noise, complexity,
+              emotional_frame, intent_count]
+    mode: embedded
+
+  smoke:
+    description: "Tiny end-to-end check: a few bases, 3-factor screen."
+    bases: [exact_recall, multi_hop, contradiction]
+    factors: [quick_screen]
+    mode: embedded
+
+  everything:
+    description: "All 18 base categories x all 40 factors. Comprehensive, expensive."
+    bases: ["*"]
+    factors: ["*"]
+    mode: embedded

@@ -5,7 +5,9 @@
 # ===========================================================================
 
 # --- Internal working docs (not part of the open-source release) ---
-docs/
+# `docs/` itself is the published Sphinx site and IS tracked; only the internal
+# working notes inside it stay out.
+docs/PLAN.md
 
 # --- Python ---
 __pycache__/
