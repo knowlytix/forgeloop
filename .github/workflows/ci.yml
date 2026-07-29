@@ -77,17 +77,9 @@ jobs:
         run: python scripts/build_forgeloop.py --package --check
 
   test:
-    name: Typecheck + test (${{ matrix.topic }})
+    name: Typecheck + test
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        topic:
-          - beyond-prompt-and-pray
-          - beyond-ship-and-pray
-          - beyond-chunk-and-pray
-          - beyond-vibe-and-pray
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -99,21 +91,28 @@ jobs:
         run: |
           pip install -U pip
           pip install torch --index-url https://download.pytorch.org/whl/cpu
-      - name: Install topic package (public deps only)
-        # `knowlytix` is licensed and not on PyPI; it stays absent in CI. Tests
-        # that need it must `pytest.importorskip("knowlytix")`. A missing
-        # pyproject (some topics) or dev extra is non-fatal.
-        working-directory: ${{ matrix.topic }}/code
+      - name: Install forgeloop and the book packages (public deps only)
+        # One package now: the root pyproject builds `forgeloop`. The book
+        # packages are installed too because the test suites import them by
+        # their book-local names (agentlab, gmstest) -- the books are the
+        # source under test, forgeloop is the assembled distribution of it.
+        # `knowlytix` is licensed and not on PyPI; it stays absent in CI, so
+        # tests needing it must `pytest.importorskip("knowlytix")`.
         run: |
           pip install mypy pytest
-          pip install -e ".[dev]" 2>/dev/null \
-            || pip install -e . 2>/dev/null \
-            || echo "no installable package in ${{ matrix.topic }}/code — skipping install"
+          pip install -e ".[dev]"
+          pip install -e beyond-prompt-and-pray/code
+          pip install -e beyond-ship-and-pray/code
       - name: Mypy (advisory)
-        working-directory: ${{ matrix.topic }}/code
         # Non-blocking until types stabilize.
-        run: mypy --ignore-missing-imports . || true
+        run: mypy --ignore-missing-imports forgeloop || true
       - name: Pytest
-        working-directory: ${{ matrix.topic }}/code
-        # No-op success if a topic has no tests yet.
-        run: pytest -q || [ $? -eq 5 ]
+        # Scoped to the book test suites on purpose: collecting from the repo
+        # root would also walk forgeloop/, which is the same code under a
+        # second name, and every test would be gathered twice.
+        # Exit 5 (no tests collected) is a no-op success, not a failure.
+        run: |
+          pytest -q \
+            beyond-prompt-and-pray/code/tests \
+            beyond-ship-and-pray/code/tests \
+            || [ $? -eq 5 ]
