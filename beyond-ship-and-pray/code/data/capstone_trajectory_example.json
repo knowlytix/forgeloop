@@ -1,0 +1,88 @@
+[
+  {
+    "case": "case-001",
+    "message": "I was charged a $35 overdraft fee and I want it removed.",
+    "expected_classification": "complaint",
+    "expected_escalate": false,
+    "sut_result": {
+      "classification": "complaint",
+      "status": "done",
+      "escalation_trigger": "",
+      "tool_sequence": [
+        "classify_complaint",
+        "extract_facts",
+        "search_policy",
+        "flag_regulatory",
+        "draft_response"
+      ],
+      "answer_excerpt": "Under overdraft policy a $35 fee applies, with one goodwill reversal per calendar year. A rep will review your account."
+    },
+    "steps": [
+      {
+        "tool": "classify_complaint",
+        "ok": true,
+        "gates_not_allowed": []
+      },
+      {
+        "tool": "extract_facts",
+        "ok": true,
+        "gates_not_allowed": []
+      },
+      {
+        "tool": "search_policy",
+        "ok": true,
+        "gates_not_allowed": []
+      },
+      {
+        "tool": "flag_regulatory",
+        "ok": true,
+        "gates_not_allowed": []
+      },
+      {
+        "tool": "draft_response",
+        "ok": true,
+        "gates_not_allowed": []
+      }
+    ]
+  },
+  {
+    "case": "case-004",
+    "message": "Your mortgage servicing department is unfair. They keep misapplying my payments.",
+    "expected_classification": "complaint",
+    "expected_escalate": true,
+    "sut_result": {
+      "classification": "complaint",
+      "status": "escalated",
+      "escalation_trigger": "regulatory",
+      "tool_sequence": [
+        "classify_complaint",
+        "extract_facts",
+        "search_policy",
+        "flag_regulatory"
+      ],
+      "answer_excerpt": ""
+    },
+    "steps": [
+      {
+        "tool": "classify_complaint",
+        "ok": true,
+        "gates_not_allowed": []
+      },
+      {
+        "tool": "extract_facts",
+        "ok": true,
+        "gates_not_allowed": []
+      },
+      {
+        "tool": "search_policy",
+        "ok": true,
+        "gates_not_allowed": []
+      },
+      {
+        "tool": "flag_regulatory",
+        "ok": true,
+        "gates_not_allowed": []
+      }
+    ]
+  }
+]

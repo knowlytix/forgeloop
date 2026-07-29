@@ -36,7 +36,9 @@ from typing import Any
 
 import torch
 
-_DEFAULT_MODEL = os.environ.get("AGENTLAB_FLAGGER_MODEL", "Qwen/Qwen3-4B-Instruct-2507")
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
+
+_DEFAULT_MODEL = os.environ.get("AGENTLAB_FLAGGER_MODEL", DEFAULT_QWEN_MODEL)
 
 ALLOWED_FLAGS = ("UDAAP", "Reg_X", "Reg_E", "Reg_Z", "FCRA")
 
@@ -57,6 +59,14 @@ _SYSTEM_PROMPT = (
 
 @dataclass
 class QwenRegulatoryFlagger:
+    """Instruction-tuned Qwen wrapper that reads a complaint and proposes regulatory flags from the fixed ALLOWED_FLAGS taxonomy.
+
+    Attributes:
+        model: The loaded causal language model.
+        tokenizer: Tokenizer paired with the model.
+        device: Torch device the model runs on.
+    """
+
     model: Any
     tokenizer: Any
     device: torch.device
@@ -66,7 +76,16 @@ class QwenRegulatoryFlagger:
         cls,
         model: str | None = None,
         device: str | torch.device | None = None,
-    ) -> QwenRegulatoryFlagger:
+    ) -> "QwenRegulatoryFlagger":
+        """Load the flagger model and tokenizer.
+
+        Args:
+            model: Model id to load; defaults to the AGENTLAB_FLAGGER_MODEL setting.
+            device: Torch device or device string; defaults to CUDA when available.
+
+        Returns:
+            A ready-to-use QwenRegulatoryFlagger.
+        """
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         model_id = model or _DEFAULT_MODEL

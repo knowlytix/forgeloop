@@ -65,7 +65,7 @@ _SAFE_EXPR = re.compile(r"^[\d+\-*/().\s]+$")
 def _calc_impl(expression: str) -> dict[str, Any]:
     if not _SAFE_EXPR.match(expression):
         raise ValueError("only basic arithmetic is permitted")
-    return {"result": float(eval(expression))}
+    return {"result": float(eval(expression))}  # noqa: S307 - guarded by regex
 
 
 calculator = Tool(
@@ -105,6 +105,7 @@ send_email = Tool(
 
 
 def register_all(registry: ToolRegistry) -> None:
+    """Register the search, calculator and email mock tools on the registry."""
     registry.register(search_documents)
     registry.register(calculator)
     registry.register(send_email)

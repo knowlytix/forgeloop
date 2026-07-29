@@ -31,9 +31,9 @@ from __future__ import annotations
 
 import json
 import warnings
-from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Iterable
 
 import torch
 import torch.nn.functional as F
@@ -61,6 +61,11 @@ class ManifoldEntityExtractor:
         thresholds: entity name -> calibrated geodesic radius (max distance to fire).
         window_size: window length in whitespace tokens.
         window_stride: step between window starts in tokens.
+
+    Attributes:
+        _matrix: ``(E, m)`` tensor of stacked entity centers, built in
+            ``__post_init__``.
+        _names: Entity names giving the row order of ``_matrix``.
     """
 
     embedder: ManifoldFlagScorer
@@ -85,7 +90,7 @@ class ManifoldEntityExtractor:
         default_tau: float = _DEFAULT_TAU,
         window_size: int = 12,
         window_stride: int = 6,
-    ) -> ManifoldEntityExtractor:
+    ) -> "ManifoldEntityExtractor":
         """Build from the cap artifact, reusing ``ManifoldFlagScorer`` for embedding.
 
         ``entities`` selects the target vocabulary (default: every store entity

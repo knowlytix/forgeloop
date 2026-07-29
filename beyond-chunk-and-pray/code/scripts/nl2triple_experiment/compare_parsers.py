@@ -6,7 +6,7 @@
   B   fine-tuned  FineTunedTripleParser (LoRA Qwen3-4B) + fuzzy bind (membership check)
 
 Only the parser (and its binding) differ; retriever, geometric relevance gate,
-verifier, assembler, ENM numeric-order route, and the synthesis LLM (Qwen2.5-3B)
+verifier, assembler, ENM numeric-order route, and the synthesis LLM (Qwen3-4B)
 are the SAME RagConfig across routes, so any delta is the parser's.
 
 Sets:

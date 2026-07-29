@@ -1,0 +1,73 @@
+{
+  "n": 20,
+  "gms": {
+    "recall": 0.85,
+    "precision": 0.85,
+    "parse_rate": 1.0,
+    "bind_rate": 1.0
+  },
+  "dense": {
+    "recall": 0.65,
+    "precision_at_k": 0.31,
+    "precision_at_1": 0.55
+  },
+  "miss_stage": {
+    "retrieve": 3
+  },
+  "misses": [
+    {
+      "question": "Is the overdraft fee charged per occurrence or per month?",
+      "expected": "per_occurrence",
+      "stage": "retrieve",
+      "triples": [
+        [
+          "overdraft",
+          "has_fee_amount",
+          "?"
+        ]
+      ],
+      "answers": [
+        [
+          "35.0",
+          1.0
+        ]
+      ]
+    },
+    {
+      "question": "What is the Reg E escalation threshold?",
+      "expected": "50.0",
+      "stage": "retrieve",
+      "triples": [
+        [
+          "regulatory_escalation",
+          "has_escalation_window_days",
+          "?"
+        ]
+      ],
+      "answers": [
+        [
+          "1.0",
+          1.0
+        ]
+      ]
+    },
+    {
+      "question": "How many overdraft-fee reversals are allowed per year?",
+      "expected": "1.0",
+      "stage": "retrieve",
+      "triples": [
+        [
+          "fee_reversal",
+          "has_prior_reversals_same_year",
+          "?"
+        ]
+      ],
+      "answers": [
+        [
+          "0.0",
+          1.0
+        ]
+      ]
+    }
+  ]
+}

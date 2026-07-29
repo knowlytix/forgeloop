@@ -18,10 +18,22 @@ def _serialize(event: AuditEvent, prev_hash: str) -> str:
 
 
 class HashChain:
+    """Stateful SHA-256 hash chain that seals events against the previous hash."""
+
     def __init__(self) -> None:
         self._prev_hash = GENESIS
 
     def seal(self, event: AuditEvent) -> SealedEvent:
+        """Hash the event with the current head and return the sealed event.
+
+        Advances the chain head to the new hash.
+
+        Args:
+            event: The audit event to seal.
+
+        Returns:
+            The sealed event holding the event, the previous hash and its hash.
+        """
         payload = _serialize(event, self._prev_hash)
         h = hashlib.sha256(payload.encode()).hexdigest()
         sealed = SealedEvent(event=event, prev_hash=self._prev_hash, event_hash=h)
@@ -29,10 +41,20 @@ class HashChain:
         return sealed
 
     def head(self) -> str:
+        """Return the current head hash of the chain."""
         return self._prev_hash
 
 
 def verify_chain(sealed: list[SealedEvent]) -> bool:
+    """Return True if the sealed events form an unbroken hash chain from genesis.
+
+    Args:
+        sealed: The sealed events in order.
+
+    Returns:
+        True if every event links to the prior hash and its recomputed hash
+        matches, False otherwise.
+    """
     prev = GENESIS
     for s in sealed:
         if s.prev_hash != prev:

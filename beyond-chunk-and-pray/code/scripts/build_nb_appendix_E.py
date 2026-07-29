@@ -235,7 +235,7 @@ print("decision:", demo.decision)
 print("sources :", [c.location for c in demo.sources])'''
 
 QWEN_CI = '''\
-# CI ONLY -- the real chunk-and-pray run on local Qwen2.5-3B-Instruct (GPU).
+# CI ONLY -- the real chunk-and-pray run on local Qwen3-4B-Instruct (GPU).
 # Same retrieval, same prompt; only the generator changes. This is the generator
 # a real chunk-and-pray deployment ships. The lead runs this in CI; it is NOT
 # executed during authoring. The cohort numbers reported in the appendix come

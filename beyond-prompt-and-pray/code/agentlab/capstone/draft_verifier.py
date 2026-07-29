@@ -28,8 +28,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_STORE = _REPO_ROOT / "data" / "gms_banking_store"
+from agentlab._paths import data_path
+
+_DEFAULT_STORE = data_path("gms_banking_store")
 
 # Policy id -> the ENM register/key holding that policy's authoritative dollar
 # figure. Only policies whose draft cites a single primary fee are listed; the
@@ -44,10 +45,24 @@ _DOLLAR = re.compile(r"\$\s?(\d+(?:\.\d+)?)")
 
 @dataclass
 class DraftVerifier:
+    """Verifies a generated draft against the GMS banking store, correcting drifted fee amounts via ENM and escalating unauthorized fee-waiver promises.
+
+    Attributes:
+        store: The loaded GMS banking expert store.
+    """
+
     store: Any
 
     @classmethod
-    def load(cls, store_path: Path | None = None) -> DraftVerifier:
+    def load(cls, store_path: Path | None = None) -> "DraftVerifier":
+        """Load the GMS banking store backing the verifier.
+
+        Args:
+            store_path: Store directory; defaults to the bundled banking store.
+
+        Returns:
+            A ready-to-use DraftVerifier.
+        """
         import torch
         from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 
@@ -101,7 +116,14 @@ _DEFAULT_VERIFIER: DraftVerifier | None = None
 
 
 def get_default_verifier() -> DraftVerifier:
+    """Return the process-wide DraftVerifier singleton, fetching the banking store on first use.
+
+    Returns:
+        The lazily loaded DraftVerifier.
+    """
     global _DEFAULT_VERIFIER
     if _DEFAULT_VERIFIER is None:
+        from agentlab._paths import ensure_default
+        ensure_default("gms_banking_store")
         _DEFAULT_VERIFIER = DraftVerifier.load()
     return _DEFAULT_VERIFIER

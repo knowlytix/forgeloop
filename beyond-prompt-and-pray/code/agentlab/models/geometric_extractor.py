@@ -30,9 +30,10 @@ from __future__ import annotations
 
 import json
 import os
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
+
+from agentlab._paths import data_path
 
 # Hand-authored exemplar phrases per label. NOT drawn from data/eval_cases.
 _PRODUCT_EXEMPLARS: dict[str, list[str]] = {
@@ -96,7 +97,8 @@ _ISSUE_EXEMPLARS: dict[str, list[str]] = {
     ],
 }
 
-_CALIB_PATH = Path(__file__).resolve().parents[2] / "data" / "extract_geo_calibration.json"
+
+_CALIB_PATH = data_path("extract_geo_calibration.json")
 
 
 def _rule_aux(message: str) -> dict[str, str]:
@@ -135,12 +137,36 @@ class GeometricFactExtractor:
             _ISSUE_EXEMPLARS, encoder, threshold=issue_threshold)
 
     def classify_product(self, message: str) -> tuple[str, float]:
+        """Classify the product against the closed exemplar set, abstaining to ``unknown``.
+
+        Args:
+            message: The customer complaint text.
+
+        Returns:
+            A ``(product, score)`` pair.
+        """
         return self.product_clf.classify(message, abstain_label="unknown")
 
     def classify_issue(self, message: str) -> tuple[str, float]:
+        """Classify the issue against the closed exemplar set, abstaining to ``general``.
+
+        Args:
+            message: The customer complaint text.
+
+        Returns:
+            An ``(issue, score)`` pair.
+        """
         return self.issue_clf.classify(message, abstain_label="general")
 
     def extract(self, message: str) -> dict[str, Any] | None:
+        """Return a schema-valid fact dict, classifying only the owned fields geometrically.
+
+        Args:
+            message: The customer complaint text; blank text returns None.
+
+        Returns:
+            A dict with urgency, sentiment, summary and the owned product/issue fields, or None.
+        """
         if not message or not message.strip():
             return None
         out: dict[str, Any] = dict(_rule_aux(message))
@@ -167,7 +193,7 @@ def _load_encoder(name: str | None):
 # nearest-prototype, no abstain -- `general` is a trained class). Used by
 # banking_tools' geo_issue extract mode to replace the Qwen issue label while
 # keeping Qwen for `product`. -----------------------------------------------------
-_ISSUE_ENCODER_DIR = Path(__file__).resolve().parents[2] / "data" / "extract_encoder_issue"
+_ISSUE_ENCODER_DIR = data_path("extract_encoder_issue")
 _TASK_ISSUE = None
 
 
@@ -203,6 +229,12 @@ def get_default_extractor() -> GeometricFactExtractor:
     calibrated before use, never run on the 0.0 default in production."""
     global _DEFAULT
     if _DEFAULT is None:
+        from agentlab._paths import ensure_default
+        for _art in ("extract_geo_calibration.json", "extract_encoder_issue", "extract_encoder_product"):
+            try:
+                ensure_default(_art)
+            except FileNotFoundError:
+                pass  # calibration check below raises the actionable error
         if not _CALIB_PATH.exists():
             raise RuntimeError(
                 f"geometric extractor is uncalibrated: {_CALIB_PATH} missing. "

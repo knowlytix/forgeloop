@@ -148,7 +148,7 @@ md(
     "triples, so nothing binds — the bind-check fires and the pipeline abstains\n"
     "with a notice rather than fabricating a paragraph.\n"
     "\n"
-    "> **CI-only cell.** This loads the store and runs Qwen2.5-3B-Instruct on the\n"
+    "> **CI-only cell.** This loads the store and runs Qwen3-4B-Instruct on the\n"
     "> GPU. Do not run it during authoring; the lead executes it in CI."
 )
 code(

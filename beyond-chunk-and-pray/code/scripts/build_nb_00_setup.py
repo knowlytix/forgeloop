@@ -52,7 +52,7 @@ md(
     "- `torch`. **Tier 1** — the base store below — is CPU-only (the corpus is\n"
     "  small), no GPU needed. **Tier 2** — the optional Qwen stages (enrichment,\n"
     "  encoder fine-tuning, gate calibration) — expects a **CUDA GPU** and\n"
-    "  downloads Qwen2.5-3B-Instruct.\n"
+    "  downloads Qwen3-4B-Instruct.\n"
     "\n"
     "**Two tiers**\n"
     "\n"

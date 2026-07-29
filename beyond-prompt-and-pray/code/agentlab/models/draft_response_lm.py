@@ -26,9 +26,11 @@ from typing import Any
 
 import torch
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_DIR = _REPO_ROOT / "data" / "draft_response_lm_qwen"
-_BASE_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
+from agentlab._paths import data_path
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
+
+_DEFAULT_DIR = data_path("draft_response_lm_qwen")
+_BASE_MODEL = DEFAULT_QWEN_MODEL
 
 # One-line policy summaries taken verbatim from the SFT corpus
 # (data/training/bank_policy/draft_response_sft*.jsonl). Keying off the
@@ -57,6 +59,15 @@ ISSUE_FOR_POLICY: dict[str, str] = {
 
 @dataclass
 class DraftResponseLM:
+    """Frozen Qwen3-4B-Instruct base with a LoRA adapter that drafts a grounded complaint reply from the issue and retrieved policy evidence.
+
+    Attributes:
+        model: The LoRA-adapted causal language model.
+        tokenizer: Tokenizer paired with the model.
+        device: Torch device the model runs on.
+        policy_summaries: Policy-id to one-line summary map used to build the prompt.
+    """
+
     model: Any
     tokenizer: Any
     device: torch.device
@@ -67,7 +78,16 @@ class DraftResponseLM:
         cls,
         path: str | Path | None = None,
         device: str | torch.device | None = None,
-    ) -> DraftResponseLM:
+    ) -> "DraftResponseLM":
+        """Load the frozen Qwen3-4B-Instruct base and apply the LoRA adapter from ``path``.
+
+        Args:
+            path: LoRA adapter directory; defaults to the bundled adapter dir.
+            device: Torch device or device string; defaults to CUDA when available.
+
+        Returns:
+            A ready-to-use DraftResponseLM.
+        """
         path = Path(path) if path is not None else _DEFAULT_DIR
         if device is None:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -130,6 +150,19 @@ class DraftResponseLM:
         max_new_tokens: int = 80,
         max_sentences: int = 3,
     ) -> str:
+        """Greedily decode a grounded reply and trim it to at most ``max_sentences`` sentences.
+
+        Args:
+            category: Complaint category from the agent's taxonomy.
+            issue: Coarse issue label from the agent's taxonomy.
+            policy_evidence: Retrieved policy records; the first known id sets the prompt summary.
+            message: The customer complaint text.
+            max_new_tokens: Decoding budget in new tokens.
+            max_sentences: Maximum sentences retained in the reply.
+
+        Returns:
+            The drafted reply text.
+        """
         prompt, _policy_id = self._format_prompt(category, issue, policy_evidence, message)
         enc = self.tokenizer(prompt, return_tensors="pt").to(self.device)
         out = self.model.generate(
@@ -164,7 +197,14 @@ _DEFAULT_LM: DraftResponseLM | None = None
 
 
 def get_default_lm() -> DraftResponseLM:
+    """Return the process-wide DraftResponseLM singleton, fetching the adapter artifact on first use.
+
+    Returns:
+        The lazily loaded DraftResponseLM.
+    """
     global _DEFAULT_LM
     if _DEFAULT_LM is None:
+        from agentlab._paths import ensure_default
+        ensure_default("draft_response_lm_qwen")
         _DEFAULT_LM = DraftResponseLM.load()
     return _DEFAULT_LM

@@ -12,6 +12,17 @@ from agentlab.evaluation.failure_modes import FailureMode
 
 @dataclass
 class TestCase:
+    """A synthetic evaluation case built from a factor assignment.
+
+    Attributes:
+        id: The case identifier.
+        task: The task specification for the agent.
+        user_message: The customer message driving the case.
+        expected_behavior: The expected agent behavior for scoring.
+        factors: The factor-level assignment that produced the case.
+        injected_failures: Failure modes injected into the case, if any.
+    """
+
     id: str
     task: TaskSpec
     user_message: str
@@ -68,6 +79,16 @@ def generate_test_cases(
     factors: dict[str, list[Any]] | None = None,
     seed: int = 0,
 ) -> list[TestCase]:
+    """Generate test cases from a balanced design over the factor table.
+
+    Args:
+        num_cases: Number of cases to generate.
+        factors: Factor-to-levels mapping; defaults to DEFAULT_FACTORS.
+        seed: Seed for the balanced design.
+
+    Returns:
+        A list of TestCase objects, one per design row.
+    """
     factors = factors or DEFAULT_FACTORS
     rows = balanced_design(factors, num_cases, seed)
     return [

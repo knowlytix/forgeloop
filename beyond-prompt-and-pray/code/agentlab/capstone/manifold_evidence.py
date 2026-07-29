@@ -26,8 +26,9 @@ from typing import Any
 import torch
 import torch.nn.functional as F
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_ARTIFACT = _REPO_ROOT / "data" / "gms_regulatory_cap"
+from agentlab._paths import data_path
+
+_DEFAULT_ARTIFACT = data_path("gms_regulatory_cap")
 _FLAG_TO_ENTITY = {"UDAAP": "udaap", "Reg_E": "reg_e", "Reg_Z": "reg_z", "Reg_X": "reg_x", "FCRA": "fcra"}
 
 
@@ -37,6 +38,20 @@ def _match(v: torch.Tensor, d: int) -> torch.Tensor:
 
 @dataclass
 class ManifoldFlagScorer:
+    """Scores regulatory flags by projecting a message into the GMS v-space and testing membership in each flag's has_evidence spherical cap.
+
+    Attributes:
+        model: The geometric knowledge graph carrying the cap geometry.
+        device: Torch device the model runs on.
+        d_v: Dimension of the semantic v-space.
+        v_model: Encoder model id used to embed messages.
+        centers: Flag to normalized cap center vector.
+        thresholds: Flag to calibrated geodesic distance threshold.
+        adapter: Optional low-rank SFT embedding adapter, or None.
+        _enc_cache: Per-message cached v-space embeddings.
+        _encoder: Cached (tokenizer, model) pair for the encoder.
+    """
+
     model: Any
     device: Any
     d_v: int
@@ -48,7 +63,16 @@ class ManifoldFlagScorer:
     _encoder: Any = field(default=None, repr=False)   # cached (tokenizer, model)
 
     @classmethod
-    def load(cls, artifact_dir: Path | None = None, device=None) -> ManifoldFlagScorer:
+    def load(cls, artifact_dir: Path | None = None, device=None) -> "ManifoldFlagScorer":
+        """Load the cap-store model, flag cap centers, calibrated thresholds and optional adapter.
+
+        Args:
+            artifact_dir: Cap store directory; defaults to the bundled artifact.
+            device: Torch device; defaults to the AGENTLAB_MANIFOLD_DEVICE setting or CPU.
+
+        Returns:
+            A ready-to-use ManifoldFlagScorer.
+        """
         from knowlytix.core.config import GeometryConfig
         from knowlytix.core.graph.gkg import GeometricKnowledgeGraph
 

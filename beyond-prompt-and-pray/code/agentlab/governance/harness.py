@@ -115,6 +115,8 @@ def _action_to_dict(action: Any) -> dict[str, Any]:
 
 
 class GovernanceHarness:
+    """Runs an agent through governed tool execution with a hash-chained audit log."""
+
     def __init__(
         self,
         agent: BaseAgent,
@@ -136,6 +138,18 @@ class GovernanceHarness:
         budget_tracker: BudgetTracker | None = None,
         human_reviewer: HumanReviewer | None = None,
     ) -> Trajectory:
+        """Drive the agent to completion, logging an audit event per step.
+
+        Args:
+            task: The task specification the agent works on.
+            max_steps: Maximum number of loop steps before stopping.
+            budget_tracker: Optional tracker enforcing token, dollar or call budgets.
+            human_reviewer: Optional reviewer routed escalating gate results; a
+                deferred decision ends the loop in escalated status.
+
+        Returns:
+            The Trajectory of step records for the run.
+        """
         run_id = uuid.uuid4().hex[:12]
         state = AgentState(task=task)
         env = _GovernedEnvironment(self._executor, human_reviewer, run_id, task=task)

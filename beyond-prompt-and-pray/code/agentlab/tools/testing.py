@@ -65,6 +65,17 @@ def _random_args(rng: random.Random) -> dict[str, Any]:
 
 
 def assert_schema_matches(tool: Tool, valid_args: dict[str, Any], invalid_args: dict[str, Any]) -> None:
+    """Assert the tool's input schema accepts valid_args and rejects invalid_args.
+
+    Args:
+        tool: The tool whose input schema is checked.
+        valid_args: Arguments expected to validate successfully.
+        invalid_args: Arguments expected to raise ValidationError.
+
+    Raises:
+        ValidationError: If valid_args fail validation.
+        AssertionError: If invalid_args validate without raising.
+    """
     tool.input_schema.model_validate(valid_args)
     try:
         tool.input_schema.model_validate(invalid_args)

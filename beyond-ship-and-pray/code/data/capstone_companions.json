@@ -1,0 +1,83 @@
+{
+  "_note": "Pinned companion numbers for the Chapter 12 per-section notebooks. From CapstoneTestHarness runs (fault_injection, substrate_test) plus the deterministic draft-groundedness, value-polarity and provenance probes; GPU-heavy and not fully reproducible run-to-run, so pinned to stay consistent with the chapter prose. substrate.baseline (=1.0) is the precondition that the graph-reversed answer key is sound; substrate.n_questions is the size of that key. Regenerate with CapstoneTestHarness.fault_injection() / .substrate_test() and the probe scripts.",
+  "resilience": {
+    "detection_rate": 1.0,
+    "silent_failures": 0,
+    "per_tool_detection": {
+      "classify_complaint": 1.0,
+      "extract_facts": 1.0,
+      "search_policy": 1.0,
+      "flag_regulatory": 1.0,
+      "draft_response": 1.0
+    },
+    "fault": "error"
+  },
+  "substrate": {
+    "baseline": 1.0,
+    "n_questions": 44
+  },
+  "draft_groundedness": {
+    "bands": {
+      "has_fee_amount": {
+        "grounded_score": 0.0557,
+        "fabricated_score": 1.5476,
+        "grounded_max": 0.4287,
+        "fabricated_min": 1.1747,
+        "threshold": 0.8017
+      },
+      "has_max_reversal": {
+        "grounded_score": 0.0235,
+        "fabricated_score": 1.7089,
+        "grounded_max": 0.4448,
+        "fabricated_min": 1.2875,
+        "threshold": 0.8662
+      }
+    },
+    "examples": [
+      {
+        "label": "grounded overdraft fee",
+        "draft": "Under our overdraft policy a $35 fee applies to the transaction.",
+        "triple": "(overdraft, has_fee_amount, 35.0)",
+        "geodesic": 0.0557,
+        "tier": "grounded"
+      },
+      {
+        "label": "distorted overdraft fee",
+        "draft": "Under our overdraft policy a $50 fee applies to the transaction.",
+        "triple": "(overdraft, has_fee_amount, 50.0)",
+        "geodesic": 1.5476,
+        "tier": "fabrication"
+      },
+      {
+        "label": "grounded reversal cap",
+        "draft": "A representative can approve a goodwill reversal of up to $35.",
+        "triple": "(representative, has_max_reversal, 35.0)",
+        "geodesic": 0.0235,
+        "tier": "grounded"
+      },
+      {
+        "label": "fabricated reversal cap",
+        "draft": "A representative can approve a goodwill reversal of up to $100.",
+        "triple": "(representative, has_max_reversal, 100.0)",
+        "geodesic": 1.7089,
+        "tier": "fabrication"
+      }
+    ],
+    "_note": "Response Draft groundedness for 12.5: store-calibrated per-relation bands + judge_draft on representative drafts. Bands are deterministic from the store; built by scripts/capture_draft_groundedness.py."
+  },
+  "value_polarity": {
+    "reversal_detected": 3,
+    "reversal_n": 4,
+    "reversal_rate": 0.75,
+    "synonym_accepted": 3,
+    "synonym_n": 4,
+    "synonym_rate": 0.75
+  },
+  "provenance_grounding": {
+    "facts": 33,
+    "sentence_provenance_n": 26,
+    "sentence_provenance_rate": 0.788,
+    "consistent_n": 33,
+    "consistent_rate": 1.0
+  }
+}

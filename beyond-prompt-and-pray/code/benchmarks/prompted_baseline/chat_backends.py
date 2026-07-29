@@ -3,7 +3,7 @@
 A backend is anything with ``chat(system, user) -> str`` and ``chat_json(...)``.
 Two are provided:
 
-  - :class:`QwenChatBackend` --- the local Qwen2.5-3B-Instruct. To keep the
+  - :class:`QwenChatBackend` --- the local Qwen3-4B-Instruct. To keep the
     comparison against the engineered agent fair (same model, only the
     engineering differs) it reuses the model and tokenizer that
     ``agentlab.models.qwen_extractor`` already loads, so it costs no extra VRAM
@@ -52,7 +52,7 @@ class ChatBackend(Protocol):
 
 
 # --------------------------------------------------------------------------- #
-# Local Qwen2.5-3B backend (reuses the extractor's loaded weights)
+# Local Qwen3-4B backend (reuses the extractor's loaded weights)
 # --------------------------------------------------------------------------- #
 
 

@@ -96,7 +96,7 @@ cells.append(new_code_cell(
 # --- Cell 6: Listing (1, real) — the same with local Qwen [GPU/Qwen — CI] ---
 cells.append(new_code_cell(
     '# [GPU/Qwen — CI] Real synthesis path. The lead runs this in CI; it is the\n'
-    '# per-role LLM choice (local Qwen2.5-3B-Instruct, no API key).\n'
+    '# per-role LLM choice (local Qwen3-4B-Instruct, no API key).\n'
     'from knowlytix.knowledge.llm_backend import LocalTransformersBackend\n'
     '\n'
     'qwen = LocalTransformersBackend(QWEN_3B)\n'

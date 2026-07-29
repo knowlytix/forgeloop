@@ -3,16 +3,42 @@ name = "gms-rag-tutorial"
 version = "0.0.1"
 description = "Beyond Chunk and Pray — Building Trustworthy RAG with Geometric Memory (tutorial book + notebooks)"
 requires-python = ">=3.12"
-dependencies = [
-    "knowlytix",          # source of truth: knowlytix.knowledge.rag / .geode
+# Core stays light so `make install` does not drag in ~2 GB before a reader has
+# decided they want the GMS material. This book was the only package declaring
+# knowlytix as a core dependency; the other three, and the root package, all put
+# it behind a `gms` extra, so this now matches them.
+dependencies = []
+
+[project.optional-dependencies]
+# The licensed GMS substrate: knowlytix.knowledge.rag / .geode, the source of
+# truth for everything this book teaches. Free to install from PyPI, gated by a
+# runtime licence key.
+gms = ["knowlytix", "pandas"]
+# Open-weight model tooling used by the enrichment and fine-tuning chapters.
+ml = [
     "torch",
     "transformers",
-    "accelerate",         # transformers device_map / from_pretrained (Ch14, Ch16)
+    "accelerate",             # transformers device_map / from_pretrained (Ch14, Ch16)
     "sentence-transformers",  # dense-vector fallback baseline (Ch02, Ch16)
-    "pandas",
-    "jupyter",
-    "nbconvert",
 ]
+notebooks = ["jupyter", "nbconvert", "pandas"]
+dev = ["pytest>=8.0", "ruff"]
+# Everything installable from public indexes without a licence.
+all = [
+    "torch", "transformers", "accelerate", "sentence-transformers",
+    "pandas", "jupyter", "nbconvert",
+]
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+# book_kit.py is a single top-level module, not a package. Without naming it
+# here setuptools' auto-discovery finds nothing to install, so the install
+# succeeds but `import book_kit` fails -- and every notebook in this book
+# imports it.
+py-modules = ["book_kit"]
 
 [tool.pytest.ini_options]
 # Files under scripts/ are runnable book companions, not tests. Some are named

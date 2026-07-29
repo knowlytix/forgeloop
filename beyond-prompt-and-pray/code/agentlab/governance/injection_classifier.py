@@ -26,14 +26,24 @@ from typing import Any
 
 import torch
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_DIR = _REPO_ROOT / "data" / "injection_classifier_lora"
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+from agentlab._paths import data_path
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
+
+_DEFAULT_DIR = data_path("injection_classifier_lora")
+_MODEL_ID = DEFAULT_QWEN_MODEL
 
 
 @dataclass
 class LoraInjectionClassifier:
-    """Qwen-3B + LoRA SEQ_CLS classifier over {none, prompt_injection, prohibited_advice}."""
+    """Qwen-3B + LoRA SEQ_CLS classifier over {none, prompt_injection, prohibited_advice}.
+
+    Attributes:
+        model: PEFT-wrapped Qwen sequence-classification model in eval mode.
+        tok: Tokenizer paired with the model.
+        labels: Intent label names indexed by the model's logits.
+        device: Torch device the model runs on.
+        _cache: Memo mapping input text to its predicted label.
+    """
 
     model: Any
     tok: Any
@@ -42,7 +52,18 @@ class LoraInjectionClassifier:
     _cache: dict[str, str] = field(default_factory=dict, repr=False)
 
     @classmethod
-    def load(cls, path: Path | None = None, device=None) -> LoraInjectionClassifier:
+    def load(cls, path: Path | None = None, device=None) -> "LoraInjectionClassifier":
+        """Load the base Qwen model and LoRA adapter from disk.
+
+        Args:
+            path: Directory holding the adapter and ``labels.json``; defaults to
+                the packaged ``injection_classifier_lora`` data path.
+            device: Torch device to place the model on; defaults to CUDA when
+                available, else CPU.
+
+        Returns:
+            A classifier ready for inference.
+        """
         from peft import PeftModel
         from transformers import AutoModelForSequenceClassification, AutoTokenizer
 

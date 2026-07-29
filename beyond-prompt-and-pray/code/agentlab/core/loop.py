@@ -9,9 +9,8 @@ record with source=budget and sets state.status = "failed".
 
 from __future__ import annotations
 
-from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Iterator, Protocol, runtime_checkable
 
 from agentlab.core.action import Action, Escalate
 from agentlab.core.agent import BaseAgent
@@ -21,11 +20,23 @@ from agentlab.core.state import AgentState
 
 @runtime_checkable
 class Environment(Protocol):
-    def step(self, action: Action) -> dict[str, Any]: ...
+    def step(self, action: Action) -> dict[str, Any]:
+        """Execute an action and return the observation it produces."""
+        ...
 
 
 @dataclass
 class StepRecord:
+    """One step of the agent loop: the action taken and the state around it.
+
+    Attributes:
+        step: Zero-based index of the step within the loop.
+        state_before: The agent state before the action was proposed.
+        action: The action proposed at this step.
+        observation: The environment's response to the action.
+        state_after: The agent state after the action and observation.
+    """
+
     step: int
     state_before: AgentState
     action: Action
@@ -40,6 +51,25 @@ def run_loop(
     max_steps: int = 32,
     budget_tracker: BudgetTracker | None = None,
 ) -> Iterator[StepRecord]:
+    """Run the agent loop, yielding one StepRecord per step until it terminates.
+
+    The loop stops when the agent proposes finish or escalate, when the state
+    status is no longer "running", when max_steps is reached, or when the budget
+    tracker reports exhaustion. On exhaustion it yields a synthetic Escalate
+    record with context source "budget" and sets the state status to "failed".
+
+    Args:
+        agent: The agent that proposes actions and updates state.
+        env: The environment stepped for tool-call observations, or None to use
+            empty observations.
+        initial_state: The starting agent state.
+        max_steps: Maximum number of loop iterations.
+        budget_tracker: Optional tracker; when supplied, tool calls are recorded
+            and the loop halts once any budget axis is exhausted.
+
+    Yields:
+        A StepRecord for each executed step.
+    """
     state = initial_state
     for step_i in range(max_steps):
         if state.status != "running":

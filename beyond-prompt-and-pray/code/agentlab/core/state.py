@@ -24,8 +24,10 @@ class AgentState(BaseModel):
     final_output: Any = None
 
     def to_dict(self) -> dict[str, Any]:
+        """Return the state as a plain dict via Pydantic model_dump."""
         return self.model_dump()
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> AgentState:
+    def from_dict(cls, d: dict[str, Any]) -> "AgentState":
+        """Construct and validate an AgentState from a dict."""
         return cls.model_validate(d)

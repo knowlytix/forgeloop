@@ -4,13 +4,13 @@ The agent (``build_complaint_harness``) runs the workflow classify -> extract_fa
 -> search_policy -> flag_regulatory -> draft / escalate and records every step. These
 helpers read that recorded trajectory and draw it. Nothing here re-implements or
 re-runs a tool: ``process_figure`` annotates each step with the tool's recorded output,
-and ``severity_subgraph`` draws the stored triplets named by ``flag_regulatory``'s own
+and ``escalation_subgraph`` draws the stored triplets named by ``flag_regulatory``'s own
 ``severity_paths``.
 
-    from kg_process import records_from_trajectory, process_figure, severity_subgraph
+    from kg_process import records_from_trajectory, process_figure, escalation_subgraph
     recs = records_from_trajectory(traj)     # traj from harness.run(...)
     process_figure(recs)                      # the workflow the agent executed
-    severity_subgraph(kg, recs)               # the triplets it walked to escalate
+    escalation_subgraph(kg, recs)             # the triplets it walked to escalate
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""Fine-tune a Qwen2.5-3B draft adapter on the MeMo v3 corpus: LoRA or RoRA.
+"""Fine-tune a Qwen3-4B draft adapter on the MeMo v3 corpus: LoRA or RoRA.
 
 Same masked-completion SFT objective for both methods (prompt tokens are
 ignored; only the grounded reply is supervised), so the only variable is the
@@ -26,10 +26,11 @@ import json
 from pathlib import Path
 
 import torch
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 REPO = Path(__file__).resolve().parents[2]
 DATA = REPO / "data" / "training" / "bank_policy" / "draft_response_memo_v3.jsonl"
-MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
+MODEL_ID = DEFAULT_QWEN_MODEL
 MAX_LEN = 256
 
 

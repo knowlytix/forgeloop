@@ -1,0 +1,353 @@
+{
+  "value_polarity": {
+    "n": 8,
+    "reversal_detection": {
+      "n": 4,
+      "detected": 3,
+      "rate": 0.75
+    },
+    "synonym_acceptance": {
+      "n": 4,
+      "accepted": 3,
+      "rate": 0.75
+    },
+    "errors": [
+      {
+        "head": "account_closure",
+        "relation": "has_identity_verification",
+        "asserted": "optional",
+        "stored": "required",
+        "expect": "contradicted",
+        "verdict": "uncertain",
+        "correct": 0
+      },
+      {
+        "head": "disputes",
+        "relation": "has_provisional_credit",
+        "asserted": "granted",
+        "stored": "issued",
+        "expect": "supported",
+        "verdict": "contradicted",
+        "correct": 0
+      }
+    ],
+    "rows": [
+      {
+        "head": "pii_handling",
+        "relation": "has_unencrypted_channel_pii",
+        "asserted": "prohibited",
+        "stored": "forbidden",
+        "expect": "supported",
+        "verdict": "supported",
+        "correct": 1
+      },
+      {
+        "head": "pii_handling",
+        "relation": "has_unencrypted_channel_pii",
+        "asserted": "banned",
+        "stored": "forbidden",
+        "expect": "supported",
+        "verdict": "supported",
+        "correct": 1
+      },
+      {
+        "head": "pii_handling",
+        "relation": "has_unencrypted_channel_pii",
+        "asserted": "permitted",
+        "stored": "forbidden",
+        "expect": "contradicted",
+        "verdict": "contradicted",
+        "correct": 1
+      },
+      {
+        "head": "pii_handling",
+        "relation": "has_unencrypted_channel_pii",
+        "asserted": "allowed",
+        "stored": "forbidden",
+        "expect": "contradicted",
+        "verdict": "contradicted",
+        "correct": 1
+      },
+      {
+        "head": "account_closure",
+        "relation": "has_identity_verification",
+        "asserted": "mandatory",
+        "stored": "required",
+        "expect": "supported",
+        "verdict": "supported",
+        "correct": 1
+      },
+      {
+        "head": "account_closure",
+        "relation": "has_identity_verification",
+        "asserted": "optional",
+        "stored": "required",
+        "expect": "contradicted",
+        "verdict": "uncertain",
+        "correct": 0
+      },
+      {
+        "head": "disputes",
+        "relation": "has_provisional_credit",
+        "asserted": "granted",
+        "stored": "issued",
+        "expect": "supported",
+        "verdict": "contradicted",
+        "correct": 0
+      },
+      {
+        "head": "disputes",
+        "relation": "has_provisional_credit",
+        "asserted": "denied",
+        "stored": "issued",
+        "expect": "contradicted",
+        "verdict": "contradicted",
+        "correct": 1
+      }
+    ]
+  },
+  "provenance_grounding": {
+    "facts": 33,
+    "sentence_provenance": {
+      "n": 26,
+      "rate": 0.788
+    },
+    "consistent": {
+      "n": 33,
+      "rate": 1.0
+    },
+    "rows": [
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "overdraft/has_fee_amount=35.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "The Bank assesses an overdraft fee of $35.00 for each item paid into overdraft, charged pe"
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "overdraft/has_type=per_occurrence",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "The Bank assesses an overdraft fee of $35.00 for each item paid into overdraft, charged pe"
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "overdraft/has_notification_window_days=1.0",
+        "is_sentence": false,
+        "consistent": 1,
+        "raw": "1"
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "overdraft/has_reversal_frequency_per_year=1.0",
+        "is_sentence": false,
+        "consistent": 1,
+        "raw": "1"
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "overdraft/has_regulation_reference=regulation_e",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "Overdraft, non-sufficient-funds, transaction disputes, wire transfers, stop payment, paper"
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "fee_reversal/has_representative_reversal_cap_usd=35.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "A customer-service representative may reverse a fee of up to $35.00 without further approv"
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "fee_reversal/has_account_tenure_required_months=12.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "To qualify, the account must have a tenure of at least 12 months and must have had no prio"
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "fee_reversal/has_prior_reversals_same_year=0.0",
+        "is_sentence": false,
+        "consistent": 1,
+        "raw": "0"
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "fee_reversal/has_above_cap_authorization=manager",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "A reversal above the representative cap requires the approval of a manager."
+      },
+      {
+        "q": "What is the overdraft fee?",
+        "fact": "manager/has_max_reversal=500.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "A manager may reverse up to $500.00 with approval."
+      },
+      {
+        "q": "How long do I have to dispute a charge?",
+        "fact": "disputes/has_filing_window_days=60.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "A customer may dispute an unauthorized or erroneous transaction by notifying the Bank with"
+      },
+      {
+        "q": "How long do I have to dispute a charge?",
+        "fact": "disputes/has_investigation_window_days=10.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "The Bank completes its investigation within 10 business days."
+      },
+      {
+        "q": "How long do I have to dispute a charge?",
+        "fact": "disputes/has_provisional_credit=issued",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "Provisional credit is issued to the customer's account while the investigation is pending."
+      },
+      {
+        "q": "How long do I have to dispute a charge?",
+        "fact": "disputes/has_primary_regulation=regulation_e",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "Overdraft, non-sufficient-funds, transaction disputes, wire transfers, stop payment, paper"
+      },
+      {
+        "q": "How long do I have to dispute a charge?",
+        "fact": "disputes/has_secondary_regulation=regulation_z",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "Late-payment fees, transaction disputes, and Regulation Z apply to the credit card."
+      },
+      {
+        "q": "Can my social security number be sent over email?",
+        "fact": "pii_handling/has_privacy_notification_window_hours=24.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "On confirmation of a data incident, the Bank issues a privacy notification within 24 hours"
+      },
+      {
+        "q": "Can my social security number be sent over email?",
+        "fact": "pii_handling/has_unencrypted_channel_pii=forbidden",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "Transmitting personal information over an unencrypted channel is forbidden."
+      },
+      {
+        "q": "Can my social security number be sent over email?",
+        "fact": "pii_handling/has_redaction=required",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "Redaction of personal information is required whenever such information appears in corresp"
+      },
+      {
+        "q": "How much notice before the bank closes my account?",
+        "fact": "account_closure/has_bank_initiated_notice_days=30.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "When the Bank closes a consumer account on its own initiative, it provides the customer 30"
+      },
+      {
+        "q": "How much notice before the bank closes my account?",
+        "fact": "account_closure/has_identity_verification=required",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "Identity verification is required before an account may be closed."
+      },
+      {
+        "q": "How much notice before the bank closes my account?",
+        "fact": "account_closure/has_fraud_notice_exception=permitted",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "An exception to the advance-notice requirement is permitted when the account is closed in "
+      },
+      {
+        "q": "What is the UDAAP harm threshold?",
+        "fact": "regulatory_escalation/has_escalation_window_days=1.0",
+        "is_sentence": false,
+        "consistent": 1,
+        "raw": "1"
+      },
+      {
+        "q": "What is the UDAAP harm threshold?",
+        "fact": "regulatory_escalation/has_harm_threshold_usd=500.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "A consumer-harm amount of $500.00 or more meets the threshold for escalation."
+      },
+      {
+        "q": "What is the UDAAP harm threshold?",
+        "fact": "regulatory_escalation/has_udaap_authority=12_usc_5531",
+        "is_sentence": false,
+        "consistent": 1,
+        "raw": "12_usc_5531"
+      },
+      {
+        "q": "What is the UDAAP harm threshold?",
+        "fact": "regulatory_escalation/has_mortgage_regulation=regulation_x",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "Mortgage-servicing matters are escalated under Regulation X."
+      },
+      {
+        "q": "What is the UDAAP harm threshold?",
+        "fact": "udaap/has_threshold=500.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "The UDAAP flag applies when a fee is unfair or abusive; it escalates to compliance, with a"
+      },
+      {
+        "q": "What is the UDAAP harm threshold?",
+        "fact": "udaap/has_applies_when=unfair_or_abusive_fee",
+        "is_sentence": false,
+        "consistent": 1,
+        "raw": "unfair_or_abusive_fee"
+      },
+      {
+        "q": "What is the UDAAP harm threshold?",
+        "fact": "udaap/has_escalates_to=compliance",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "The UDAAP flag applies when a fee is unfair or abusive; it escalates to compliance, with a"
+      },
+      {
+        "q": "How much can a representative reverse without approval?",
+        "fact": "fee_reversal/has_representative_reversal_cap_usd=35.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "A customer-service representative may reverse a fee of up to $35.00 without further approv"
+      },
+      {
+        "q": "How much can a representative reverse without approval?",
+        "fact": "fee_reversal/has_account_tenure_required_months=12.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "To qualify, the account must have a tenure of at least 12 months and must have had no prio"
+      },
+      {
+        "q": "How much can a representative reverse without approval?",
+        "fact": "fee_reversal/has_prior_reversals_same_year=0.0",
+        "is_sentence": false,
+        "consistent": 1,
+        "raw": "0"
+      },
+      {
+        "q": "How much can a representative reverse without approval?",
+        "fact": "fee_reversal/has_above_cap_authorization=manager",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "A reversal above the representative cap requires the approval of a manager."
+      },
+      {
+        "q": "How much can a representative reverse without approval?",
+        "fact": "manager/has_max_reversal=500.0",
+        "is_sentence": true,
+        "consistent": 1,
+        "raw": "A manager may reverse up to $500.00 with approval."
+      }
+    ]
+  }
+}

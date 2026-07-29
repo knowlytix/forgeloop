@@ -8,7 +8,7 @@ count (the dominant failure the DoE testing surfaced).
 A classifier is given as ``name=SPEC`` where SPEC is one of:
   - ``head:DIR``       a trained logit head (ComplaintClassifier.load(DIR))
   - ``DIR``            shorthand for ``head:DIR``
-  - ``qwen``           local Qwen2.5-3B-Instruct, prompted zero-shot
+  - ``qwen``           local Qwen3-4B-Instruct, prompted zero-shot
   - ``anthropic:MODEL` a hosted Claude model, prompted zero-shot (needs ANTHROPIC_API_KEY)
 
 Classifiers are built and scored one at a time, then freed, so several 3B models

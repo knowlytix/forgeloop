@@ -9,6 +9,8 @@ from agentlab.multiagent.worker import Worker
 
 
 class Supervisor:
+    """Routes delegate messages to named workers and records them on a message bus."""
+
     def __init__(self, name: str, workers: list[Worker], bus: MessageBus | None = None) -> None:
         self.name = name
         self._workers: dict[str, Worker] = {w.name: w for w in workers}
@@ -19,6 +21,7 @@ class Supervisor:
         return self._bus
 
     def workers(self) -> list[str]:
+        """Return the names of the registered workers."""
         return list(self._workers)
 
     def delegate(
@@ -29,6 +32,23 @@ class Supervisor:
         constraints: list[str] | None = None,
         max_steps: int = 16,
     ) -> AgentMessage:
+        """Send a delegate message to a worker and return its response.
+
+        Both the request and the response are recorded on the bus.
+
+        Args:
+            worker_name: Name of the worker to delegate to.
+            goal: The goal for the worker's task.
+            inputs: Optional task inputs passed in the payload.
+            constraints: Optional task constraints passed in the payload.
+            max_steps: Maximum steps the worker's harness may run.
+
+        Returns:
+            The worker's response message.
+
+        Raises:
+            KeyError: If worker_name is not a registered worker.
+        """
         if worker_name not in self._workers:
             raise KeyError(f"unknown worker {worker_name!r}")
         request = AgentMessage(

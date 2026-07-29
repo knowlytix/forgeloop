@@ -59,7 +59,7 @@ def load_store(store_path: str, dev: torch.device | None = None) -> GMSExpertSto
 
 
 def make_qwen(dev: torch.device | None = None) -> LocalTransformersBackend:
-    """Local Qwen2.5-3B-Instruct — the default synthesis/verify/extract backend."""
+    """Local Qwen3-4B-Instruct — the default synthesis/verify/extract backend."""
     dev = dev or device()
     return LocalTransformersBackend(QWEN_3B, device=str(dev))
 

@@ -18,14 +18,19 @@ from agentlab.protocols import BaseLM
 
 @runtime_checkable
 class Planner(Protocol):
-    def plan(self, task: TaskSpec) -> Plan: ...
+    def plan(self, task: TaskSpec) -> Plan:
+        """Return a plan for the given task."""
+        ...
 
 
 class WorkflowPlanner:
+    """Planner that returns a fixed list of steps regardless of the task."""
+
     def __init__(self, steps: list[PlanStep]) -> None:
         self._steps = steps
 
     def plan(self, task: TaskSpec) -> Plan:
+        """Return a plan containing a copy of the fixed steps."""
         return Plan(steps=list(self._steps))
 
 
@@ -41,10 +46,23 @@ Return only valid JSON, no other text."""
 
 
 class LMPlanner:
+    """Planner that asks a language model for a JSON array of steps."""
+
     def __init__(self, lm: BaseLM) -> None:
         self._lm = lm
 
     def plan(self, task: TaskSpec) -> Plan:
+        """Prompt the LM with the task goal and constraints and parse its JSON into a plan.
+
+        Args:
+            task: The task whose goal and constraints fill the prompt.
+
+        Returns:
+            The plan built from the LM's JSON step array.
+
+        Raises:
+            ValueError: If the LM response is not valid JSON or is not a JSON array.
+        """
         prompt = _LM_PROMPT.format(
             goal=task.goal,
             constraints="; ".join(task.constraints) or "none",
@@ -78,6 +96,15 @@ class GraphSearchPlanner:
         self._graph = graph
 
     def plan(self, task: TaskSpec) -> Plan:
+        """Search the graph from task.inputs["start"] to the first expected output.
+
+        Args:
+            task: The task supplying the start state and the goal state.
+
+        Returns:
+            A plan whose steps are the actions along the found path, empty when
+            no path exists.
+        """
         start = str(task.inputs.get("start", ""))
         goal = task.expected_outputs[0] if task.expected_outputs else ""
         path = self._bfs(start, goal)

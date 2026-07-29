@@ -1,4 +1,4 @@
-"""Train the classify_complaint logit head on a frozen Qwen2.5-3B encoder.
+"""Train the classify_complaint logit head on a frozen Qwen3-4B encoder.
 
 This is the Qwen port of the Chapter-15 complaint classifier (it replaces the
 vendored TinyGPT classifier). The recipe is deliberately the simplest thing
@@ -8,7 +8,7 @@ that can work — and the first rung of the escalation ladder:
     2. LoRA + logit head
     3. RoRA (Cayley) + logit head
 
-The backbone (Qwen/Qwen2.5-3B-Instruct) is frozen. We pull the last non-pad
+The backbone (Qwen/Qwen3-4B-Instruct-2507) is frozen. We pull the last non-pad
 token's hidden state as a sentence feature, standardize, and fit a single
 linear "logit head" (hidden -> 3 labels) on top. Because the encoder never
 updates, features are extracted once and the head trains on cached vectors in
@@ -30,12 +30,13 @@ from pathlib import Path
 
 import torch
 import torch.nn as nn
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _DATA_DIR = _REPO_ROOT / "data" / "training" / "complaint_classification"
 _EVAL_CASES = _REPO_ROOT / "data" / "eval_cases" / "cases.json"
 _OUT_DIR = _REPO_ROOT / "data" / "complaint_classifier_qwen"
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+_MODEL_ID = DEFAULT_QWEN_MODEL
 _MAX_LENGTH = 128
 
 

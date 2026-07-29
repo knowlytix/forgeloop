@@ -13,6 +13,8 @@ from agentlab.multiagent.message import AgentMessage
 
 
 class Worker:
+    """A named agent that handles delegate messages by running its governance harness."""
+
     def __init__(self, name: str, capability: str, harness: GovernanceHarness) -> None:
         self.name = name
         self.capability = capability
@@ -23,6 +25,20 @@ class Worker:
         return self._harness
 
     def handle(self, message: AgentMessage, max_steps: int = 16) -> AgentMessage:
+        """Run the harness on a delegate message and return a response message.
+
+        Builds a TaskSpec from the message payload, runs the harness and wraps
+        the resulting status, final output and step count in a response. A
+        non-delegate message yields a rejected message instead.
+
+        Args:
+            message: The incoming message; only "delegate" types are handled.
+            max_steps: Maximum steps the harness may run.
+
+        Returns:
+            A "response" message on success, or a "rejected" message when the
+            message type is not "delegate".
+        """
         if message.message_type != "delegate":
             return AgentMessage(
                 sender=self.name,

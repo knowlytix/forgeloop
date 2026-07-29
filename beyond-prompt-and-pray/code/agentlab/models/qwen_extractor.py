@@ -36,7 +36,9 @@ from typing import Any
 
 import torch
 
-_DEFAULT_MODEL = os.environ.get("AGENTLAB_EXTRACTOR_MODEL", "Qwen/Qwen3-4B-Instruct-2507")
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
+
+_DEFAULT_MODEL = os.environ.get("AGENTLAB_EXTRACTOR_MODEL", DEFAULT_QWEN_MODEL)
 
 _SYSTEM_PROMPT = (
     "You extract structured facts from a retail-bank customer message. "
@@ -57,6 +59,14 @@ _REQUIRED_KEYS = ("product", "issue", "urgency", "sentiment")
 
 @dataclass
 class QwenFactExtractor:
+    """Instruction-tuned Qwen wrapper that reads a complaint and proposes product, issue, urgency and sentiment as a parsed JSON dict.
+
+    Attributes:
+        model: The loaded causal language model.
+        tokenizer: Tokenizer paired with the model.
+        device: Torch device the model runs on.
+    """
+
     model: Any
     tokenizer: Any
     device: torch.device
@@ -66,7 +76,16 @@ class QwenFactExtractor:
         cls,
         model: str | None = None,
         device: str | torch.device | None = None,
-    ) -> QwenFactExtractor:
+    ) -> "QwenFactExtractor":
+        """Load the extractor model and tokenizer.
+
+        Args:
+            model: Model id to load; defaults to the AGENTLAB_EXTRACTOR_MODEL setting.
+            device: Torch device or device string; defaults to CUDA when available.
+
+        Returns:
+            A ready-to-use QwenFactExtractor.
+        """
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         model_id = model or _DEFAULT_MODEL

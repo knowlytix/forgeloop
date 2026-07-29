@@ -19,10 +19,11 @@ import json
 from pathlib import Path
 
 import torch
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _ROOT = Path(__file__).resolve().parents[1]
 _DATA = _ROOT / "data" / "training" / "polarity"
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+_MODEL_ID = DEFAULT_QWEN_MODEL
 _MAX_LEN = 96
 
 # The polarity decision is RELATIVE: an asserted stance is judged against the value

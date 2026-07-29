@@ -30,11 +30,13 @@ from typing import Any
 
 import torch
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+from agentlab._paths import data_path
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
+
 # The NL (premise+claim) adapter: it reads prose, which is what a disclosure
 # scanner receives. The tuple adapter exists for the Chapter 13 ablation.
-_DEFAULT_DIR = _REPO_ROOT / "data" / "polarity_classifier_qwen_nl"
-_MODEL_ID = "Qwen/Qwen3-4B-Instruct-2507"
+_DEFAULT_DIR = data_path("polarity_classifier_qwen_nl")
+_MODEL_ID = DEFAULT_QWEN_MODEL
 
 # Reference phrasing for each stance relation -- must match the premise the
 # classifier was trained on (scripts/build_polarity_doe_dataset.py).
@@ -49,7 +51,15 @@ RELATION_PHRASE = {
 
 @dataclass
 class LoraPolarityClassifier:
-    """Qwen-4B + LoRA SEQ_CLS over {contradicted, supported, uncertain}."""
+    """Qwen-4B + LoRA SEQ_CLS over {contradicted, supported, uncertain}.
+
+    Attributes:
+        model: PEFT-wrapped Qwen sequence-classification model in eval mode.
+        tok: Tokenizer paired with the model.
+        labels: Stance label names indexed by the model's logits.
+        device: Torch device the model runs on.
+        _cache: Memo mapping input text to its ``(label, confidence)`` result.
+    """
 
     model: Any
     tok: Any
@@ -58,7 +68,18 @@ class LoraPolarityClassifier:
     _cache: dict[str, tuple[str, float]] = field(default_factory=dict, repr=False)
 
     @classmethod
-    def load(cls, path: Path | None = None, device=None) -> LoraPolarityClassifier:
+    def load(cls, path: Path | None = None, device=None) -> "LoraPolarityClassifier":
+        """Load the base Qwen model and LoRA adapter from disk.
+
+        Args:
+            path: Directory holding the adapter and ``labels.json``; defaults to
+                the packaged ``polarity_classifier_qwen_nl`` data path.
+            device: Torch device to place the model on; defaults to CUDA when
+                available, else CPU.
+
+        Returns:
+            A classifier ready for inference.
+        """
         from peft import PeftModel
         from transformers import AutoModelForSequenceClassification, AutoTokenizer
 

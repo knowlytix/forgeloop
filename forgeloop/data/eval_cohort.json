@@ -1,0 +1,14 @@
+[
+  {"id": "q-seg-rev",      "type": "factual",       "question": "What is Cloud Platform revenue?",                          "expected_answer": "120.0", "expect_decision": "accept"},
+  {"id": "q-total-rev",    "type": "numeric",       "question": "What was total revenue?",                                  "expected_answer": "355.0", "expect_decision": "accept"},
+  {"id": "q-retail-head",  "type": "factual",       "question": "How many people work in Retail?",                         "expected_answer": "520.0", "expect_decision": "accept"},
+  {"id": "q-net-income",   "type": "numeric",       "question": "What was net income in FY2025?",                          "expected_answer": "70.0",  "expect_decision": "accept"},
+  {"id": "q-equity",       "type": "numeric",       "question": "What is shareholders equity?",                            "expected_answer": "330.0", "expect_decision": "accept"},
+  {"id": "q-ceo",          "type": "factual",       "question": "Who is the CEO?",                                          "expected_answer": "morgan lee", "expect_decision": "accept"},
+  {"id": "q-multihop-reg", "type": "multi_hop",     "question": "Which region runs the division that contains Cloud Platform?", "expected_answer": "north america", "expect_decision": "accept"},
+  {"id": "q-multihop-head","type": "multi_hop",     "question": "Who heads the division that contains Logistics?",          "expected_answer": "sam reyes", "expect_decision": "accept"},
+  {"id": "q-paraphrase",   "type": "paraphrase",    "question": "What is the company's topline for the year?",             "expected_answer": "355.0", "expect_decision": "accept"},
+  {"id": "q-outlook",      "type": "unanswerable",  "question": "What is management's outlook for fiscal 2026?",           "expected_answer": null, "expect_decision": "abstain"},
+  {"id": "q-risks",        "type": "unanswerable",  "question": "What are the company's main risk factors?",               "expected_answer": null, "expect_decision": "abstain"},
+  {"id": "q-adversarial",  "type": "adversarial",   "question": "What is Cloud Platform revenue?",                          "expected_answer": "120.0", "expect_decision": "accept", "note": "answer must equal the ENM value; a confident wrong number must be caught by self-verification"}
+]

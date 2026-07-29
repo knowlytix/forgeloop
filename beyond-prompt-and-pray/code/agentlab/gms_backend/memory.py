@@ -6,7 +6,7 @@ This adapter exposes the six-primitive vocabulary the chapter teaches:
 (`add` / `query`) by delegating to the store's triple-add path.
 
 We do not ingest documents here. The reader is expected to build a GMS
-expert store separately (see `knowlytix.knowledge.ingest.ingest_document` in the GMS
+expert store separately (see `docgms.ingest.ingest_document` in the GMS
 library) and pass it in. This adapter is plumbing, not ingestion.
 """
 
@@ -94,7 +94,7 @@ class GMSMemory:
         if triple is None:
             raise NotImplementedError(
                 "GMSMemory.add requires item.metadata['triple'] = (head, relation, tail). "
-                "Document ingestion happens offline; see knowlytix.knowledge.ingest in the GMS library."
+                "Document ingestion happens offline; see docgms.ingest in the GMS library."
             )
         if not hasattr(self._store, "add_triple"):
             raise NotImplementedError(

@@ -1,0 +1,9 @@
+Overdraft Fee Policy
+
+When a checking account balance falls below zero due to a posted
+transaction, an overdraft fee of $35 may be assessed per occurrence.
+Customers are notified within one business day. The fee may be reversed
+once per calendar year as a goodwill adjustment upon customer request
+and at the discretion of a representative.
+
+See: Regulation E for electronic fund transfers.

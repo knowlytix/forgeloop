@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import time
-from collections.abc import Iterable
 from dataclasses import dataclass, field
+from typing import Iterable
 
 from agentlab.core.loop import StepRecord
 from agentlab.core.state import AgentState
@@ -13,6 +13,15 @@ from agentlab.core.task import TaskSpec
 
 @dataclass
 class Trajectory:
+    """The full record of an agent run for evaluation.
+
+    Attributes:
+        task: The task specification the run addressed.
+        records: The per-step records in execution order.
+        started_at: Wall-clock start time in seconds.
+        ended_at: Wall-clock end time in seconds, or None while running.
+    """
+
     task: TaskSpec
     records: list[StepRecord] = field(default_factory=list)
     started_at: float = field(default_factory=time.time)
@@ -30,6 +39,15 @@ class Trajectory:
 
 
 def collect(task: TaskSpec, step_iter: Iterable[StepRecord]) -> Trajectory:
+    """Drain an iterator of step records into a completed Trajectory.
+
+    Args:
+        task: The task specification for the run.
+        step_iter: An iterable of step records to collect.
+
+    Returns:
+        A Trajectory holding the collected records with ended_at set.
+    """
     traj = Trajectory(task=task)
     for rec in step_iter:
         traj.records.append(rec)

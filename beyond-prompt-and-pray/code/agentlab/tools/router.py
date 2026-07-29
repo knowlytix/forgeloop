@@ -17,14 +17,27 @@ from agentlab.tools.registry import ToolRegistry
 
 @runtime_checkable
 class Router(Protocol):
-    def route(self, query: str, registry: ToolRegistry) -> Tool | None: ...
+    def route(self, query: str, registry: ToolRegistry) -> Tool | None:
+        """Select the tool best matching the query, or None if none matches."""
+        ...
 
 
 class RuleRouter:
+    """Routes by matching keywords in the query to tool names."""
+
     def __init__(self, keywords: dict[str, str]) -> None:
         self._keywords = keywords
 
     def route(self, query: str, registry: ToolRegistry) -> Tool | None:
+        """Return the tool for the first keyword found in the query, or None.
+
+        Args:
+            query: The user query to match against the keyword map.
+            registry: The registry used to resolve matched tool names.
+
+        Returns:
+            The matched Tool, or None if no keyword matches a registered tool.
+        """
         ql = query.lower()
         for kw, tool_name in self._keywords.items():
             if kw.lower() in ql:
@@ -45,11 +58,23 @@ def _cosine(a: list[float], b: list[float]) -> float:
 
 
 class EmbeddingRouter:
+    """Routes by cosine similarity between the query and tool descriptions."""
+
     def __init__(self, embedder: BaseEmbedder, threshold: float = 0.5) -> None:
         self._embedder = embedder
         self._threshold = threshold
 
     def route(self, query: str, registry: ToolRegistry) -> Tool | None:
+        """Return the tool whose description is most similar to the query.
+
+        Args:
+            query: The user query to embed and compare.
+            registry: The registry supplying candidate tools.
+
+        Returns:
+            The highest-scoring Tool, or None when there are no tools or the top
+            cosine similarity is below the threshold.
+        """
         tools = registry.all()
         if not tools:
             return None
@@ -69,10 +94,23 @@ class EmbeddingRouter:
 
 
 class LMRouter:
+    """Routes by asking a language model to name the matching tool."""
+
     def __init__(self, lm: BaseLM) -> None:
         self._lm = lm
 
     def route(self, query: str, registry: ToolRegistry) -> Tool | None:
+        """Prompt the LM with the tool listing and return the tool it names.
+
+        Args:
+            query: The user query included in the prompt.
+            registry: The registry supplying the tool listing and resolving the
+                LM's chosen name.
+
+        Returns:
+            The named Tool, or None when there are no tools, the LM replies
+            "NONE" or the reply does not match a registered tool.
+        """
         tools = registry.all()
         if not tools:
             return None

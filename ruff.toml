@@ -8,6 +8,11 @@ line-length = 100
 target-version = "py312"
 
 extend-exclude = [
+    # Build artifacts assembled by scripts/build_forgeloop.py from the books.
+    # The books, packaging/ and scripts/ are the linted source; linting the
+    # output too would just double-report every finding at a path nobody edits.
+    "forgeloop",
+    "docs/4-notebook-examples",
     # Topic scripts/ are book glue ported verbatim; repo-root scripts/ is
     # maintained tooling and stays in the gate.
     "beyond-*/code/scripts",

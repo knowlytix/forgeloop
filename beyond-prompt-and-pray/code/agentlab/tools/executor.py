@@ -8,10 +8,9 @@ that conform to the same protocol.
 from __future__ import annotations
 
 import json
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Callable, Protocol, runtime_checkable
 
 from agentlab.core.action import ToolCall
 from agentlab.core.state import AgentState
@@ -26,6 +25,14 @@ class GateDecision(str, Enum):
 
 @dataclass(frozen=True)
 class GateResult:
+    """Outcome of a single gate check.
+
+    Attributes:
+        decision: Whether the gate allows, denies or escalates the call.
+        gate_name: Name of the gate that produced the result.
+        reason: Explanation for a deny or escalate decision.
+    """
+
     decision: GateDecision
     gate_name: str
     reason: str = ""
@@ -47,11 +54,21 @@ class ToolHooks:
         ``(True, response)`` to bypass real execution and substitute ``response``
         (a mock/stale result); ``(False, None)`` to run the tool normally.
       * ``on_tool_call`` / ``on_tool_result``: observability only.
+
+    Attributes:
+        on_tool_call: Observability callback invoked with ``(name, args)`` before
+            the tool runs.
+        before_tool: Predicate on ``(name, args)``; returning ``False`` blocks the
+            call and records an injected fault.
+        intercept_tool: Callback on ``(name, args)`` returning ``(intercepted,
+            response)`` to substitute a response and skip real execution.
+        on_tool_result: Observability callback invoked with ``(name, text_output,
+            output)`` after the tool returns.
     """
 
     on_tool_call: Callable[[str, dict], None] | None = None
     before_tool: Callable[[str, dict], bool] | None = None
-    intercept_tool: Callable[[str, dict], tuple[bool, Any]] | None = None
+    intercept_tool: Callable[[str, dict], "tuple[bool, Any]"] | None = None
     on_tool_result: Callable[[str, str, Any], None] | None = None
 
 
@@ -64,11 +81,24 @@ class Gate(Protocol):
         action: ToolCall,
         state: AgentState | None,
         registry: ToolRegistry,
-    ) -> GateResult: ...
+    ) -> GateResult:
+        """Evaluate a tool call and return an allow, deny or escalate result."""
+        ...
 
 
 @dataclass
 class ToolResult:
+    """Result of executing a tool call through the governed executor.
+
+    Attributes:
+        tool_name: Name of the tool that was called.
+        arguments: Arguments passed to the tool.
+        output: The tool's output when the call succeeded.
+        error: Error message when the call was denied, escalated or failed.
+        gate_results: Results of each gate that evaluated the call.
+        success: True when the tool ran and returned without error.
+    """
+
     tool_name: str
     arguments: dict[str, Any]
     output: Any = None
@@ -78,6 +108,8 @@ class ToolResult:
 
 
 class SyntaxGate:
+    """Gate that denies unknown tools and arguments failing schema validation."""
+
     name = "syntax"
 
     def check(
@@ -86,6 +118,7 @@ class SyntaxGate:
         state: AgentState | None,
         registry: ToolRegistry,
     ) -> GateResult:
+        """Deny if the tool is unknown or the arguments fail schema validation, else allow."""
         try:
             registry.get(action.tool_name)
         except KeyError:
@@ -114,6 +147,7 @@ class PolicyGate:
         state: AgentState | None,
         registry: ToolRegistry,
     ) -> GateResult:
+        """Return the first non-allow policy result, or allow if every policy allows."""
         for p in self._policies:
             r = p(action, state)
             if r.decision != GateDecision.ALLOW:
@@ -135,6 +169,7 @@ class PlausibilityGate:
         state: AgentState | None,
         registry: ToolRegistry,
     ) -> GateResult:
+        """Deny arguments that are not JSON-serializable or exceed the size limit, else allow."""
         try:
             s = json.dumps(action.arguments, default=str)
         except Exception:
@@ -149,6 +184,8 @@ class PlausibilityGate:
 
 
 class GovernedToolExecutor:
+    """Runs a tool call through an ordered list of gates, then executes the tool."""
+
     def __init__(
         self,
         registry: ToolRegistry,
@@ -216,6 +253,21 @@ class GovernedToolExecutor:
         action: ToolCall,
         state: AgentState | None = None,
     ) -> ToolResult:
+        """Run the gates then execute the tool, returning a ToolResult.
+
+        Each gate is checked in order; a deny or escalate returns immediately
+        with the accumulated gate results. Testing hooks run after the gates and
+        may block or intercept the call. On execution the tool is retried up to
+        max_retries times before returning the last error.
+
+        Args:
+            action: The tool call to execute.
+            state: Optional agent state passed to the gates.
+
+        Returns:
+            A ToolResult recording the output or error, the gate results and
+            whether the call succeeded.
+        """
         gate_results: list[GateResult] = []
         for gate in self._gates:
             r = gate.check(action, state, self._registry)

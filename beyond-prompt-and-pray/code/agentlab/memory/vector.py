@@ -14,6 +14,19 @@ from agentlab.protocols import BaseEmbedder
 
 
 def chunk_text(text: str, window: int = 400, overlap: int = 50) -> list[str]:
+    """Split text into overlapping fixed-width character windows.
+
+    Args:
+        text: The text to split.
+        window: Number of characters per chunk.
+        overlap: Number of characters shared between consecutive chunks.
+
+    Returns:
+        The list of chunks, empty when text is empty.
+
+    Raises:
+        ValueError: If overlap is not smaller than window.
+    """
     if overlap >= window:
         raise ValueError("overlap must be smaller than window")
     if not text:
@@ -30,12 +43,19 @@ def chunk_text(text: str, window: int = 400, overlap: int = 50) -> list[str]:
 
 
 class VectorMemory:
+    """In-memory store that embeds item content and retrieves by cosine similarity."""
+
     def __init__(self, embedder: BaseEmbedder) -> None:
         self._embedder = embedder
         self._items: list[MemoryItem] = []
         self._vecs: list[np.ndarray] = []
 
     def add(self, item: MemoryItem) -> None:
+        """Embed the item's content and store it.
+
+        Raises:
+            ValueError: If the item content is empty or whitespace only.
+        """
         if not item.content.strip():
             raise ValueError("cannot add empty content")
         v = self._embedder.embed([item.content])[0]
@@ -43,6 +63,15 @@ class VectorMemory:
         self._vecs.append(np.asarray(v, dtype=float))
 
     def query(self, q: str, k: int = 5) -> list[MemoryItem]:
+        """Return up to k stored items ranked by cosine similarity to the query.
+
+        Args:
+            q: The query text to embed and compare.
+            k: Maximum number of items to return.
+
+        Returns:
+            The top-k items by similarity, or an empty list when nothing is stored.
+        """
         if not self._items:
             return []
         qv = np.asarray(self._embedder.embed([q])[0], dtype=float)

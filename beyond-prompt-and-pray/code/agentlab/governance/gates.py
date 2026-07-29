@@ -8,7 +8,7 @@ that operate on broader state.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from typing import Callable
 
 from agentlab.tools.executor import (
     Gate,
@@ -46,6 +46,17 @@ class StateInvariantGate:
         self._invariants = invariants
 
     def check(self, action, state, registry) -> GateResult:
+        """Escalate when any configured invariant rejects the state.
+
+        Args:
+            action: The proposed action (unused; present for the Gate interface).
+            state: The current AgentState, or None to allow.
+            registry: The tool registry (unused; present for the Gate interface).
+
+        Returns:
+            An ESCALATE result naming the first failing invariant, else ALLOW;
+            an invariant that raises is treated as a failure.
+        """
         if state is None:
             return GateResult(GateDecision.ALLOW, self.name)
         for inv in self._invariants:

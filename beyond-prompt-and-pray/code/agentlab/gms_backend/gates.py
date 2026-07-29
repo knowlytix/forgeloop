@@ -34,7 +34,7 @@ class GMSPlausibilityGate:
     ----------
     store : object with `score_triple(head, relation, tail) -> float | None`
         A GMS-shaped store. In production this is a `GMSExpertStore` from
-        the licensed `knowlytix` library. In tests it is a mock.
+        the `gms`/`docgms` library. In tests it is a mock.
     theta : float
         Maximum admissible geodesic distance. Calibrated per domain in
         Appendix C; the GMS library's default is 1.5.
@@ -77,6 +77,17 @@ class GMSPlausibilityGate:
         state: AgentState | None,
         registry: ToolRegistry,
     ) -> GateResult:
+        """Score the (context, relation, tool) triple and deny above theta.
+
+        Args:
+            action: The proposed tool call; non-tool-call actions are allowed.
+            state: The current state, passed to a callable context if configured.
+            registry: The tool registry (unused; present for the Gate interface).
+
+        Returns:
+            DENY when the store's score exceeds theta, ALLOW when at or below it,
+            and the configured on_missing decision when the store returns None.
+        """
         if action.kind != "tool_call":
             return GateResult(GateDecision.ALLOW, self.name)
         context = self._context(action, state) if callable(self._context) else self._context

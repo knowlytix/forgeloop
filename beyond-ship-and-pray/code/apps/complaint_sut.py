@@ -23,6 +23,14 @@ from agentlab.testing.capstone_harness import (  # noqa: E402
     did_escalate,
 )
 
+# The stores these probes read belong to Prompt-and-Pray, not to this book, so
+# they are anchored to that book's data rather than the caller's. In an
+# installed package there is no book directory and this falls back to the
+# bundled data/ instead.
+from agentlab._datapaths import book_data_root  # noqa: E402
+
+_AGENT_BOOK = "beyond-prompt-and-pray"
+
 
 def score_components(traj, case: dict, goldens: dict | None = None) -> dict:
     """Per-tool correctness for the complaint workflow against case ground truth.
@@ -130,6 +138,7 @@ class AgentSUT:
         )
 
     def audit_verifies(self) -> bool:
+        """Return whether the harness's audit log passes hash-chain verification."""
         return bool(self._harness.audit.verify())
 
 
@@ -361,8 +370,7 @@ def probe_value_polarity(store_path: str | None = None) -> dict:
     from knowlytix.knowledge.rag import PolarityCuts, ValuePolarityChecker
     import torch
 
-    sp = store_path or os.path.expanduser(
-        "~/forgeloop/beyond-prompt-and-pray/code/data/gms_policy_store_cap")
+    sp = store_path or str(book_data_root(_AGENT_BOOK) / "gms_policy_store_cap")
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     store = GMSExpertStore(DocGMSConfig(store_path=sp, ingest_mode="regex"), device=dev)
     store.load()
@@ -471,9 +479,9 @@ def retrieval_benchmark(cohort_path: str | None = None,
     from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
     from knowlytix.knowledge.rag import EvalCase, benchmark_retrieval
 
-    root = Path(os.path.expanduser("~/forgeloop/beyond-prompt-and-pray/code"))
-    sp = store_path or str(root / "data" / "gms_policy_store_cap")
-    cohort_path = cohort_path or str(root / "data" / "eval_cases" / "policy_retrieval_cohort.json")
+    data = book_data_root(_AGENT_BOOK)
+    sp = store_path or str(data / "gms_policy_store_cap")
+    cohort_path = cohort_path or str(data / "eval_cases" / "policy_retrieval_cohort.json")
     spec = json.loads(Path(cohort_path).read_text())
     cases = [EvalCase(question=c["question"], expected_answer=c["expected_answer"])
              for c in spec["cases"]]

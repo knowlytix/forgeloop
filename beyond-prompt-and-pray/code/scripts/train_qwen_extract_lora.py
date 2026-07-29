@@ -16,9 +16,10 @@ from collections import Counter
 from pathlib import Path
 
 import torch
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
 
 _REPO = Path(__file__).resolve().parents[1]
-_MODEL_ID = "Qwen/Qwen2.5-3B-Instruct"
+_MODEL_ID = DEFAULT_QWEN_MODEL
 _MAX_LEN = 64
 
 

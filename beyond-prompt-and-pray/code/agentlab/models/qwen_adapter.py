@@ -20,7 +20,9 @@ from typing import Any
 
 import torch
 
-_DEFAULT_MODEL = "Qwen/Qwen3-4B-Instruct-2507"
+from agentlab.models.constants import DEFAULT_QWEN_MODEL
+
+_DEFAULT_MODEL = DEFAULT_QWEN_MODEL
 _CACHE: dict[tuple[str, str], tuple[Any, Any]] = {}
 
 
@@ -77,6 +79,15 @@ class QwenAdapter:
 
     @torch.no_grad()
     def complete(self, prompt: str, **kwargs: Any) -> str:
+        """Greedy-decode a single prompt and record the input and output token counts.
+
+        Args:
+            prompt: User prompt text.
+            **kwargs: Accepts ``max_tokens`` to override the generation cap.
+
+        Returns:
+            The decoded completion text.
+        """
         tokenizer, model = _load(self._model_name, self._device)
         messages: list[dict[str, str]] = []
         if self._system:
@@ -142,5 +153,13 @@ class QwenAdapter:
         return outputs
 
     def token_count(self, text: str) -> int:
+        """Count tokens with the model's own tokenizer.
+
+        Args:
+            text: Text to encode.
+
+        Returns:
+            The number of tokens.
+        """
         tokenizer, _ = _load(self._model_name, self._device)
         return len(tokenizer.encode(text))
