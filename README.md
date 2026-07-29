@@ -54,25 +54,24 @@ verbatim.
 
 ## Install
 
-One command installs every book's package plus `forgeloop`, in the right order:
-
 ```bash
 git clone https://github.com/knowlytix/forgeloop.git && cd forgeloop
 make install
 ```
 
-After that you can start in **any** book and run its notebooks — `agentlab`,
-`gmstest`, `book_kit`, `apps.complaint_sut` and `forgeloop` all import with no
-`PYTHONPATH` set. Order matters and `make` handles it: Ship-and-Pray's system
-under test imports `agentlab`, which is not declared as a dependency because it
-is not published to PyPI.
+That is the whole setup. Open any notebook in any book and it runs — nothing to
+add to `PYTHONPATH`, no per-book install, no ordering to get right.
 
-`make install-dev` adds the test and lint extras. To consume the assembled
-package on its own, without the book sources:
+It pulls in a few GB, mostly `torch` and `transformers`, because the GMS
+material needs them. The one thing it cannot give you is a **licence key** for
+`knowlytix`: the package installs freely, but using it needs a key at
+`~/.knowlytix/license.key` — see [below](#the-knowlytix-substrate-licensed).
+Without one, the ~44 plain-Python notebooks still run.
+
+To consume the assembled package on its own, without the book sources:
 
 ```bash
 pip install forgeloop-<version>-py3-none-any.whl   # from a Release asset
-pip install "forgeloop[ml]"                        # + torch/transformers/peft for the model tools
 ```
 
 ## The `knowlytix` substrate (licensed)
