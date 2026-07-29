@@ -1,9 +1,0 @@
-{
-  "entity_thresholds": {
-    "reg_x": 1.3,
-    "udaap": 1.3
-  },
-  "source": "data/eval_cases/cases.json",
-  "method": "in-sample F1 max over geodesic-radius grid; gold = factors.regulatory",
-  "n_cases": 20
-}
