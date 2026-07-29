@@ -21,6 +21,13 @@ class ReplanReason(str, Enum):
 
 @dataclass(frozen=True)
 class ReplanTrigger:
+    """A reason to re-plan together with supporting detail.
+
+    Attributes:
+        reason: The category of event prompting a re-plan.
+        detail: Optional context describing the specific trigger.
+    """
+
     reason: ReplanReason
     detail: str = ""
 

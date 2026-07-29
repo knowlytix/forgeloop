@@ -37,8 +37,9 @@ from knowlytix.knowledge.llm_backend import LocalTransformersBackend
 from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 from knowlytix.knowledge.rag import Extraction
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_STORE = _REPO_ROOT / "data" / "gms_policy_store_cap"
+from agentlab._paths import data_path
+
+_DEFAULT_STORE = data_path("gms_policy_store_cap")
 
 # Query-time LLM for the RAG pipeline (extract / synthesize / verify). The local
 # open-weight Qwen3-4B-Instruct, the same backend the grounded-synthesis chapter
@@ -54,6 +55,8 @@ _REVERSAL_RELATIONS = {"has_max_reversal"}
 
 
 class PolicyRagRetriever:
+    """Drives the knowlytix GEODE triple-mediated RAG pipeline over the GMS policy store, returning grounded answers, extracted facts and routed policy domains for the search_policy tool."""
+
     def __init__(
         self,
         store_path: Path | None = None,
@@ -246,7 +249,7 @@ class PolicyRagRetriever:
 
         corpus = os.environ.get("AGENTLAB_RAG_CORPUS")
         cand = [Path(corpus)] if corpus else []
-        cand += [_REPO_ROOT / "data" / "banking_policy_full.md",
+        cand += [data_path("banking_policy_full.md"),
                  Path(store_path).parent / "banking_policy_full.md"]
         md = next((p for p in cand if p.exists()), None)
         if md is None or getattr(store, "doc_graph", None) is None:
@@ -529,7 +532,14 @@ _DEFAULT_RETRIEVER: PolicyRagRetriever | None = None
 
 
 def get_default_retriever() -> PolicyRagRetriever:
+    """Return the process-wide PolicyRagRetriever singleton, fetching the policy store on first use.
+
+    Returns:
+        The lazily built PolicyRagRetriever.
+    """
     global _DEFAULT_RETRIEVER
     if _DEFAULT_RETRIEVER is None:
+        from agentlab._paths import ensure_default
+        ensure_default("gms_policy_store_cap")
         _DEFAULT_RETRIEVER = PolicyRagRetriever()
     return _DEFAULT_RETRIEVER

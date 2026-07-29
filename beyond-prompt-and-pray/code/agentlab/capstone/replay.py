@@ -32,6 +32,15 @@ from agentlab.governance.harness import _hash_state
 
 @dataclass(frozen=True)
 class ReplayStep:
+    """Per-step outcome of replaying one sealed audit event.
+
+    Attributes:
+        step: The step index.
+        action_kind: The action discriminator recovered for the step.
+        action_roundtrips: Whether parse_action reproduces the sealed typed action.
+        state_hash_matches: Whether the round-tripped state reproduces the sealed hash.
+    """
+
     step: int
     action_kind: str
     action_roundtrips: bool      # parse_action(JSON) reproduces the typed action
@@ -40,6 +49,16 @@ class ReplayStep:
 
 @dataclass
 class ReplayReport:
+    """Summary of a replayed run and whether it reconstructs exactly.
+
+    Attributes:
+        steps: Number of steps replayed.
+        actions_reconstructed: Count of steps whose action round-tripped.
+        state_hashes_matched: Count of steps whose state hash matched the seal.
+        chain_verifies: Whether the audit hash chain still verifies.
+        detail: Per-step ReplayStep records.
+    """
+
     steps: int
     actions_reconstructed: int
     state_hashes_matched: int

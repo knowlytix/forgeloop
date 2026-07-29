@@ -34,6 +34,16 @@ class QwenLLMBackend(LLMBackend):
         self._qwen = QwenAdapter(max_new_tokens=max_new_tokens)
 
     def call(self, system: str, user: str, max_tokens: int = 2048) -> str:
+        """Concatenate the system and user text into one greedy Qwen completion.
+
+        Args:
+            system: System instruction, prepended when non-empty.
+            user: User content.
+            max_tokens: Maximum tokens to generate.
+
+        Returns:
+            The generated completion text.
+        """
         prompt = f"{system}\n\n{user}" if system else user
         return self._qwen.complete(prompt, max_tokens=max_tokens)
 

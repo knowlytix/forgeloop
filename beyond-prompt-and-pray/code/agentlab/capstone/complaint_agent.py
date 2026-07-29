@@ -46,7 +46,17 @@ def _prev_workflow_node(action, state) -> str:
 
 
 class ComplaintAgent(BaseAgent):
+    """Fixed-workflow agent that runs classify, extract, search, flag then draft or escalate over the banking tools."""
+
     def propose_action(self, state: AgentState) -> Action:
+        """Return the next action for the current step, escalating on tool failure, regulatory risk or ungrounded claims.
+
+        Args:
+            state: The current agent state, including task inputs and prior tool results.
+
+        Returns:
+            The next ToolCall, Escalate or Finish action.
+        """
         for i, result in enumerate(state.tool_results):
             if isinstance(result, dict) and result.get("success") is False:
                 return Escalate(
@@ -229,6 +239,15 @@ def build_complaint_harness(
     policies_dir: Path | str | None = None,
     extra_policies: list | None = None,
 ) -> tuple[GovernanceHarness, ToolRegistry]:
+    """Assemble the complaint agent's governance harness and tool registry with the input policies and GMS plausibility gate.
+
+    Args:
+        policies_dir: Legacy corpus directory forwarded to the search_policy tool.
+        extra_policies: Additional input policies appended to the default set.
+
+    Returns:
+        A ``(harness, registry)`` pair.
+    """
     registry = ToolRegistry()
     register_all(registry, policies_dir=policies_dir)
     # PII stays a regex format check (the right tool for SSN/card/email). The
@@ -259,8 +278,9 @@ def _build_gms_plausibility_gate() -> GMSPlausibilityGate:
     import torch
     from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 
-    root = Path(__file__).resolve().parents[2]
-    store_path = root / "data" / "gms_banking_store"
+    from agentlab._paths import data_path
+
+    store_path = data_path("gms_banking_store")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     store = GMSExpertStore(DocGMSConfig(store_path=str(store_path)), device=device)
     if not store.load():

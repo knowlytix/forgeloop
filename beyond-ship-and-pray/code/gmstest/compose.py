@@ -17,9 +17,8 @@ knowlytix Sobol+refine generator for real space-filling coverage.
 from __future__ import annotations
 
 import random
-from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from .resolve import ResolvedSuite
 from .sources import QAItem
@@ -32,6 +31,15 @@ DesignFn = Callable[[LevelSpec, int, int], list[dict[str, str]]]
 
 @dataclass
 class Scenario:
+    """One composed test case: a base item enriched with a factor-level assignment.
+
+    Attributes:
+        sid: Scenario identifier, formed from the base qid and a run index.
+        base: The base QAItem carrying the query and ground truth.
+        factor_levels: Chosen level for each presentation factor.
+        mode: Composition mode, either "cross" or "embedded".
+        metadata: Optional extra scenario metadata.
+    """
     sid: str
     base: QAItem
     factor_levels: dict[str, str]

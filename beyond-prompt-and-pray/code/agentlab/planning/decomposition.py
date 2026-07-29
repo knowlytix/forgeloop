@@ -7,6 +7,21 @@ from agentlab.planning.plan import Plan
 
 
 def decompose(task: TaskSpec, plan: Plan | None = None) -> list[TaskSpec]:
+    """Turn a task and its plan into one subtask per plan step.
+
+    Each subtask takes the step description as its goal and carries the parent
+    goal and step id in its inputs, along with the parent's constraints and
+    validation.
+
+    Args:
+        task: The parent task being decomposed.
+        plan: The plan whose steps become subtasks; when None or empty the
+            original task is returned unchanged.
+
+    Returns:
+        The list of subtasks, or a single-element list holding the task when
+        there is no plan.
+    """
     if plan is None or len(plan) == 0:
         return [task]
     subtasks: list[TaskSpec] = []

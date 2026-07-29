@@ -2,7 +2,7 @@
 
 DEPRECATED for the testing chapter. The chapter and its notebook now apply the unified
 ``gmstest`` framework via ``apps.complaint_sut`` (see gms-testing-tutorial and
-``scripts/build_nb_16_testing_agents.py``); this ad-hoc harness is retained only for the
+``scripts/build_nb_17_testing_agents.py``); this ad-hoc harness is retained only for the
 dev scripts and tests that still import it, and is not the path the book teaches.
 
 Chapter 15 reported a 20-case benchmark. That answers "does the agent pass the
@@ -40,12 +40,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentlab._paths import data_path, data_root
 from agentlab.testing.harness import FactorAttribution, TestResult
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_STORE = _REPO_ROOT / "data" / "gms_banking_store"
-_DEFAULT_CASES = _REPO_ROOT / "data" / "eval_cases" / "cases.json"
-_DEFAULT_CONFIG = _REPO_ROOT / "configs" / "complaint_agent.json"
+_DEFAULT_STORE = data_path("gms_banking_store")
+_DEFAULT_CASES = data_path("eval_cases", "cases.json")
+_DEFAULT_CONFIG = data_root().parent / "configs" / "complaint_agent.json"
 
 # The three presentation factors under test. seed_case is added as a blocking
 # factor at design time but excluded from the attribution model.
@@ -277,6 +277,11 @@ class CapstoneTestResult(TestResult):
 
     Same shape as `TestResult` (rows / n_runs / summary); named distinctly
     because each row is a complaint scenario, not a QA question.
+
+    Attributes:
+        rows: One record per complaint scenario with its outcome and judgment columns.
+        n_runs: Number of scenarios that were run.
+        summary: Aggregate metrics across the run (accuracy, adherence, and similar).
     """
 
 
@@ -286,6 +291,10 @@ class FaultInjectionResult:
 
     `rows` carries one record per (faulted_tool, scenario); `per_tool` aggregates
     the detection rate (did the agent fail loud rather than silently propagate?).
+
+    Attributes:
+        rows: One record per (faulted_tool, scenario) with reach and detection flags.
+        per_tool: Per-tool aggregate counts and detection rate.
     """
 
     rows: list[dict[str, Any]] = field(default_factory=list)
@@ -301,6 +310,13 @@ class SubstrateTestResult:
     calibrated verifier pipeline, and a tiered release gate makes the ship/no-ship
     call. Complements the agent-trajectory test: one tests behavior, this tests
     the ground truth the behavior relies on.
+
+    Attributes:
+        baseline_accuracy: GMS ground-truth accuracy on the generated questions.
+        evaluator_accuracy: The Qwen RAG evaluator's accuracy under the verifiers.
+        n_questions: Number of questions evaluated.
+        verdict_summary: Aggregate typed-verdict counts and mean confidence.
+        gates: Per-tier release-gate outcomes (tier, passed, threshold, actual).
     """
 
     baseline_accuracy: float = 0.0
@@ -320,6 +336,15 @@ class RagTestResult:
     thresholds wired from a one-time calibration). `claims_verified / n_claims`
     is the joint retrieval+generation correctness; `failure_codes` says how the
     rest failed (INCOMPLETE_ANSWER, FACT_INCORRECT, ...).
+
+    Attributes:
+        n_questions: Number of questions (typed verdicts) evaluated.
+        n_claims: Total typed claims decomposed across all answers.
+        claims_verified: Number of claims that passed verification against the GMS.
+        mean_confidence: Mean overall confidence over verdicts carrying claims.
+        failure_codes: Counts of each failure code for the unverified claims.
+        plausibility_threshold: Calibrated geodesic operating point, or None if unfit.
+        mean_completeness: Mean answer coverage of expected ground-truth atoms (recall).
     """
 
     n_questions: int = 0

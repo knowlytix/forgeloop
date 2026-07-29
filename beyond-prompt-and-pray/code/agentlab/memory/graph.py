@@ -10,6 +10,15 @@ from agentlab.memory.base import MemoryItem, MemoryKind
 
 @dataclass(frozen=True)
 class Triple:
+    """A subject-relation-object fact with an optional source.
+
+    Attributes:
+        subject: The head entity of the fact.
+        relation: The relation linking subject and object.
+        object: The tail entity of the fact.
+        source: Optional provenance label for the fact.
+    """
+
     subject: str
     relation: str
     object: str
@@ -17,18 +26,34 @@ class Triple:
 
 
 class GraphMemory:
+    """Triple store supporting multi-hop neighbor traversal and substring queries."""
+
     def __init__(self) -> None:
         self._triples: list[Triple] = []
 
     def add_triple(self, t: Triple) -> None:
+        """Append a triple to the store."""
         self._triples.append(t)
 
     def add(self, item: MemoryItem) -> None:
+        """Store the item's "triple" metadata entry if it is a Triple."""
         t = item.metadata.get("triple")
         if isinstance(t, Triple):
             self.add_triple(t)
 
     def neighbors(self, entity: str, hops: int = 1) -> list[Triple]:
+        """Return triples reachable from an entity within a number of hops.
+
+        Traverses triples in both directions by breadth-first search, visiting
+        each connected entity once.
+
+        Args:
+            entity: The entity to start traversal from.
+            hops: Number of hops to expand from the entity.
+
+        Returns:
+            The triples encountered during traversal.
+        """
         seen: set[str] = {entity}
         frontier: deque[str] = deque([entity])
         out: list[Triple] = []
@@ -49,6 +74,15 @@ class GraphMemory:
         return out
 
     def query(self, q: str, k: int = 5) -> list[MemoryItem]:
+        """Return up to k memory items for triples whose subject, relation or object contains q.
+
+        Args:
+            q: Case-insensitive substring matched against each triple field.
+            k: Maximum number of items to return.
+
+        Returns:
+            Semantic-kind memory items wrapping the matching triples.
+        """
         ql = q.lower()
         hits = []
         for t in self._triples:

@@ -30,12 +30,13 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from agentlab._paths import data_path
 from agentlab.models.complaint_classifier import get_default_classifier
 from agentlab.models.draft_response_lm import get_default_lm
 from agentlab.tools.base import RiskLevel, Tool
 from agentlab.tools.registry import ToolRegistry
 
-_DEFAULT_POLICIES_DIR = Path(__file__).resolve().parents[2] / "data" / "policies"
+_DEFAULT_POLICIES_DIR = data_path("policies")
 
 
 class ClassifyInput(BaseModel):
@@ -266,6 +267,14 @@ class SearchPolicyOutput(BaseModel):
 
 
 def make_search_policy_tool(policies_dir: Path | str | None = None) -> Tool:
+    """Build the ``search_policy`` Tool wrapping the shared GMS Graph RAG retriever.
+
+    Args:
+        policies_dir: Legacy corpus directory kept for signature compatibility; ignored by the GEODE retriever.
+
+    Returns:
+        A Tool that returns trimmed policy snippets with grounded answers and query facts.
+    """
     # The Chapter-32 Graph RAG retriever replaces the previous keyword matcher.
     # It routes the query through the GMS policy store's entity index
     # (data/gms_policy_store/) so the agent's search_policy returns the right
@@ -478,6 +487,12 @@ draft_response = Tool(
 
 
 def register_all(registry: ToolRegistry, policies_dir: Path | str | None = None) -> None:
+    """Register the five banking complaint tools on ``registry``.
+
+    Args:
+        registry: The tool registry to populate.
+        policies_dir: Legacy corpus directory forwarded to the search_policy tool.
+    """
     registry.register(classify_complaint)
     registry.register(extract_facts)
     registry.register(make_search_policy_tool(policies_dir))

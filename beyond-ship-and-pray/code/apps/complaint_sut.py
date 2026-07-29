@@ -130,6 +130,7 @@ class AgentSUT:
         )
 
     def audit_verifies(self) -> bool:
+        """Return whether the harness's audit log passes hash-chain verification."""
         return bool(self._harness.audit.verify())
 
 
@@ -362,7 +363,7 @@ def probe_value_polarity(store_path: str | None = None) -> dict:
     import torch
 
     sp = store_path or os.path.expanduser(
-        "~/forgeloop/beyond-prompt-and-pray/code/data/gms_policy_store_cap")
+        "~/jupyterlab/agent-tutorial-private/beyond-prompt-and-pray/code/data/gms_policy_store_cap")
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     store = GMSExpertStore(DocGMSConfig(store_path=sp, ingest_mode="regex"), device=dev)
     store.load()
@@ -471,7 +472,7 @@ def retrieval_benchmark(cohort_path: str | None = None,
     from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
     from knowlytix.knowledge.rag import EvalCase, benchmark_retrieval
 
-    root = Path(os.path.expanduser("~/forgeloop/beyond-prompt-and-pray/code"))
+    root = Path(os.path.expanduser("~/jupyterlab/agent-tutorial-private/beyond-prompt-and-pray/code"))
     sp = store_path or str(root / "data" / "gms_policy_store_cap")
     cohort_path = cohort_path or str(root / "data" / "eval_cases" / "policy_retrieval_cohort.json")
     spec = json.loads(Path(cohort_path).read_text())

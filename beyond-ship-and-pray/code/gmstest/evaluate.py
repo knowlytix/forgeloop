@@ -16,15 +16,23 @@ per-component scoring.
 """
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from .compose import Scenario
 
 
 @dataclass
 class SUTResult:
+    """Structured result returned by a System Under Test for one scenario.
+
+    Attributes:
+        answer: The SUT's final answer.
+        components: Per-tool predicted outputs keyed by component name.
+        trajectory: Ordered workflow steps, each a dict describing the step.
+        status: Run outcome, one of "ok", "escalated" or "failed".
+        escalation_trigger: Name of the trigger that caused escalation, or None.
+    """
     answer: Any = None
     components: dict[str, Any] = field(default_factory=dict)   # tool -> predicted
     trajectory: list[dict[str, Any]] = field(default_factory=list)  # ordered steps
@@ -99,6 +107,7 @@ def run(
 
 
 def summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate result rows into accuracy and, when present, workflow adherence."""
     n = len(rows) or 1
     out = {"n": len(rows), "accuracy": sum(r["correct"] for r in rows) / n}
     if any("workflow_adherent" in r for r in rows):

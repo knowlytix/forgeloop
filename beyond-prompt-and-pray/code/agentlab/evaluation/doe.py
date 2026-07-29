@@ -17,6 +17,19 @@ def balanced_design(
     num_cases: int,
     seed: int = 0,
 ) -> list[dict[str, Any]]:
+    """Sample a balanced design over the factor table.
+
+    Each factor's levels appear roughly ``num_cases / len(levels)`` times and are
+    shuffled independently across rows.
+
+    Args:
+        factors: Factor-to-levels mapping.
+        num_cases: Number of design rows to produce.
+        seed: Seed for the shuffles.
+
+    Returns:
+        A list of factor-level assignments, one dict per row.
+    """
     if num_cases <= 0:
         return []
     if not factors:
@@ -37,6 +50,15 @@ def coverage_report(
     design: list[dict[str, Any]],
     factors: dict[str, list[Any]],
 ) -> dict[str, dict[Any, int]]:
+    """Count how often each factor level appears in a design.
+
+    Args:
+        design: The design rows to tally.
+        factors: Factor-to-levels mapping defining the levels to count.
+
+    Returns:
+        A nested mapping of factor to level to occurrence count.
+    """
     out: dict[str, dict[Any, int]] = {}
     for fname, levels in factors.items():
         counts: dict[Any, int] = {lv: 0 for lv in levels}

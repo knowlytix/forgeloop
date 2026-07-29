@@ -28,7 +28,7 @@ class AnthropicAdapter:
         pricing: dict[str, dict[str, float]] | None = None,
     ) -> None:
         try:
-            from anthropic import Anthropic
+            from anthropic import Anthropic  # noqa: I001 - lazy import is the point
         except ImportError as e:
             raise ImportError(
                 "anthropic SDK is required for AnthropicAdapter. Install with `pip install anthropic`."
@@ -41,6 +41,15 @@ class AnthropicAdapter:
         self.last_dollars = 0.0
 
     def complete(self, prompt: str, **kwargs: Any) -> str:
+        """Send the prompt to the Anthropic model and record token usage and estimated cost.
+
+        Args:
+            prompt: User prompt text.
+            **kwargs: Accepts ``max_tokens`` (default 1024).
+
+        Returns:
+            The model's text response.
+        """
         max_tokens = int(kwargs.get("max_tokens", 1024))
         response = self._client.messages.create(
             model=self._model,
@@ -61,4 +70,12 @@ class AnthropicAdapter:
 
     @staticmethod
     def token_count(text: str) -> int:
+        """Estimate token count as roughly four characters per token.
+
+        Args:
+            text: Text to count.
+
+        Returns:
+            An approximate token count, at least 1.
+        """
         return max(1, len(text) // 4)

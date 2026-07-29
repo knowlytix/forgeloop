@@ -15,7 +15,23 @@ _NON_FACTOR_SECTIONS = {"factor_groups"}
 
 @dataclass(frozen=True)
 class BaseSpec:
-    """One base question type — defines content and its ground truth."""
+    """One base question type defining content and its ground truth.
+
+    Attributes:
+        name: Unique base-category identifier and the catalog lookup key.
+        family: Family this base belongs to, used for family-level selection.
+        category: Free-text category label.
+        description: Human-readable description of the base question.
+        requires: Names of prerequisites the base depends on.
+        generator: knowlytix benchmark generator class name, or None when no
+            generator exists yet.
+        answer_type: Type of the ground-truth answer (for example "str" or "decision").
+        ground_truth: Description of how the ground truth is derived.
+        multiplicity: Cardinality of the expected answer.
+        applicability: Contexts in which the base applies.
+        status: Build status, defaulting to "build".
+        source: Source references for the base.
+    """
     name: str
     family: str
     category: str
@@ -32,7 +48,18 @@ class BaseSpec:
 
 @dataclass(frozen=True)
 class FactorSpec:
-    """One enrichment factor — presentation only, ground-truth invariant."""
+    """One enrichment factor, presentation only and ground-truth invariant.
+
+    Attributes:
+        name: Unique factor identifier and the catalog lookup key.
+        section: Factor-catalog section the factor was read from.
+        cardinality: Number of levels, defaulting to the number of categories.
+        levels: The factor's level vocabulary.
+        description: Human-readable description of the factor.
+        gt_invariant: Whether varying the factor leaves ground truth unchanged.
+        applies_families: Base families the factor applies to; ["*"] means all.
+        applies_answer_types: Base answer types the factor applies to; ["*"] means all.
+    """
     name: str
     section: str
     cardinality: int
@@ -42,7 +69,8 @@ class FactorSpec:
     applies_families: list[str]      # ["*"] means all
     applies_answer_types: list[str]  # ["*"] means all
 
-    def applies_to(self, base: BaseSpec) -> bool:
+    def applies_to(self, base: "BaseSpec") -> bool:
+        """Return whether this factor applies to the given base by family and answer type."""
         fam_ok = "*" in self.applies_families or base.family in self.applies_families
         at_ok = "*" in self.applies_answer_types or base.answer_type in self.applies_answer_types
         return fam_ok and at_ok
@@ -50,7 +78,15 @@ class FactorSpec:
 
 @dataclass(frozen=True)
 class Profile:
-    """A pick-and-choose bundle: base selection + factor selection + mode."""
+    """A selection bundle: chosen bases, chosen factors and a composition mode.
+
+    Attributes:
+        name: Profile identifier and the catalog lookup key.
+        description: Human-readable description of the profile.
+        bases: Base selection tokens (names, family names or "*").
+        factors: Factor selection tokens (names, group names or "*").
+        mode: Composition mode, either "cross" or "embedded".
+    """
     name: str
     description: str
     bases: list[str]
@@ -60,6 +96,15 @@ class Profile:
 
 @dataclass
 class Catalog:
+    """The loaded base, factor and profile catalogs with a family index.
+
+    Attributes:
+        bases: Base specs keyed by base name.
+        factors: Factor specs keyed by factor name.
+        factor_groups: Named factor groups mapping a group name to its factor names.
+        profiles: Profile specs keyed by profile name.
+        families: Base names grouped by family name.
+    """
     bases: dict[str, BaseSpec]
     factors: dict[str, FactorSpec]
     factor_groups: dict[str, list[str]]
@@ -68,7 +113,16 @@ class Catalog:
 
     # -- loading ------------------------------------------------------------
     @classmethod
-    def load(cls, catalogs_dir: str | Path | None = None) -> Catalog:
+    def load(cls, catalogs_dir: str | Path | None = None) -> "Catalog":
+        """Load the base, factor and profile catalogs from a directory.
+
+        Args:
+            catalogs_dir: Directory holding base_catalog.yaml, factor_catalog.yaml
+                and optional profiles.yaml; defaults to the package's catalogs/ directory.
+
+        Returns:
+            A Catalog populated from the YAML files.
+        """
         d = Path(catalogs_dir) if catalogs_dir else _DEFAULT_CATALOGS
 
         base_doc = _read_yaml(d / "base_catalog.yaml")
@@ -131,6 +185,7 @@ class Catalog:
 
     # -- convenience --------------------------------------------------------
     def summary(self) -> str:
+        """Return a one-line count of bases, families, factors, groups and profiles."""
         n_groups = len({f.section for f in self.factors.values()})
         return (f"{len(self.bases)} base categories in {len(self.families)} families, "
                 f"{len(self.factors)} factors in {n_groups} groups, "

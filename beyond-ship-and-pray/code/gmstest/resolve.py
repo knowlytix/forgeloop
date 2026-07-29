@@ -19,6 +19,15 @@ from .catalogs import BaseSpec, Catalog, FactorSpec
 
 @dataclass
 class ResolvedSuite:
+    """A concrete suite of expanded bases and applicable factors with a mode.
+
+    Attributes:
+        bases: The expanded base specs.
+        factors: The factors kept after applicability filtering.
+        mode: Composition mode, either "cross" or "embedded".
+        dropped_factors: (factor name, reason) pairs for factors removed by applies_to.
+        profile: Source profile name, or None for a custom selection.
+    """
     bases: list[BaseSpec]
     factors: list[FactorSpec]
     mode: str
@@ -27,13 +36,16 @@ class ResolvedSuite:
 
     @property
     def base_names(self) -> list[str]:
+        """Return the names of the selected bases."""
         return [b.name for b in self.bases]
 
     @property
     def factor_names(self) -> list[str]:
+        """Return the names of the applicable factors."""
         return [f.name for f in self.factors]
 
     def summary(self) -> str:
+        """Return a one-line description of the suite's size, mode and dropped factors."""
         s = (f"suite[{self.profile or 'custom'}]: {len(self.bases)} bases x "
              f"{len(self.factors)} factors, mode={self.mode}")
         if self.dropped_factors:
@@ -92,6 +104,18 @@ def resolve(
     mode: str = "embedded",
     filter_factors: bool = True,
 ) -> ResolvedSuite:
+    """Expand base and factor selections into a suite, filtering by applicability.
+
+    Args:
+        catalog: The loaded catalog to resolve against.
+        bases: Base selection tokens (names, family names or "*").
+        factors: Factor selection tokens (names, group names or "*").
+        mode: Composition mode, "cross" or "embedded".
+        filter_factors: Whether to drop factors that apply to no selected base.
+
+    Returns:
+        A ResolvedSuite of the expanded bases and kept factors.
+    """
     if mode not in ("cross", "embedded"):
         raise ValueError(f"mode must be 'cross' or 'embedded', got {mode!r}")
     base_specs = _expand_bases(catalog, bases)
@@ -104,6 +128,16 @@ def resolve(
 
 
 def resolve_profile(catalog: Catalog, name: str, filter_factors: bool = True) -> ResolvedSuite:
+    """Resolve a named profile into a suite and tag it with the profile name.
+
+    Args:
+        catalog: The loaded catalog holding the profile.
+        name: Profile name to resolve.
+        filter_factors: Whether to drop factors that apply to no selected base.
+
+    Returns:
+        A ResolvedSuite whose profile field is set to name.
+    """
     if name not in catalog.profiles:
         raise KeyError(f"unknown profile '{name}'")
     p = catalog.profiles[name]

@@ -21,7 +21,17 @@ from .resolve import ResolvedSuite
 
 @dataclass
 class QAItem:
-    """One base (query, answer) with optional per-component ground truth."""
+    """One base (query, answer) with optional per-component ground truth.
+
+    Attributes:
+        qid: Unique item identifier.
+        query: The base question text.
+        answer: The primary ground-truth answer.
+        answer_type: Type of the answer, defaulting to "str".
+        base: Base-category name, or None for user-supplied items.
+        components: Per-tool ground-truth values keyed by component name.
+        metadata: Extra item metadata.
+    """
     qid: str
     query: str
     answer: Any
@@ -33,7 +43,9 @@ class QAItem:
 
 @runtime_checkable
 class BaseSource(Protocol):
-    def items(self, suite: ResolvedSuite | None = None) -> list[QAItem]: ...
+    def items(self, suite: ResolvedSuite | None = None) -> list[QAItem]:
+        """Return the base QAItems, optionally specialized to a resolved suite."""
+        ...
 
 
 # ---------------------------------------------------------------------------
@@ -48,6 +60,7 @@ class UserBaseSource:
         self._pairs = pairs
 
     def items(self, suite: ResolvedSuite | None = None) -> list[QAItem]:
+        """Return QAItems built from the supplied (query, answer) pairs."""
         out = []
         for i, p in enumerate(self._pairs):
             out.append(QAItem(
@@ -87,6 +100,7 @@ class SeedCaseSource:
         self._components = component_keys
 
     def items(self, suite: ResolvedSuite | None = None) -> list[QAItem]:
+        """Return QAItems from the labeled cases, carrying per-component ground truth."""
         out = []
         for i, c in enumerate(self._cases):
             comps = {k: c[k] for k in self._components if k in c}
@@ -118,6 +132,14 @@ class CatalogBaseSource:
         self._seed = seed
 
     def items(self, suite: ResolvedSuite | None = None) -> list[QAItem]:
+        """Mine the store for QAItems using the suite's base-category generators.
+
+        Args:
+            suite: The resolved suite selecting which base categories to generate.
+
+        Returns:
+            The generated QAItems with graph-derived ground truth.
+        """
         if suite is None:
             raise ValueError("CatalogBaseSource.items needs a resolved suite")
         gens = self._generators_for(suite)

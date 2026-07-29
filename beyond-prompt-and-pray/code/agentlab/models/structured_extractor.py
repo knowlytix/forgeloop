@@ -74,6 +74,14 @@ def _coerce(obj: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_facts(text: str) -> dict[str, Any] | None:
+    """Pull the first JSON object from the model text and coerce it onto the controlled fact schema.
+
+    Args:
+        text: Raw model output expected to contain a JSON object.
+
+    Returns:
+        The coerced fact dict, or None when no valid JSON object is found.
+    """
     m = re.search(r"\{.*\}", text, re.DOTALL)
     if not m:
         return None

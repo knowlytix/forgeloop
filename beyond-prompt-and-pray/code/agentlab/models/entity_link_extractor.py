@@ -27,6 +27,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentlab._paths import data_path
+
 # Policy entity -> coarse issue taxonomy (disputes re-routed to credit_card under
 # card context). Cross-product domains map to None (no specific product issue).
 _DOMAIN_ISSUE: dict[str, str | None] = {
@@ -41,11 +43,14 @@ _DOMAIN_ISSUE: dict[str, str | None] = {
     "udaap": None, "regulatory_escalation": None, "pii_handling": None,
 }
 _NONE = "__none__"
-_CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.IGNORECASE)
-_DEFAULT_STORE = Path(__file__).resolve().parents[2] / "data" / "gms_policy_store_geode"
+_CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.I)
+
+_DEFAULT_STORE = data_path("gms_policy_store_geode")
 
 
 class EntityLinkExtractor:
+    """Links a complaint to the nearest policy entity in the GEODE embedding space, then reads the product by GMS link prediction and the issue by domain mapping."""
+
     def __init__(self, store_path: Path | str | None = None,
                  threshold: float = 0.0) -> None:
         from knowlytix.knowledge.rag import GeometricLabelClassifier
@@ -80,6 +85,14 @@ class EntityLinkExtractor:
             abstain_label=_NONE, false_accept_ceiling=ceiling)
 
     def extract(self, message: str) -> dict[str, Any] | None:
+        """Link the message to a policy entity and return its grounded product and issue.
+
+        Args:
+            message: The customer complaint text.
+
+        Returns:
+            A ``{product, issue, entity}`` dict, or None when nothing links above threshold.
+        """
         entity, _score = self.clf.classify(message, abstain_label=_NONE)
         if entity == _NONE:
             return None  # nothing linked -> general / keep Qwen product
@@ -103,10 +116,18 @@ _DEFAULT: EntityLinkExtractor | None = None
 
 
 def get_default_entity_linker() -> EntityLinkExtractor:
+    """Return the process-wide EntityLinkExtractor singleton, applying any persisted link-accept threshold.
+
+    Returns:
+        The lazily built EntityLinkExtractor bound to the resolved policy store.
+    """
     global _DEFAULT
     if _DEFAULT is None:
         import json
         sp = os.environ.get("AGENTLAB_POLICY_STORE")
+        if not sp:
+            from agentlab._paths import ensure_default
+            ensure_default("gms_policy_store_geode")
         ext = EntityLinkExtractor(store_path=sp or None)
         cal = Path(os.environ.get(
             "AGENTLAB_ENTITY_LINK_CAL",

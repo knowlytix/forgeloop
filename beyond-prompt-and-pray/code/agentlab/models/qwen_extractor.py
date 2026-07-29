@@ -57,6 +57,14 @@ _REQUIRED_KEYS = ("product", "issue", "urgency", "sentiment")
 
 @dataclass
 class QwenFactExtractor:
+    """Instruction-tuned Qwen wrapper that reads a complaint and proposes product, issue, urgency and sentiment as a parsed JSON dict.
+
+    Attributes:
+        model: The loaded causal language model.
+        tokenizer: Tokenizer paired with the model.
+        device: Torch device the model runs on.
+    """
+
     model: Any
     tokenizer: Any
     device: torch.device
@@ -66,7 +74,16 @@ class QwenFactExtractor:
         cls,
         model: str | None = None,
         device: str | torch.device | None = None,
-    ) -> QwenFactExtractor:
+    ) -> "QwenFactExtractor":
+        """Load the extractor model and tokenizer.
+
+        Args:
+            model: Model id to load; defaults to the AGENTLAB_EXTRACTOR_MODEL setting.
+            device: Torch device or device string; defaults to CUDA when available.
+
+        Returns:
+            A ready-to-use QwenFactExtractor.
+        """
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         model_id = model or _DEFAULT_MODEL

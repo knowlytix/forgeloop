@@ -37,8 +37,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_DOC = _REPO_ROOT / "data" / "banking_policy_full.md"
+from agentlab._paths import data_path
+
+_DEFAULT_DOC = data_path("banking_policy_full.md")
 # The frozen base encoder the GEODE store also starts from -- so the baseline
 # uses the *same* embedding model the GMS path tunes, isolating the tuning +
 # triple-mediation as the variable, not the encoder family.

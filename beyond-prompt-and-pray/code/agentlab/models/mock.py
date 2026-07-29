@@ -25,6 +25,15 @@ class MockLM:
         self.last_output_tokens = 0
 
     def complete(self, prompt: str, **kwargs) -> str:
+        """Return the scripted response for the prompt, or the default, recording token counts.
+
+        Args:
+            prompt: Prompt text used as the scripted-response key.
+            **kwargs: Ignored; present for BaseLM compatibility.
+
+        Returns:
+            The scripted or default response text.
+        """
         if self._latency_s > 0:
             time.sleep(self._latency_s)
         response = self._responses.get(prompt, self._default)
@@ -33,4 +42,12 @@ class MockLM:
         return response
 
     def token_count(self, text: str) -> int:
+        """Count tokens as whitespace-separated words.
+
+        Args:
+            text: Text to count.
+
+        Returns:
+            The word count.
+        """
         return len(text.split())

@@ -34,8 +34,9 @@ from typing import Any
 
 import torch
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_STORE = _REPO_ROOT / "data" / "gms_regulatory_store"
+from agentlab._paths import data_path
+
+_DEFAULT_STORE = data_path("gms_regulatory_store")
 
 # Tool-facing flag names <-> lower-case store entity ids.
 _FLAG_TO_ENTITY = {"UDAAP": "udaap", "Reg_E": "reg_e", "Reg_Z": "reg_z", "Reg_X": "reg_x", "FCRA": "fcra"}
@@ -91,6 +92,16 @@ _EVIDENCE_TASK = (
 
 @dataclass
 class GMSRegulatoryGuard:
+    """Consults the trained GMS regulatory store to verify and correct Qwen-proposed regulatory flags against the message's evidence and to decide escalation.
+
+    Attributes:
+        store: The loaded GMS regulatory expert store.
+        theta: Calibrated plausibility threshold for accepting a flag-evidence edge.
+        alias_to_evidence: Customer phrase (lowercase) to canonical evidence entity.
+        evidence_by_flag: Flag entity to its linked evidence entities.
+        _extractor: Lazily built hybrid regex-plus-LLM evidence extractor.
+    """
+
     store: Any
     theta: float
     alias_to_evidence: dict[str, str]  # customer phrase (lower) -> canonical evidence entity
@@ -104,7 +115,16 @@ class GMSRegulatoryGuard:
         cls,
         store_path: Path | None = None,
         device: torch.device | None = None,
-    ) -> GMSRegulatoryGuard:
+    ) -> "GMSRegulatoryGuard":
+        """Load the regulatory store, its calibrated threshold and the alias and evidence maps.
+
+        Args:
+            store_path: Store directory; defaults to the bundled regulatory store.
+            device: Torch device; defaults to CUDA when available.
+
+        Returns:
+            A ready-to-use GMSRegulatoryGuard.
+        """
         from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
 
         store_path = Path(store_path) if store_path is not None else _DEFAULT_STORE
@@ -336,7 +356,14 @@ _DEFAULT_GUARD: GMSRegulatoryGuard | None = None
 
 
 def get_default_guard() -> GMSRegulatoryGuard:
+    """Return the process-wide GMSRegulatoryGuard singleton, fetching the regulatory store on first use.
+
+    Returns:
+        The lazily loaded GMSRegulatoryGuard.
+    """
     global _DEFAULT_GUARD
     if _DEFAULT_GUARD is None:
+        from agentlab._paths import ensure_default
+        ensure_default("gms_regulatory_store")
         _DEFAULT_GUARD = GMSRegulatoryGuard.load()
     return _DEFAULT_GUARD

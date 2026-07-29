@@ -27,6 +27,12 @@ _STOP_WORDS = frozenset(
 
 @dataclass(frozen=True)
 class Claim:
+    """A single extracted claim.
+
+    Attributes:
+        text: The claim sentence.
+    """
+
     text: str
 
 
@@ -39,12 +45,28 @@ class ClaimVerdict(str, Enum):
 
 @dataclass(frozen=True)
 class GroundednessResult:
+    """The verdict for one claim against the evidence.
+
+    Attributes:
+        claim: The claim text that was checked.
+        verdict: The groundedness verdict for the claim.
+        evidence_id: Identifier of the best-matching evidence, or None.
+    """
+
     claim: str
     verdict: ClaimVerdict
     evidence_id: str | None = None
 
 
 def extract_claims(text: str) -> list[Claim]:
+    """Split text into sentence-level claims.
+
+    Args:
+        text: The text to split.
+
+    Returns:
+        One Claim per non-empty sentence.
+    """
     sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
     return [Claim(text=s) for s in sentences]
 
@@ -55,6 +77,17 @@ def _content_terms(text: str) -> set[str]:
 
 
 def check_groundedness(claim: Claim, evidence: dict[str, str]) -> GroundednessResult:
+    """Classify a claim as supported or unsupported by content-term overlap.
+
+    Args:
+        claim: The claim to check.
+        evidence: A mapping of evidence id to evidence text.
+
+    Returns:
+        A GroundednessResult; SUPPORTED with the best evidence id when overlap
+        meets the threshold, UNSUPPORTED otherwise, and UNCERTAIN when the claim
+        carries no content terms.
+    """
     claim_terms = _content_terms(claim.text)
     if not claim_terms:
         return GroundednessResult(claim=claim.text, verdict=ClaimVerdict.UNCERTAIN)
@@ -73,10 +106,27 @@ def check_groundedness(claim: Claim, evidence: dict[str, str]) -> GroundednessRe
 
 
 def groundedness_report(claims: list[Claim], evidence: dict[str, str]) -> list[GroundednessResult]:
+    """Return the groundedness result for each claim against the evidence.
+
+    Args:
+        claims: The claims to check.
+        evidence: A mapping of evidence id to evidence text.
+
+    Returns:
+        One GroundednessResult per claim.
+    """
     return [check_groundedness(c, evidence) for c in claims]
 
 
 def coverage(report: list[GroundednessResult]) -> float:
+    """Return the fraction of claims classified as supported.
+
+    Args:
+        report: The groundedness results to summarize.
+
+    Returns:
+        The supported fraction, or 0.0 for an empty report.
+    """
     if not report:
         return 0.0
     supported = sum(1 for r in report if r.verdict == ClaimVerdict.SUPPORTED)

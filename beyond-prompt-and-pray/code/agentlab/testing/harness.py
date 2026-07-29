@@ -17,9 +17,8 @@ and the GMS testing monograph.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 
 @dataclass
@@ -28,6 +27,11 @@ class TestResult:
 
     Wraps the underlying DOEBenchmarkResult to flatten the fields the
     chapter actually inspects.
+
+    Attributes:
+        rows: One record per DoE-expanded question with its outcome columns.
+        n_runs: Number of DoE rows in the design.
+        summary: Aggregate run metadata and metrics.
     """
 
     rows: list[dict[str, Any]] = field(default_factory=list)
@@ -42,6 +46,12 @@ class FactorAttribution:
     The four tables the chapter prints: logistic deviance per factor with
     BH-corrected p-values, joint-model fit, failure ranking, and pairwise
     interactions.
+
+    Attributes:
+        logistic_table: Per-factor logistic deviance rows with BH-corrected p-values.
+        joint_model: Joint-model fit summary.
+        failure_table: Failure ranking by (factor, level).
+        interactions: Pairwise factor-interaction logistic rows.
     """
 
     logistic_table: list[dict[str, Any]] = field(default_factory=list)

@@ -26,6 +26,15 @@ class JudgeVerdict:
     `passed` is the binary verdict; `confidence` is the aggregated continuous
     confidence from the underlying judge. The four geometric signals are
     surfaced individually so the caller can route by margin.
+
+    Attributes:
+        passed: True when ``confidence`` meets the judge's threshold.
+        confidence: Aggregated overall confidence from the underlying judge.
+        geodesic: Mean geodesic distance between the answer and ground truth.
+        tension: Tension score from the underlying judge.
+        holonomy: Holonomy score from the underlying judge.
+        label: Four-band hallucination label derived from the geodesic distance.
+        detail: Human-readable detail from the underlying verdict.
     """
 
     passed: bool
@@ -58,7 +67,7 @@ class GeometricJudge:
     Parameters
     ----------
     store : GMSExpertStore
-        A trained GMS store (typically from `knowlytix.knowledge.ingest.ingest_document`
+        A trained GMS store (typically from `docgms.ingest.ingest_document`
         or `store.load()`).
     confidence_threshold : float
         Threshold for binary `passed`. Values >= this threshold are passing.

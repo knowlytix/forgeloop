@@ -41,6 +41,12 @@ class PlanVerdict:
     ``transitions`` lists every ``(from_step, to_step, score)`` in order, so
     the caller can see which transition contributed most; ``drift`` is the
     mean transition score across the plan.
+
+    Attributes:
+        admissible: Binary verdict, True when ``drift`` is within the budget.
+        drift: Mean transition score across the plan.
+        transitions: Ordered ``(from_step, to_step, score)`` for each consecutive
+            transition; score is None when the store could not score it.
     """
 
     admissible: bool

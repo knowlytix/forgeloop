@@ -12,6 +12,8 @@ from agentlab.memory.vector import VectorMemory
 
 
 class HybridMemory:
+    """Combines vector, graph and short-term memory into one weighted retrieval."""
+
     def __init__(
         self,
         vector: VectorMemory,
@@ -31,6 +33,11 @@ class HybridMemory:
         self._tau = tau_seconds
 
     def add(self, item: MemoryItem) -> None:
+        """Add the item to short-term, vector and graph memory.
+
+        The vector store is skipped for empty content, and a ValueError from the
+        vector store is suppressed.
+        """
         self._short.add(item)
         if item.content.strip():
             try:
@@ -40,6 +47,19 @@ class HybridMemory:
         self._graph.add(item)
 
     def query(self, q: str, k: int = 5) -> list[MemoryItem]:
+        """Return up to k items ranked by a weighted sum of the backend scores.
+
+        Vector hits contribute alpha, graph hits contribute beta and short-term
+        hits contribute gamma scaled by exponential recency decay, summed per
+        item id before ranking.
+
+        Args:
+            q: The query passed to each backend.
+            k: Maximum number of items to return, and the per-backend fetch size.
+
+        Returns:
+            The top-k items by combined score.
+        """
         now = time.time()
         scored: dict[str, tuple[float, MemoryItem]] = {}
         for m in self._vector.query(q, k=k):

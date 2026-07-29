@@ -22,12 +22,29 @@ class HumanDecision(str, Enum):
 
 @dataclass(frozen=True)
 class HumanResponse:
+    """A reviewer's decision on an escalation request.
+
+    Attributes:
+        decision: The reviewer's decision (approve, deny or defer).
+        note: An optional free-text note explaining the decision.
+    """
+
     decision: HumanDecision
     note: str = ""
 
 
 @dataclass(frozen=True)
 class EscalationRequest:
+    """Context handed to a human reviewer for a single escalated step.
+
+    Attributes:
+        run_id: Identifier of the run the escalation belongs to.
+        step: The review index within the run.
+        reason: A short summary of why the step escalated.
+        proposed_action: The action awaiting a decision, as a dict.
+        gate_results: The gate results that produced the escalation.
+    """
+
     run_id: str
     step: int
     reason: str
@@ -35,17 +52,35 @@ class EscalationRequest:
     gate_results: list[dict[str, Any]] = field(default_factory=list)
 
     def to_json(self, indent: int | None = None) -> str:
+        """Serialize the request to a JSON string.
+
+        Args:
+            indent: Optional indentation passed to json.dumps.
+
+        Returns:
+            The request as a JSON string.
+        """
         return json.dumps(asdict(self), indent=indent, default=str)
 
     @classmethod
-    def from_json(cls, s: str) -> EscalationRequest:
+    def from_json(cls, s: str) -> "EscalationRequest":
+        """Deserialize a request from a JSON string.
+
+        Args:
+            s: A JSON string produced by to_json.
+
+        Returns:
+            The reconstructed EscalationRequest.
+        """
         d = json.loads(s)
         return cls(**d)
 
 
 @runtime_checkable
 class HumanReviewer(Protocol):
-    def review(self, request: EscalationRequest) -> HumanResponse: ...
+    def review(self, request: EscalationRequest) -> HumanResponse:
+        """Return a decision for an escalation request."""
+        ...
 
 
 class ScriptedReviewer:
@@ -61,6 +96,14 @@ class ScriptedReviewer:
         self.requests: list[EscalationRequest] = []
 
     def review(self, request: EscalationRequest) -> HumanResponse:
+        """Record the request and return the next scripted response.
+
+        Args:
+            request: The escalation request to review.
+
+        Returns:
+            The next response from the configured list, cycling on overflow.
+        """
         self.requests.append(request)
         r = self._responses[self._i % len(self._responses)]
         self._i += 1
@@ -71,6 +114,14 @@ class CLIReviewer:
     """Reads a decision from stdin. Useful in notebooks; not for tests."""
 
     def review(self, request: EscalationRequest) -> HumanResponse:
+        """Print the request and read a decision and note from stdin.
+
+        Args:
+            request: The escalation request to review.
+
+        Returns:
+            The response parsed from stdin; an unrecognized decision defers.
+        """
         print(request.to_json(indent=2))
         decision_str = input("[approve/deny/defer]: ").strip().lower()
         try:

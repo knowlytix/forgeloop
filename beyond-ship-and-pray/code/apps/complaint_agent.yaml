@@ -1,4 +1,4 @@
-# Application layer: Banking Complaint Agent (Beyond Prompt and Pray, Ch15-16)
+# Application layer: Banking Complaint Agent (Beyond Prompt and Pray, Ch16-17)
 # =============================================================================
 # This is the APPLICATION config, deliberately separate from the domain-neutral
 # catalogs/. It does two things the general catalog must not:
@@ -7,7 +7,7 @@
 #   2. Supplies this app's level VOCABULARY (level_overrides) on top of those
 #      catalog factors.
 #
-# Ch16's ad hoc harness fused several catalog factors into 3 ("entity_aliasing"
+# Ch17's ad hoc harness fused several catalog factors into 3 ("entity_aliasing"
 # carried a typo level that is really `noise`; "reasoning_cue" carried an
 # injection nudge that is really `instruction_conflict`). We keep them
 # normalized: 5 orthogonal factors give finer failure attribution than the
@@ -17,7 +17,7 @@
 app: complaint_agent
 description: "Governed banking complaint agent — test + SFT data generation."
 
-# Data the app binds to (paths relative to the forgeloop repo root).
+# Data the app binds to (paths relative to the agent-tutorial-private repo root).
 data:
   cases: data/eval_cases/cases.json          # 20 labeled seed cases (SeedCaseSource)
   policy_store: data/gms_policy_store         # Policy GMS (source of truth / oracle)
@@ -30,7 +30,7 @@ bases:
   families: [behavioral_operational]          # governance_policy, recovery
   categories: [conditional_rule, contradiction]
 
-# Enrichment: the 5 ORTHOGONAL catalog factors (vs Ch16's fused 3).
+# Enrichment: the 5 ORTHOGONAL catalog factors (vs Ch17's fused 3).
 factors: [clarity, entity_aliasing, noise, reasoning_cue, instruction_conflict]
 mode: embedded                                # base = balanced blocking factor
 
@@ -56,13 +56,13 @@ components: [classification, product, issue, policy, escalation]
 # The agent's fixed five-step workflow (trajectory scoring order).
 workflow: [classify_complaint, extract_facts, search_policy, flag_regulatory, draft_response]
 
-# --- Strict-parity option (reproduce Ch16's exact ad hoc design) -------------
+# --- Strict-parity option (reproduce Ch17's exact ad hoc design) -------------
 # The original 3 fused factors, for byte-for-byte equivalence checks only.
 parity_ch16:
   factors: [clarity, entity_aliasing, reasoning_cue]
   mode: embedded
-  balance_base: false        # seed_case joins the design as a factor (as Ch16 does)
-  design_method: sobol       # Ch16 uses plain sobol
+  balance_base: false        # seed_case joins the design as a factor (as Ch17 does)
+  design_method: sobol       # Ch17 uses plain sobol
   level_overrides:
     clarity:          [clear, ambiguous, misleading]
     entity_aliasing:  [canonical, alias, typo]            # fused: typo is really noise

@@ -49,7 +49,7 @@ class Entry(BaseModel):
         return v
 
     @model_validator(mode="after")
-    def _check_invariants(self) -> Entry:
+    def _check_invariants(self) -> "Entry":
         if self.kind == EntryType.OBSERVATION and not self.source:
             raise ValueError("observations require a source")
         if self.trust != TrustLevel.LOW and not self.evidence:
@@ -73,11 +73,22 @@ class Scratchpad:
         evidence: str | None = None,
         trust: TrustLevel = TrustLevel.LOW,
     ) -> Entry:
+        """Append a claim entry and return it.
+
+        Args:
+            text: The claim text.
+            evidence: Optional evidence pointer supporting the claim.
+            trust: Trust level of the claim; above LOW requires evidence.
+
+        Returns:
+            The created claim entry.
+        """
         e = Entry(kind=EntryType.CLAIM, text=text, evidence=evidence, trust=trust)
         self._entries.append(e)
         return e
 
     def add_assumption(self, text: str) -> Entry:
+        """Append an assumption entry at LOW trust and return it."""
         e = Entry(kind=EntryType.ASSUMPTION, text=text, trust=TrustLevel.LOW)
         self._entries.append(e)
         return e
@@ -89,6 +100,17 @@ class Scratchpad:
         evidence: str | None = None,
         trust: TrustLevel = TrustLevel.LOW,
     ) -> Entry:
+        """Append an observation entry and return it.
+
+        Args:
+            text: The observation text.
+            source: Required provenance of the observation.
+            evidence: Optional evidence pointer.
+            trust: Trust level of the observation; above LOW requires evidence.
+
+        Returns:
+            The created observation entry.
+        """
         e = Entry(
             kind=EntryType.OBSERVATION,
             text=text,
@@ -100,17 +122,25 @@ class Scratchpad:
         return e
 
     def add_question(self, text: str) -> Entry:
+        """Append a question entry at LOW trust and return it."""
         e = Entry(kind=EntryType.QUESTION, text=text, trust=TrustLevel.LOW)
         self._entries.append(e)
         return e
 
     def by_type(self, kind: EntryType) -> list[Entry]:
+        """Return all entries of the given kind in insertion order."""
         return [e for e in self._entries if e.kind == kind]
 
     def unsupported_claims(self) -> list[Entry]:
+        """Return claim entries that have no evidence pointer."""
         return [e for e in self._entries if e.kind == EntryType.CLAIM and not e.evidence]
 
     def assert_all_claims_have_evidence(self) -> None:
+        """Raise if any claim entry lacks evidence.
+
+        Raises:
+            AssertionError: If one or more claims have no evidence pointer.
+        """
         bad = self.unsupported_claims()
         if bad:
             raise AssertionError(
@@ -118,6 +148,15 @@ class Scratchpad:
             )
 
     def render_table(self, as_string: bool = False) -> list[dict[str, Any]] | str:
+        """Render the entries as row dicts or an aligned text table.
+
+        Args:
+            as_string: When True return a formatted text table; otherwise return
+                a list of per-entry row dicts.
+
+        Returns:
+            A list of row dicts, or a table string when as_string is True.
+        """
         rows = [
             {
                 "id": e.id,

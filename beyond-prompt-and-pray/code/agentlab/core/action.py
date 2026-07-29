@@ -50,6 +50,18 @@ Action = Union[ToolCall, AskUser, Finish, Escalate]
 
 
 def parse_action(d: dict[str, Any]) -> Action:
+    """Deserialize an action dict into the matching Action subclass by its kind field.
+
+    Args:
+        d: A mapping with a "kind" key equal to one of "tool_call", "ask_user",
+            "finish" or "escalate", plus the remaining fields of that action.
+
+    Returns:
+        The validated ToolCall, AskUser, Finish or Escalate instance.
+
+    Raises:
+        ValueError: If "kind" is missing or not a recognized action kind.
+    """
     kind = d.get("kind")
     if kind == "tool_call":
         return ToolCall.model_validate(d)

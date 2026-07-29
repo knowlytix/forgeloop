@@ -23,6 +23,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentlab._paths import data_path
+
 # Policy domain -> coarse issue taxonomy. `disputes` is deposit-side by default
 # and re-routed to credit_card_issue under card context (mirrors the dual
 # has_product edge). Cross-product domains (udaap/escalation/pii) imply no single
@@ -42,10 +44,11 @@ _DOMAIN_ISSUE: dict[str, str | None] = {
 # then product-specific issues, then the generic account issue.
 _ISSUE_RANK = {"overdraft_fee": 1, "mortgage_issue": 2, "loan_issue": 3,
                "credit_card_issue": 4, "account_issue": 5, "general": 6}
-_CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.IGNORECASE)
-_CLAUSE_SPLIT = re.compile(r"[.;!?]|\band\b|\bbut\b|,", re.IGNORECASE)
+_CARD_RE = re.compile(r"credit[\s-]?card|\bvisa\b|mastercard|amex|\bmy card\b", re.I)
+_CLAUSE_SPLIT = re.compile(r"[.;!?]|\band\b|\bbut\b|,", re.I)
 
-_DEFAULT_STORE = Path(__file__).resolve().parents[2] / "data" / "gms_policy_store_geode"
+
+_DEFAULT_STORE = data_path("gms_policy_store_geode")
 
 
 def _clauses(message: str) -> list[str]:
@@ -54,6 +57,8 @@ def _clauses(message: str) -> list[str]:
 
 
 class ClaimRouteExtractor:
+    """Decomposes a complaint into clauses and routes each through the calibrated GEODE retriever to read a grounded (product, issue) off the policy store."""
+
     def __init__(self, store_path: Path | str | None = None) -> None:
         from agentlab.capstone.policy_rag import PolicyRagRetriever
 
@@ -108,10 +113,18 @@ _DEFAULT: ClaimRouteExtractor | None = None
 
 
 def get_default_claim_router() -> ClaimRouteExtractor:
+    """Return the process-wide ClaimRouteExtractor singleton, honoring the AGENTLAB_POLICY_STORE store override.
+
+    Returns:
+        The lazily built ClaimRouteExtractor bound to the resolved policy store.
+    """
     global _DEFAULT
     if _DEFAULT is None:
         # AGENTLAB_POLICY_STORE overrides the store (e.g. the v2 product-augmented
         # store during validation, before it is swapped in as canonical).
         sp = os.environ.get("AGENTLAB_POLICY_STORE")
+        if not sp:
+            from agentlab._paths import ensure_default
+            ensure_default("gms_policy_store_geode")
         _DEFAULT = ClaimRouteExtractor(store_path=sp or None)
     return _DEFAULT

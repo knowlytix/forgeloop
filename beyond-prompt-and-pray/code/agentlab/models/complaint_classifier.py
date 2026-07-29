@@ -27,12 +27,27 @@ from typing import Any
 import torch
 import torch.nn.functional as F
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_DIR = _REPO_ROOT / "data" / "complaint_classifier_qwen"
+from agentlab._paths import data_path
+
+_DEFAULT_DIR = data_path("complaint_classifier_qwen")
 
 
 @dataclass
 class ComplaintClassifier:
+    """Frozen Qwen3-4B encoder plus a trained linear logit head that maps a message to one of three complaint labels.
+
+    Attributes:
+        encoder: Frozen Qwen3-4B-Instruct encoder producing the feature vector.
+        tokenizer: Tokenizer paired with the encoder.
+        head_weight: Linear head weight matrix, shape (num_labels, hidden).
+        head_bias: Linear head bias vector, shape (num_labels,).
+        mean: Per-feature standardization mean, shape (hidden,).
+        std: Per-feature standardization standard deviation, shape (hidden,).
+        labels: Ordered label names indexed by the head outputs.
+        device: Torch device the encoder and head run on.
+        max_length: Maximum token length for message truncation.
+    """
+
     encoder: Any
     tokenizer: Any
     head_weight: torch.Tensor  # (num_labels, hidden)
@@ -48,7 +63,16 @@ class ComplaintClassifier:
         cls,
         path: str | Path | None = None,
         device: str | torch.device | None = None,
-    ) -> ComplaintClassifier:
+    ) -> "ComplaintClassifier":
+        """Load the encoder named in the checkpoint and the trained head from ``head.pt``.
+
+        Args:
+            path: Directory holding ``head.pt``; defaults to the bundled classifier dir.
+            device: Torch device or device string; defaults to CUDA when available.
+
+        Returns:
+            A ready-to-use ComplaintClassifier.
+        """
         path = Path(path) if path is not None else _DEFAULT_DIR
         if device is None:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -98,6 +122,14 @@ class ComplaintClassifier:
 
     @torch.no_grad()
     def classify(self, text: str) -> tuple[str, float]:
+        """Classify a message and return its label with the winning softmax probability.
+
+        Args:
+            text: Customer complaint message; blank text returns the last label at 0.0.
+
+        Returns:
+            A ``(label, confidence)`` pair.
+        """
         if not text or not text.strip():
             return self.labels[-1], 0.0
         feat = (self._feature(text) - self.mean) / self.std
@@ -117,6 +149,13 @@ class LoraComplaintClassifier:
     Same ``.classify(text) -> (label, confidence)`` API as ``ComplaintClassifier``,
     so ``classify_complaint`` is unchanged. The artifact is a PEFT adapter dir
     (``adapter_config.json`` + adapter weights + ``labels.json``).
+
+    Attributes:
+        model: PEFT-wrapped Qwen sequence-classification model in eval mode.
+        tokenizer: Tokenizer paired with the model.
+        labels: Complaint label names indexed by the model's logits.
+        device: Torch device the model runs on.
+        max_length: Maximum token length for message truncation.
     """
 
     model: Any
@@ -130,7 +169,16 @@ class LoraComplaintClassifier:
         cls,
         path: str | Path | None = None,
         device: str | torch.device | None = None,
-    ) -> LoraComplaintClassifier:
+    ) -> "LoraComplaintClassifier":
+        """Load the base sequence-classification model, restore the PEFT LoRA adapter and score head, and read the label set.
+
+        Args:
+            path: PEFT adapter directory; defaults to the bundled classifier dir.
+            device: Torch device or device string; defaults to CUDA when available.
+
+        Returns:
+            A ready-to-use LoraComplaintClassifier.
+        """
         path = Path(path) if path is not None else _DEFAULT_DIR
         if device is None:
             device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -162,6 +210,14 @@ class LoraComplaintClassifier:
 
     @torch.no_grad()
     def classify(self, text: str) -> tuple[str, float]:
+        """Classify a message with the LoRA sequence classifier and return the winning softmax probability.
+
+        Args:
+            text: Customer complaint message; blank text returns the last label at 0.0.
+
+        Returns:
+            A ``(label, confidence)`` pair.
+        """
         if not text or not text.strip():
             return self.labels[-1], 0.0
         enc = self.tokenizer(
@@ -184,6 +240,8 @@ def get_default_classifier():
     """
     global _DEFAULT_CLASSIFIER
     if _DEFAULT_CLASSIFIER is None:
+        from agentlab._paths import ensure_default
+        ensure_default("complaint_classifier_qwen")
         if (_DEFAULT_DIR / "adapter_config.json").exists():
             _DEFAULT_CLASSIFIER = LoraComplaintClassifier.load()
         else:

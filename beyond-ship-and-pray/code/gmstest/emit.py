@@ -18,9 +18,8 @@ so the format + validation logic here is dependency-light and testable.
 from __future__ import annotations
 
 import json
-from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from .compose import Scenario
 
@@ -123,6 +122,7 @@ def emit_draft_sft(
 
 # -- io ---------------------------------------------------------------------
 def to_jsonl(records: list[dict[str, Any]], path: str | Path) -> int:
+    """Write records as JSON lines, creating parent directories, and return the count."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("".join(json.dumps(r) + "\n" for r in records))

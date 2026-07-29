@@ -28,8 +28,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_EXEMPLARS = _REPO_ROOT / "data" / "governance_exemplars.json"
+from agentlab._paths import data_path
+
+_DEFAULT_EXEMPLARS = data_path("governance_exemplars.json")
 
 # Recognized intents and the disposition each implies (the gate layer maps these
 # to DENY / ESCALATE; see governance.policies and the draft verifier).
@@ -64,6 +65,16 @@ def _build_fewshot(exemplars: dict[str, list[str]]) -> list[dict[str, str]]:
 
 @dataclass
 class SemanticIntentGuard:
+    """Zero-shot Qwen classifier over governance intents with per-text memoization.
+
+    Attributes:
+        model: The loaded causal language model.
+        tokenizer: The tokenizer paired with the model.
+        device: The torch device the model runs on.
+        fewshot: Few-shot chat turns prepended to each classification prompt.
+        _cache: Per-text memo of previously returned intent labels.
+    """
+
     model: Any
     tokenizer: Any
     device: Any
@@ -71,7 +82,17 @@ class SemanticIntentGuard:
     _cache: dict[str, str | None] = field(default_factory=dict)
 
     @classmethod
-    def load(cls, exemplars_path: Path | None = None, model: str | None = None) -> SemanticIntentGuard:
+    def load(cls, exemplars_path: Path | None = None, model: str | None = None) -> "SemanticIntentGuard":
+        """Load the Qwen model and build the few-shot prompt from exemplars.
+
+        Args:
+            exemplars_path: Path to the exemplars JSON; defaults to the packaged
+                ``governance_exemplars.json``.
+            model: Hugging Face model id to load; defaults to Qwen3-4B-Instruct.
+
+        Returns:
+            A guard ready to classify text.
+        """
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -140,6 +161,7 @@ _DEFAULT_GUARD: SemanticIntentGuard | None = None
 
 
 def get_default_guard() -> SemanticIntentGuard:
+    """Return the process-wide guard, loading it on first use."""
     global _DEFAULT_GUARD
     if _DEFAULT_GUARD is None:
         _DEFAULT_GUARD = SemanticIntentGuard.load()
@@ -171,6 +193,15 @@ def _intent(text: str) -> str | None:
 
 
 def semantic_prompt_injection_policy(action, state):
+    """Deny when the customer text is classified as prompt-injection intent.
+
+    Args:
+        action: The proposed action carrying the customer message or query.
+        state: The current state (unused; present for the policy interface).
+
+    Returns:
+        A DENY result on prompt-injection intent, else ALLOW.
+    """
     from agentlab.tools.executor import GateDecision, GateResult
 
     text = _customer_text(action)
@@ -182,6 +213,15 @@ def semantic_prompt_injection_policy(action, state):
 
 
 def semantic_prohibited_advice_policy(action, state):
+    """Escalate when the customer text is classified as prohibited-advice intent.
+
+    Args:
+        action: The proposed action carrying the customer message or query.
+        state: The current state (unused; present for the policy interface).
+
+    Returns:
+        An ESCALATE result on prohibited-advice intent, else ALLOW.
+    """
     from agentlab.tools.executor import GateDecision, GateResult
 
     text = _customer_text(action)
