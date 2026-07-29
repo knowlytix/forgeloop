@@ -114,6 +114,12 @@ coverage.xml
 !**/data/capstone_rows.json
 !**/data/capstone_companions.json
 !**/data/capstone_retrieval.json
+# The pinned test set and the captured trajectory follow the same reasoning:
+# capstone_run.py reads the test set and only re-materializes it when absent,
+# so shipping it keeps the campaign reproducible rather than freshly sampled,
+# and 09_agentic_capstone.ipynb reads the trajectory directly.
+!**/data/capstone_testset.json
+!**/data/capstone_trajectory_example.json
 **/data/*_calibration.json
 **/data/*_results.json
 **/*_augmented.jsonl
