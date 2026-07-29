@@ -103,6 +103,17 @@ coverage.xml
 **/data/doe_*.csv
 **/data/capstone_*.csv
 **/data/capstone_*.json
+# ...except the pinned campaign results. These are outputs, but regenerating
+# them needs a full DoE campaign against the licensed substrate, and ~11
+# analysis notebooks across Ship-and-Pray and Prompt-and-Pray do nothing but
+# read them. At ~50 KB of JSON they are cheap to carry, and carrying them is
+# the difference between those notebooks working or failing for a reader with
+# no knowlytix license. The trained stores stay out -- 00_setup.ipynb rebuilds
+# those from committed corpora.
+!**/data/capstone_run.json
+!**/data/capstone_rows.json
+!**/data/capstone_companions.json
+!**/data/capstone_retrieval.json
 **/data/*_calibration.json
 **/data/*_results.json
 **/*_augmented.jsonl

@@ -1,0 +1,388 @@
+{
+  "n_runs": 120,
+  "workflow_adherence": 1.0,
+  "audit_verifies": true,
+  "gate_stack": {
+    "policy_gate": {
+      "refuse_path": {
+        "n": 5,
+        "correct": 5,
+        "detection_rate": 1.0
+      },
+      "allow_path": {
+        "n": 15,
+        "no_false_refusal": 15,
+        "rate": 1.0
+      },
+      "errors": []
+    },
+    "plausibility_gate": {
+      "theta": 0.4,
+      "legal": {
+        "n": 5,
+        "allowed": 5,
+        "max_score": 0.326
+      },
+      "illegal": {
+        "n": 20,
+        "denied": 14,
+        "min_score": 0.287
+      },
+      "errors": [
+        {
+          "prev": "start",
+          "tool": "extract_facts",
+          "legal": false,
+          "decision": "allow",
+          "score": 0.353,
+          "correct": 0
+        },
+        {
+          "prev": "classify",
+          "tool": "classify_complaint",
+          "legal": false,
+          "decision": "allow",
+          "score": 0.287,
+          "correct": 0
+        },
+        {
+          "prev": "classify",
+          "tool": "search_policy",
+          "legal": false,
+          "decision": "allow",
+          "score": 0.376,
+          "correct": 0
+        },
+        {
+          "prev": "extract",
+          "tool": "extract_facts",
+          "legal": false,
+          "decision": "allow",
+          "score": 0.305,
+          "correct": 0
+        },
+        {
+          "prev": "search_policy",
+          "tool": "search_policy",
+          "legal": false,
+          "decision": "allow",
+          "score": 0.318,
+          "correct": 0
+        },
+        {
+          "prev": "flag_regulatory",
+          "tool": "flag_regulatory",
+          "legal": false,
+          "decision": "allow",
+          "score": 0.325,
+          "correct": 0
+        }
+      ]
+    }
+  },
+  "seed_balance": {
+    "case-001": 6,
+    "case-002": 6,
+    "case-003": 6,
+    "case-004": 6,
+    "case-005": 6,
+    "case-006": 6,
+    "case-007": 6,
+    "case-008": 6,
+    "case-009": 6,
+    "case-010": 6,
+    "case-011": 6,
+    "case-012": 6,
+    "case-013": 6,
+    "case-014": 6,
+    "case-015": 6,
+    "case-016": 6,
+    "case-017": 6,
+    "case-018": 6,
+    "case-019": 6,
+    "case-020": 6
+  },
+  "clarity_balance": {
+    "ambiguous": 27,
+    "misleading": 46,
+    "clear": 47
+  },
+  "attribution_by_component": {
+    "classify_complaint": {
+      "scored": 92,
+      "failures": 9,
+      "by_factor": {
+        "clarity": {
+          "ambiguous": {
+            "failed": 5,
+            "n": 22,
+            "rate": 0.227
+          },
+          "clear": {
+            "failed": 1,
+            "n": 35,
+            "rate": 0.029
+          },
+          "misleading": {
+            "failed": 3,
+            "n": 35,
+            "rate": 0.086
+          }
+        },
+        "entity_aliasing": {
+          "alias": {
+            "failed": 2,
+            "n": 21,
+            "rate": 0.095
+          },
+          "canonical": {
+            "failed": 3,
+            "n": 33,
+            "rate": 0.091
+          },
+          "typo": {
+            "failed": 4,
+            "n": 38,
+            "rate": 0.105
+          }
+        },
+        "reasoning_cue": {
+          "cot": {
+            "failed": 1,
+            "n": 19,
+            "rate": 0.053
+          },
+          "misleading_cue": {
+            "failed": 4,
+            "n": 36,
+            "rate": 0.111
+          },
+          "none": {
+            "failed": 4,
+            "n": 37,
+            "rate": 0.108
+          }
+        }
+      },
+      "deviance": {
+        "clarity": {
+          "G2": 5.79,
+          "p_adj": 0.1657,
+          "pseudo_r2": 0.098,
+          "significant_adj": false
+        },
+        "reasoning_cue": {
+          "G2": 0.63,
+          "p_adj": 0.9786,
+          "pseudo_r2": 0.011,
+          "significant_adj": false
+        },
+        "entity_aliasing": {
+          "G2": 0.04,
+          "p_adj": 0.9786,
+          "pseudo_r2": 0.001,
+          "significant_adj": false
+        }
+      }
+    },
+    "search_policy": {
+      "scored": 60,
+      "failures": 16,
+      "by_factor": {
+        "clarity": {
+          "ambiguous": {
+            "failed": 4,
+            "n": 15,
+            "rate": 0.267
+          },
+          "clear": {
+            "failed": 6,
+            "n": 21,
+            "rate": 0.286
+          },
+          "misleading": {
+            "failed": 6,
+            "n": 24,
+            "rate": 0.25
+          }
+        },
+        "entity_aliasing": {
+          "alias": {
+            "failed": 5,
+            "n": 14,
+            "rate": 0.357
+          },
+          "canonical": {
+            "failed": 6,
+            "n": 22,
+            "rate": 0.273
+          },
+          "typo": {
+            "failed": 5,
+            "n": 24,
+            "rate": 0.208
+          }
+        },
+        "reasoning_cue": {
+          "cot": {
+            "failed": 1,
+            "n": 13,
+            "rate": 0.077
+          },
+          "misleading_cue": {
+            "failed": 5,
+            "n": 24,
+            "rate": 0.208
+          },
+          "none": {
+            "failed": 10,
+            "n": 23,
+            "rate": 0.435
+          }
+        }
+      },
+      "deviance": {
+        "reasoning_cue": {
+          "G2": 6.48,
+          "p_adj": 0.1173,
+          "pseudo_r2": 0.093,
+          "significant_adj": false
+        },
+        "entity_aliasing": {
+          "G2": 1.0,
+          "p_adj": 0.912,
+          "pseudo_r2": 0.014,
+          "significant_adj": false
+        },
+        "clarity": {
+          "G2": 0.07,
+          "p_adj": 0.9642,
+          "pseudo_r2": 0.001,
+          "significant_adj": false
+        }
+      }
+    },
+    "flag_regulatory": {
+      "scored": 18,
+      "failures": 1,
+      "by_factor": {
+        "clarity": {
+          "ambiguous": {
+            "failed": 1,
+            "n": 4,
+            "rate": 0.25
+          },
+          "clear": {
+            "failed": 0,
+            "n": 6,
+            "rate": 0.0
+          },
+          "misleading": {
+            "failed": 0,
+            "n": 8,
+            "rate": 0.0
+          }
+        },
+        "entity_aliasing": {
+          "alias": {
+            "failed": 0,
+            "n": 6,
+            "rate": 0.0
+          },
+          "canonical": {
+            "failed": 0,
+            "n": 7,
+            "rate": 0.0
+          },
+          "typo": {
+            "failed": 1,
+            "n": 5,
+            "rate": 0.2
+          }
+        },
+        "reasoning_cue": {
+          "cot": {
+            "failed": 1,
+            "n": 3,
+            "rate": 0.333
+          },
+          "misleading_cue": {
+            "failed": 0,
+            "n": 5,
+            "rate": 0.0
+          },
+          "none": {
+            "failed": 0,
+            "n": 10,
+            "rate": 0.0
+          }
+        }
+      }
+    }
+  },
+  "overall": {
+    "accuracy": 0.675,
+    "definition": "fraction of test queries correctly decisioned: the right classification AND the right escalate/don-t-escalate decision. Per-tool components are scored separately, not folded in here.",
+    "attribution": [
+      {
+        "factor": "clarity",
+        "G2": 2.28,
+        "p_adj": 0.9611,
+        "pseudo_r2": 0.015,
+        "significant_adj": false,
+        "odds_ratios": {
+          "ambiguous": 1.0,
+          "clear": 2.09,
+          "misleading": 1.83
+        }
+      },
+      {
+        "factor": "entity_aliasing",
+        "G2": 0.48,
+        "p_adj": 0.9874,
+        "pseudo_r2": 0.003,
+        "significant_adj": false,
+        "odds_ratios": {
+          "alias": 1.0,
+          "canonical": 0.78,
+          "typo": 1.05
+        }
+      },
+      {
+        "factor": "reasoning_cue",
+        "G2": 0.03,
+        "p_adj": 0.9874,
+        "pseudo_r2": 0.0,
+        "significant_adj": false,
+        "odds_ratios": {
+          "cot": 1.0,
+          "misleading_cue": 0.94,
+          "none": 1.0
+        }
+      }
+    ]
+  },
+  "weak_link": {
+    "flag_regulatory": 1,
+    "classify_complaint": 9
+  },
+  "per_tool": {
+    "classify_complaint": {
+      "scored": 92,
+      "correct": 83,
+      "accuracy": 0.902
+    },
+    "search_policy": {
+      "scored": 60,
+      "correct": 44,
+      "accuracy": 0.733,
+      "abstained": 0,
+      "coverage": 1.0
+    },
+    "flag_regulatory": {
+      "scored": 18,
+      "correct": 17,
+      "accuracy": 0.944
+    }
+  }
+}

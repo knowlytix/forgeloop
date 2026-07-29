@@ -54,6 +54,9 @@ SCAFFOLD = "packaging/forgeloop"
 DATA_DIRS = [
     "beyond-prompt-and-pray/code/data",
     "beyond-chunk-and-pray/code/data",
+    # Ship-and-Pray owns the pinned capstone campaign results, which the
+    # analysis notebooks in both books read.
+    "beyond-ship-and-pray/code/data",
 ]
 
 # Book notebooks -> package notebooks and docs gallery sections.
