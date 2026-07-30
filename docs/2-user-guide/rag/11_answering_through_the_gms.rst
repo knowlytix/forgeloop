@@ -1,4 +1,4 @@
-Chapter 10 — Answering Through the GMS
+Chapter 11 — Answering Through the GMS
 ======================================
 
 Binding turns a question's words into the graph's vocabulary and leaves a list
@@ -119,8 +119,8 @@ keeps a held fact from being displaced by a guess, and
 fallback to :meth:`~knowlytix.knowledge.store.GMSExpertStore.link_predict`. When
 the bound triples do not resolve, ``result.facts`` is empty and
 ``result.answers`` is empty; that emptiness is what drives abstention
-(:doc:`13_abstention_and_coverage`). The retrieved facts and their spans are the
-input to grounded synthesis (:doc:`11_grounded_synthesis`).
+(:doc:`14_abstention_and_coverage`). The retrieved facts and their spans are the
+input to grounded synthesis (:doc:`12_grounded_synthesis`).
 
 See also
 --------

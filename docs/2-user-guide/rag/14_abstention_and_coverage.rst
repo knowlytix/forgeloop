@@ -1,4 +1,4 @@
-Chapter 13 — Abstention and Coverage
+Chapter 14 — Abstention and Coverage
 ====================================
 
 This page shows how to make a triple-mediated pipeline decline a question it
@@ -169,10 +169,10 @@ Limits
 
 The monitor measures triple presence per section, not answer quality. A section
 with triples can still miss the specific attribute a question asks for, which is
-the relevance gate's concern (:doc:`10_answering_through_the_gms`), and abstention
+the relevance gate's concern (:doc:`11_answering_through_the_gms`), and abstention
 here is binary: the pipeline does not rank how close a query came to binding.
 Setting the bind threshold so paraphrases resolve while off-topic queries still
-abstain is the subject of :doc:`14_calibration`.
+abstain is the subject of :doc:`15_calibration`.
 
 See also
 --------
@@ -182,7 +182,7 @@ See also
   :func:`~knowlytix.knowledge.rag.coverage.graph_coverage`,
   :class:`~knowlytix.knowledge.rag.pipeline.RagPipeline` and
   :class:`~knowlytix.knowledge.rag.pipeline.RagAnswer`.
-- :doc:`09_binding` and :doc:`14_calibration` — the bind-check and its
+- :doc:`09_binding` and :doc:`15_calibration` — the bind-check and its
   calibrated operating point.
 - :doc:`/4-notebook-examples/rag/index` — the same coverage and abstention run
   end to end.

@@ -1,4 +1,4 @@
-Chapter 15 — Evaluating the RAG with a Designed Experiment
+Chapter 16 — Evaluating the RAG with a Designed Experiment
 ==========================================================
 
 A single accuracy number rewards a confident guess as much as a verified answer.
@@ -131,7 +131,7 @@ See also
   :func:`~knowlytix.knowledge.rag.eval.benchmark_retrieval` and
   :func:`~knowlytix.knowledge.rag.eval.calibrate_accept_threshold`.
 - :doc:`06_doe_enrichment` — the designed-experiment cohort used as the test set.
-- :doc:`13_abstention_and_coverage` and :doc:`14_calibration` — the abstention
+- :doc:`14_abstention_and_coverage` and :doc:`15_calibration` — the abstention
   behavior these metrics separate the two architectures on, and the calibrated
   cut correctness reads.
 - :doc:`/4-notebook-examples/rag/index` — the evaluation and the baseline

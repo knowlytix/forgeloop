@@ -142,7 +142,7 @@ general fact verifier and cannot anchor an LLM-extracted prose claim. Keys are
 entity-relation pairs, so documents with recurring row labels can collide, and a
 consistent span confirms that the span supports the tail, not that extraction
 chose the right triple. This resolved span is the citation later carried onto a
-retrieved answer (:doc:`10_answering_through_the_gms`).
+retrieved answer (:doc:`11_answering_through_the_gms`).
 
 See also
 --------

@@ -6,7 +6,7 @@ graph-derived answer, so the store supplies the data that trains and tests the
 rest of the pipeline. This page mines the store for questions whose answers are
 fixed by the graph, enriches each across a designed space of presentation
 conditions and emits one corpus that feeds both the encoder tuning
-(:doc:`07_embedding_sft`) and the evaluation (:doc:`15_evaluation`). The suite
+(:doc:`07_embedding_sft`) and the evaluation (:doc:`16_evaluation`). The suite
 API lives in ``knowlytix.harness.suite``.
 
 The organizing principle is ground-truth-invariant enrichment. A question about
@@ -105,13 +105,13 @@ carries a graph-derived answer, and the factor levels are balanced.
 
 The corpus is only as broad as the generators that mine it: the cohort spans the
 phrasings the design covers, not phrasings far outside the factor space, a limit
-:doc:`07_embedding_sft` and :doc:`15_evaluation` carry forward.
+:doc:`07_embedding_sft` and :doc:`16_evaluation` carry forward.
 
 See also
 --------
 
 - :doc:`04_document_to_graph` — the store this page mines as an oracle.
-- :doc:`07_embedding_sft` and :doc:`15_evaluation` — the encoder tuning and
+- :doc:`07_embedding_sft` and :doc:`16_evaluation` — the encoder tuning and
   evaluation that consume the emitted corpus.
 - :doc:`/3-api-reference/modules/knowlytix/harness/index` — the suite API
   (``Catalog``, ``resolve``, ``CatalogBaseSource``, ``compose``,

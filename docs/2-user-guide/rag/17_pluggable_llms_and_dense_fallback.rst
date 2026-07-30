@@ -1,4 +1,4 @@
-Chapter 16 — Pluggable LLMs and the Distrusted Dense Fallback
+Chapter 17 — Pluggable LLMs and the Distrusted Dense Fallback
 =============================================================
 
 A deployment has three LLM-shaped jobs: extract the query triples from the
@@ -208,5 +208,5 @@ See also
   ``LocalTransformersBackend``.
 - :doc:`/3-api-reference/modules/knowlytix/rag/index` — the dense fallback, pipeline
   and config types.
-- :doc:`13_abstention_and_coverage` — why the triple route abstains on prose.
+- :doc:`14_abstention_and_coverage` — why the triple route abstains on prose.
 - :doc:`/4-notebook-examples/rag/index` — the same configuration run end to end.

@@ -1,9 +1,9 @@
-Chapter 11 — Grounded Synthesis
+Chapter 12 — Grounded Synthesis
 ===============================
 
 Retrieval already decided the answer values through the graph: bound query
 triples resolved to asserted facts, each carrying its source span
-(:doc:`10_answering_through_the_gms`). What remains is to turn those facts into
+(:doc:`11_answering_through_the_gms`). What remains is to turn those facts into
 prose without letting the model reach into parametric memory. This page shows
 how :class:`~knowlytix.knowledge.rag.assemble.Assembler` formats the retrieved
 facts into an evidence block and calls the synthesis model under a prompt that
@@ -100,9 +100,9 @@ Grounded synthesis constrains where the answer comes from: the values were
 decided by the geometry, and synthesis is confined to phrasing them. It does not
 prove that the prose faithfully restates the facts, so a wayward model could
 still mis-phrase a value, which is why answer self-verification is a separate
-stage (:doc:`12_self_verification`). Synthesis also inherits the coverage of
+stage (:doc:`13_self_verification`). Synthesis also inherits the coverage of
 retrieval, so a blind-spot question yields a refusal
-(:doc:`13_abstention_and_coverage`).
+(:doc:`14_abstention_and_coverage`).
 
 See also
 --------
@@ -114,5 +114,5 @@ See also
 - :doc:`/3-api-reference/modules/knowlytix/llm/index` — the
   :class:`~knowlytix.knowledge.llm_backend.LLMBackend` interface and
   :class:`~knowlytix.knowledge.llm_backend.LocalTransformersBackend`.
-- :doc:`10_answering_through_the_gms` — where the retrieved facts come from.
+- :doc:`11_answering_through_the_gms` — where the retrieved facts come from.
 - :doc:`/4-notebook-examples/rag/index` — synthesis run end to end.

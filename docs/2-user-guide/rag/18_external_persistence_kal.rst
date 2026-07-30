@@ -1,4 +1,4 @@
-Chapter 17 — Persisting to an External Store (KAL / Postgres)
+Chapter 18 — Persisting to an External Store (KAL / Postgres)
 =============================================================
 
 A trained store is a directory on local disk: a model checkpoint, an adapter,
@@ -152,6 +152,6 @@ See also
 
 - :doc:`/3-api-reference/modules/knowlytix/kal/index` — the adapter contract and KAL
   types.
-- :doc:`03_provenance` and :doc:`12_self_verification` — the provenance and
+- :doc:`03_provenance` and :doc:`13_self_verification` — the provenance and
   verification records that ride along with each triple.
 - :doc:`/4-notebook-examples/rag/index` — the round trip run end to end.

@@ -103,7 +103,7 @@ The asserted headcount (340.0) scores strictly closer than the swapped tail
 (520.0). The distance is relative geometry, not a calibrated probability;
 :meth:`~knowlytix.knowledge.store.GMSExpertStore.cap_radius` reports the accept
 radius for a relation, and turning a gap into an accept or abstain decision is the
-subject of :doc:`14_calibration`.
+subject of :doc:`15_calibration`.
 
 Asserted edges and ranked tails
 -------------------------------

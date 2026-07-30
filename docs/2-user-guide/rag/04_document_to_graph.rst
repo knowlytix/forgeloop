@@ -126,7 +126,7 @@ value rather than a string re-parsed at answer time. The consequence is a graph,
 not a guarantee of completeness: regex ingestion extracts from tables and the
 declared schema, not free-form prose, so the report's narrative sections produce
 no triples, and a question answerable only from prose abstains rather than
-answers. Coverage and abstention are the subject of :doc:`13_abstention_and_coverage`.
+answers. Coverage and abstention are the subject of :doc:`14_abstention_and_coverage`.
 
 See also
 --------

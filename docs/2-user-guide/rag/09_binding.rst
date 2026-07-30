@@ -8,7 +8,7 @@ each non-variable slot to a term the store actually contains, or, when the term
 is genuinely ambiguous, refuses rather than guessing. A silent mis-resolution
 returns a confident, wrong, well-provenanced answer, which is the most damaging
 failure because the provenance makes it appear trustworthy. An unbound slot is a
-designed outcome that feeds abstention (:doc:`13_abstention_and_coverage`).
+designed outcome that feeds abstention (:doc:`14_abstention_and_coverage`).
 
 Binding is performed by
 :class:`~knowlytix.knowledge.rag.binding.TripleBinder`, which reads two
@@ -144,9 +144,9 @@ Where the thresholds come from
 Binding decides whether a term resolves, not whether the thresholds suit a
 corpus. ``bind_threshold`` and ``bind_margin`` are set under calibration:
 :func:`~knowlytix.knowledge.rag.eval.calibrate_bind_threshold` fits the operating
-point from labeled data (:doc:`14_calibration`). Binding also does not check
+point from labeled data (:doc:`15_calibration`). Binding also does not check
 whether a bound relation applies to its bound entity; that relevance check occurs
-downstream in :doc:`10_answering_through_the_gms`.
+downstream in :doc:`11_answering_through_the_gms`.
 
 See also
 --------
@@ -156,5 +156,5 @@ See also
   :func:`~knowlytix.knowledge.rag.eval.calibrate_bind_threshold`.
 - :doc:`08_triple_mediated_retrieval` — producing the query triples the binder
   consumes.
-- :doc:`14_calibration` — fitting ``bind_threshold`` and ``bind_margin``.
+- :doc:`15_calibration` — fitting ``bind_threshold`` and ``bind_margin``.
 - :doc:`/4-notebook-examples/rag/index` — binding run against the trained store.

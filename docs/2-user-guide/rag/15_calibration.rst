@@ -1,9 +1,9 @@
-Chapter 14 — Calibrate, Don't Guess
+Chapter 15 — Calibrate, Don't Guess
 ===================================
 
 The embedding binder turns on a single similarity cut: above it a paraphrase is
 accepted as a graph entity, below it the term is refused and the query abstains
-(:doc:`09_binding`, :doc:`13_abstention_and_coverage`). This page shows how to
+(:doc:`09_binding`, :doc:`14_abstention_and_coverage`). This page shows how to
 set that cut from a labeled cohort with
 :func:`knowlytix.knowledge.rag.eval.calibrate_bind_threshold` rather than by eye,
 so the operating point is the output of a recorded sweep and re-calibration is a
@@ -140,6 +140,6 @@ See also
 - :doc:`/3-api-reference/modules/knowlytix/store/index` — store-side calibration with
   :func:`~knowlytix.core.graph.admissibility.calibrate_cap_margins_per_head` and
   :func:`~knowlytix.core.graph.admissibility.calibrate_tension_threshold`.
-- :doc:`09_binding` and :doc:`13_abstention_and_coverage` — where the calibrated
+- :doc:`09_binding` and :doc:`14_abstention_and_coverage` — where the calibrated
   cut is read at query time.
 - :doc:`/4-notebook-examples/rag/index` — the sweep run end to end.

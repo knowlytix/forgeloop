@@ -1,4 +1,4 @@
-Chapter 18 — Capstone: The Assembled Pipeline
+Chapter 19 — Capstone: The Assembled Pipeline
 =============================================
 
 Each preceding page built one stage of a governed RAG over a single annual
@@ -25,17 +25,17 @@ gates it at a calibrated operating point.
    * - bind the query to graph vocabulary
      - :doc:`09_binding`
    * - answer through the graph
-     - :doc:`10_answering_through_the_gms`
+     - :doc:`11_answering_through_the_gms`
    * - synthesize a grounded answer
-     - :doc:`11_grounded_synthesis`
+     - :doc:`12_grounded_synthesis`
    * - verify with geometry
-     - :doc:`12_self_verification`
+     - :doc:`13_self_verification`
    * - abstain on a coverage blind spot
-     - :doc:`13_abstention_and_coverage`
+     - :doc:`14_abstention_and_coverage`
    * - calibrate every gate
-     - :doc:`14_calibration`
+     - :doc:`15_calibration`
    * - score against the store as oracle
-     - :doc:`15_evaluation`
+     - :doc:`16_evaluation`
 
 Assemble the pipeline
 ---------------------
@@ -68,14 +68,14 @@ self-verified, and a contradicted claim abstains.
        llm=qwen,
        encoder=v_ft.encode,            # tuned query/relevance v-encoder
        binding="fuzzy",                # 09_binding
-       ground_extraction=True,         # 10_answering_through_the_gms
+       ground_extraction=True,         # 11_answering_through_the_gms
        relevance_gate=True,            # geometric: v accepts, u vetoes
        relevance_mode="geometric",
        relevance_u_encoder=u_ft.encode,
-       verify_llm_output=True,         # 12_self_verification
-       on_verify_fail="abstain",       # 13_abstention_and_coverage
-       dense_fallback=False,           # 16_pluggable_llms_and_dense_fallback
-       accept_threshold=0.0,           # else the calibrated value (14_calibration)
+       verify_llm_output=True,         # 13_self_verification
+       on_verify_fail="abstain",       # 14_abstention_and_coverage
+       dense_fallback=False,           # 17_pluggable_llms_and_dense_fallback
+       accept_threshold=0.0,           # else the calibrated value (15_calibration)
    )
    pipe = RagPipeline.from_store(store, cfg)
 
@@ -98,7 +98,7 @@ reports its ``decision`` alongside the answer.
 The verdict
 -----------
 
-The designed experiment (:doc:`15_evaluation`) scores the geometric system and a
+The designed experiment (:doc:`16_evaluation`) scores the geometric system and a
 chunk-and-pray baseline on the same question cohort, with the store as oracle,
 and writes the comparison to disk. The geometric system reports higher precision
 and correctness, and only it abstains; the baseline cannot decline.
@@ -125,7 +125,7 @@ See also
 
 - :doc:`/3-api-reference/modules/knowlytix/rag/index` — the pipeline, config and
   answer types.
-- :doc:`16_pluggable_llms_and_dense_fallback` and
-  :doc:`17_external_persistence_kal` — swapping backends and persisting the
+- :doc:`17_pluggable_llms_and_dense_fallback` and
+  :doc:`18_external_persistence_kal` — swapping backends and persisting the
   graph to an external store.
 - :doc:`/4-notebook-examples/rag/index` — the full pipeline run end to end.

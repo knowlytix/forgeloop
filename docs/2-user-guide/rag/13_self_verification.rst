@@ -1,8 +1,8 @@
-Chapter 12 — Self-Verification: The GMS as a Hallucination Detector
+Chapter 13 — Self-Verification: The GMS as a Hallucination Detector
 ===================================================================
 
 Grounded synthesis constrains the model; it does not prove the model obeyed
-(:doc:`11_grounded_synthesis`). A small local model can still drop a digit, swap
+(:doc:`12_grounded_synthesis`). A small local model can still drop a digit, swap
 a segment or paste a half-remembered figure. This page shows how
 :class:`~knowlytix.knowledge.rag.verify.AnswerVerifier` decomposes an answer
 back into claim triples and checks each against the trained store, and how
@@ -162,7 +162,7 @@ model fails to extract is never checked, a claim that touches nothing in the
 graph is unverifiable rather than safe, and the check confirms agreement with
 the store, not truth, so a wrong fact in the store is faithfully echoed. It is
 the last gate, not the first, and it feeds the abstention branch of
-:doc:`13_abstention_and_coverage`.
+:doc:`14_abstention_and_coverage`.
 
 See also
 --------
@@ -174,6 +174,6 @@ See also
   :class:`~knowlytix.knowledge.rag.config.RagConfig`.
 - :doc:`/3-api-reference/modules/knowlytix/llm/index` — the
   :class:`~knowlytix.knowledge.llm_backend.LLMBackend` interface.
-- :doc:`11_grounded_synthesis` and :doc:`13_abstention_and_coverage` — the stage
+- :doc:`12_grounded_synthesis` and :doc:`14_abstention_and_coverage` — the stage
   before and the branch a failed verification takes.
 - :doc:`/4-notebook-examples/rag/index` — verification run end to end.
