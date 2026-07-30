@@ -91,14 +91,30 @@ The code above takes the ``compiler`` and its ``exemplar_rows`` as given. Arm A'
 encoder is tuned as in :doc:`07_embedding_sft`, but arm B's compiler is built in two
 steps --- generating the supervised samples from the store, then fine-tuning a small
 language model on them --- and because those steps are what a practitioner carries
-out to obtain the binder, they are set out here. Sample generation enumerates the
-store's asserted facts and, for each, produces a natural-language question paired
-with the gold ``(head, relation)`` hop chain that answers it, varying the question's
-presentation across the designed factors of :doc:`06_doe_enrichment` so the compiler
-sees many surface forms of the same fact rather than a single canonical phrasing. A
-presentation level and a fraction of the facts are withheld, which yields the
-held-out-level and novel-fact splits the bake-off scores on later, so the model is
-never trained on the questions it is tested against.
+out to obtain the binder, they are set out here.
+
+Sample generation is a design of experiments rather than a set of hand-written
+templates, and it runs in three stages, each bound to a knowlytix component. The
+base questions are mined from the graph by three generators --- single-hop facts,
+two-hop relation chains, and relation-absent probes that teach the compiler to
+abstain --- and each carries the gold ``(head, relation)`` chain that is its training
+target, held invariant through everything that follows. ``DesignMatrix.from_catalog``
+then draws a space-filling **Sobol** design over the comprehensive factor group of
+:doc:`06_doe_enrichment` --- roughly twenty presentation factors such as clarity,
+length, expertise and paraphrase depth --- with one design row per presentation
+variant. ``QuestionRephraser`` finally realizes each row, rewriting the base question
+to the factor levels the row specifies while preserving the target chain, so a single
+fact becomes many surface forms spread systematically across the presentation space
+rather than clustered on one phrasing or drawn at random.
+
+The design also defines the evaluation. Because the splits come from the design
+rather than from sampling after the fact, the held-out sets are genuinely unseen:
+reserving a factor level (here the *Misleading* level of clarity) routes every
+question at that level to the held-out-level split, and reserving a fraction of the
+entities routes their facts to the novel-fact split. One limitation is measured, not
+assumed --- a rephraser does not always produce text at the level it is asked for, so
+the bake-off scores the *realized* level of each question rather than the intended
+one.
 
 .. code-block:: python
 

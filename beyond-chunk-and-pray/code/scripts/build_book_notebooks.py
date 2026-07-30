@@ -112,16 +112,24 @@ B_CHAPTERS = [
              "licensed backend; run them locally (execution is off at render time)."),
       ("md", "**Setup.** Load the store and the base LM through the installed package."),
       ("code",
-       "from forgeloop import data_path\n"
+       "from forgeloop import data_path, ensure_artifacts\n"
        "from forgeloop.rag import load_store\n"
        "from knowlytix.knowledge.llm_backend import LocalTransformersBackend\n"
        "from knowlytix.knowledge.rag.compiler import (build_compiler_dataset, train_compiler,\n"
        "                                              CompilerSFTConfig, QWEN_4B)\n"
-       "store = load_store(str(data_path('gms_annual_report_store')))\n"
+       "ensure_artifacts()          # fetch the store + adapters if missing (portable)\n"
+       "store = load_store()        # forgeloop resolves the store dir -- no hardcoded path\n"
        "llm = LocalTransformersBackend(QWEN_4B)   # rephraser for datagen + base for SFT"),
-      ("md", "**Arm B, step 1 --- generate samples.** Enumerate the store's facts and pair "
-             "each with a natural-language question over the DoE presentation factors; "
-             "hold out a level and a fraction of facts for evaluation."),
+      ("md", "**Arm B, step 1 --- generate samples (a design of experiments).** "
+             "`build_compiler_dataset` runs three knowlytix stages: graph generators "
+             "mine base questions (single-hop, two-hop, and relation-absent probes), "
+             "each carrying its gold hop chain as the training target; "
+             "`DesignMatrix.from_catalog` draws a space-filling **Sobol** design over "
+             "the ~20 presentation factors of the DoE (clarity, length, expertise, "
+             "paraphrase depth, ...); and `QuestionRephraser` realizes each design row, "
+             "rewriting the base question to those factor levels while preserving the "
+             "target chain. A held-out factor level and a fraction of facts become the "
+             "eval splits, so the design defines what the model is tested on."),
       ("code",
        "splits = build_compiler_dataset(\n"
        "    store, llm, group='comprehensive', variants_per_base=12,\n"
