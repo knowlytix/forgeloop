@@ -21,9 +21,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.dirname(HERE)
 sys.path.insert(0, SCRIPTS)
-from _bootstrap import REPO_ROOT, use_branch_library  # noqa: E402
-
-use_branch_library()
+from forgeloop import data_path  # noqa: E402  (resolves the installed book data)
 
 import torch  # noqa: E402
 
@@ -33,8 +31,7 @@ from knowlytix.knowledge.llm_backend import LocalTransformersBackend  # noqa: E4
 from knowlytix.knowledge.rag.compiler import QWEN_4B, build_query_compiler  # noqa: E402
 from knowlytix.knowledge.store import GMSExpertStore  # noqa: E402
 
-STORE = os.environ.get("GMS_STORE",
-                       os.path.join(REPO_ROOT, "data", "gms_annual_report_store"))
+STORE = os.environ.get("GMS_STORE", str(data_path("gms_annual_report_store")))
 
 
 def load_store(store_path, dev):

@@ -27,9 +27,9 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.dirname(HERE)
 sys.path.insert(0, SCRIPTS)
-from _bootstrap import REPO_ROOT, load_store_geo, use_branch_library  # noqa: E402
+from _bootstrap import load_store_geo  # noqa: E402  (local store-loader helper)
 
-use_branch_library()
+from forgeloop import data_path  # noqa: E402  (resolves the installed book data)
 
 import torch  # noqa: E402
 
@@ -46,13 +46,13 @@ from knowlytix.knowledge.rag.bakeoff import (Arm, BinderPrediction,  # noqa: E40
                                              RealizedFactorScorer,
                                              calibrate_alias_resolver, bakeoff)
 
-STORE = os.environ.get("GMS_STORE", os.path.join(REPO_ROOT, "data", "gms_annual_report_store"))
+STORE = os.environ.get("GMS_STORE", str(data_path("gms_annual_report_store")))
 COMP_DIR = os.path.join(STORE, COMPILER_SUBDIR)
 DATA_DIR = os.path.join(COMP_DIR, "data")
-HOLDOUT = os.path.join(REPO_ROOT, "data", "enrichment", "holdout", "holdout_materialized.jsonl")
-EXEMPLARS = os.path.join(REPO_ROOT, "data", "enrichment", "llm_extract_sft.jsonl")
+HOLDOUT = str(data_path("enrichment", "holdout", "holdout_materialized.jsonl"))
+EXEMPLARS = str(data_path("enrichment", "llm_extract_sft.jsonl"))
 ALIAS_CAL = os.path.join(STORE, "alias_resolver_calibration.json")
-OUT = os.path.join(REPO_ROOT, "data", "enrichment", "bakeoff_ABCD.json")
+OUT = str(data_path("enrichment", "bakeoff_ABCD.json"))
 FEWSHOT_K = int(os.environ.get("FEWSHOT_K", "6"))
 
 # Realized presentation factors to slice the crossover on (measured, not intended).

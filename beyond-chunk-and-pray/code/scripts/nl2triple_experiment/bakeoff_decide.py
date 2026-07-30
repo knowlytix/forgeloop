@@ -11,20 +11,12 @@ from __future__ import annotations
 
 import json
 import os
-import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-SCRIPTS = os.path.dirname(HERE)
-sys.path.insert(0, SCRIPTS)
-from _bootstrap import REPO_ROOT, use_branch_library  # noqa: E402
+from forgeloop import data_path   # resolves the installed book data
+from knowlytix.knowledge.rag.bakeoff import DEFAULT_CEILINGS, decide
 
-use_branch_library()
-
-from knowlytix.knowledge.rag.bakeoff import DEFAULT_CEILINGS, decide  # noqa: E402
-
-REPORT = os.environ.get(
-    "BAKEOFF_REPORT", os.path.join(REPO_ROOT, "data", "enrichment", "bakeoff_ABCD.json"))
-OUT = os.path.join(REPO_ROOT, "data", "enrichment", "bakeoff_decision.json")
+REPORT = os.environ.get("BAKEOFF_REPORT", str(data_path("enrichment", "bakeoff_ABCD.json")))
+OUT = str(data_path("enrichment", "bakeoff_decision.json"))
 # The runtime has no clock in the library; stamp the audit from the caller.
 STAMP = os.environ.get("BAKEOFF_STAMP", "2026-07-30")
 

@@ -109,15 +109,15 @@ B_CHAPTERS = [
              "`scripts/run_bakeoff.py`, and the G4 decision rule by "
              "`scripts/bakeoff_decide.py`; this notebook reads the persisted crossover "
              "and verdict, so it runs without loading a model."),
-      ("code", BOOT),
       ("code", 'import json\n'
-               'report = json.load(open(os.path.join(REPO, "data", "enrichment", "bakeoff_ABCD.json")))\n'
+               'from forgeloop import data_path   # resolves the installed book data\n'
+               'report = json.load(open(data_path("enrichment", "bakeoff_ABCD.json")))\n'
                'print(f"{\'arm\':12}{\'acc\':>7}{\'mis_bind\':>10}{\'oos_FAR\':>9}{\'holdout\':>9}{\'patch\':>7}")\n'
                'for name, e in report["arms"].items():\n'
                '    o = e["overall"]\n'
                '    print(f"{name:12}{o[\'accuracy\']:>7.3f}{o[\'mis_bind_rate\']:>10.3f}"\n'
                '          f"{o[\'oos_false_accept\']:>9.3f}{e[\'holdout\'][\'accuracy\']:>9.3f}{e[\'patch_cost\']:>7}")'),
-      ("code", 'decision = json.load(open(os.path.join(REPO, "data", "enrichment", "bakeoff_decision.json")))\n'
+      ("code", 'decision = json.load(open(data_path("enrichment", "bakeoff_decision.json")))\n'
                'print("recommended:", decision["recommended"], "| recused:", decision["recused"])\n'
                'print(decision["rationale"])\n'
                'print("per-regime leaders:")\n'

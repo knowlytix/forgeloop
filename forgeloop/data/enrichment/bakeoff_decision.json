@@ -1,0 +1,197 @@
+{
+  "ceilings": {
+    "mis_bind_rate": 0.05,
+    "conformal_coverage": 0.9,
+    "synthetic_vs_real_gap": 0.1
+  },
+  "ceilings_ratified": false,
+  "arms": {
+    "A_encoder": {
+      "metrics": {
+        "accuracy": 0.7477,
+        "mis_bind_rate": 0.1778,
+        "oos_false_accept": 0.2115,
+        "novel_entity_score": 0.7167,
+        "holdout_accuracy": 0.5,
+        "synthetic_vs_real_gap": 0.2477,
+        "conformal_coverage": 0.5,
+        "patch_cost": 2,
+        "patch_mechanism": "adapter_retune"
+      },
+      "checks": {
+        "mis_bind_rate": false,
+        "conformal_coverage": false,
+        "synthetic_vs_real_gap": false
+      },
+      "admissible": false
+    },
+    "B_compiler": {
+      "metrics": {
+        "accuracy": 0.9666,
+        "mis_bind_rate": 0.0,
+        "oos_false_accept": 0.0,
+        "novel_entity_score": 0.95,
+        "holdout_accuracy": 0.375,
+        "synthetic_vs_real_gap": 0.5916,
+        "conformal_coverage": 0.375,
+        "patch_cost": 3,
+        "patch_mechanism": "full_retrain"
+      },
+      "checks": {
+        "mis_bind_rate": true,
+        "conformal_coverage": false,
+        "synthetic_vs_real_gap": false
+      },
+      "admissible": false
+    },
+    "C_fewshot": {
+      "metrics": {
+        "accuracy": 0.9544,
+        "mis_bind_rate": 0.0,
+        "oos_false_accept": 0.0192,
+        "novel_entity_score": 0.95,
+        "holdout_accuracy": 0.375,
+        "synthetic_vs_real_gap": 0.5794,
+        "conformal_coverage": 0.375,
+        "patch_cost": 1,
+        "patch_mechanism": "alias_edit"
+      },
+      "checks": {
+        "mis_bind_rate": true,
+        "conformal_coverage": false,
+        "synthetic_vs_real_gap": false
+      },
+      "admissible": false
+    },
+    "D_hybrid": {
+      "metrics": {
+        "accuracy": 0.9696,
+        "mis_bind_rate": 0.0,
+        "oos_false_accept": 0.0,
+        "novel_entity_score": 0.95,
+        "holdout_accuracy": 0.4,
+        "synthetic_vs_real_gap": 0.5696,
+        "conformal_coverage": 0.4,
+        "patch_cost": 1,
+        "patch_mechanism": "alias_edit"
+      },
+      "checks": {
+        "mis_bind_rate": true,
+        "conformal_coverage": false,
+        "synthetic_vs_real_gap": false
+      },
+      "admissible": false
+    }
+  },
+  "recommended": null,
+  "recused": true,
+  "rationale": "No binder clears every ceiling; recusing from a single pick. Nearest is D_hybrid, failing ['conformal_coverage', 'synthetic_vs_real_gap']. The per-regime crossover still identifies a leader within each factor level.",
+  "by_regime": {
+    "clarity": {
+      "Ambiguous": "D_hybrid",
+      "Clear": "B_compiler",
+      "Misleading": "C_fewshot"
+    },
+    "style": {
+      "Casual": "C_fewshot",
+      "Formal": "B_compiler",
+      "Technical": "B_compiler"
+    },
+    "length": {
+      "Long": "D_hybrid",
+      "Medium": "B_compiler",
+      "Short": "B_compiler"
+    },
+    "expertise": {
+      "Expert": "B_compiler",
+      "Intermediate": "D_hybrid",
+      "Novice": "B_compiler"
+    },
+    "paraphrase_depth": {
+      "Light": "D_hybrid"
+    }
+  },
+  "audit": {
+    "timestamp": "2026-07-30",
+    "ceilings": {
+      "mis_bind_rate": 0.05,
+      "conformal_coverage": 0.9,
+      "synthetic_vs_real_gap": 0.1
+    },
+    "ceilings_ratified": false,
+    "overall_accuracy_leader": "D_hybrid",
+    "per_arm": {
+      "A_encoder": {
+        "accuracy": 0.7477,
+        "mis_bind_rate": 0.1778,
+        "oos_false_accept": 0.2115,
+        "novel_entity_score": 0.7167,
+        "holdout_accuracy": 0.5,
+        "synthetic_vs_real_gap": 0.2477,
+        "conformal_coverage": 0.5,
+        "patch_cost": 2,
+        "patch_mechanism": "adapter_retune",
+        "checks": {
+          "mis_bind_rate": false,
+          "conformal_coverage": false,
+          "synthetic_vs_real_gap": false
+        },
+        "admissible": false
+      },
+      "B_compiler": {
+        "accuracy": 0.9666,
+        "mis_bind_rate": 0.0,
+        "oos_false_accept": 0.0,
+        "novel_entity_score": 0.95,
+        "holdout_accuracy": 0.375,
+        "synthetic_vs_real_gap": 0.5916,
+        "conformal_coverage": 0.375,
+        "patch_cost": 3,
+        "patch_mechanism": "full_retrain",
+        "checks": {
+          "mis_bind_rate": true,
+          "conformal_coverage": false,
+          "synthetic_vs_real_gap": false
+        },
+        "admissible": false
+      },
+      "C_fewshot": {
+        "accuracy": 0.9544,
+        "mis_bind_rate": 0.0,
+        "oos_false_accept": 0.0192,
+        "novel_entity_score": 0.95,
+        "holdout_accuracy": 0.375,
+        "synthetic_vs_real_gap": 0.5794,
+        "conformal_coverage": 0.375,
+        "patch_cost": 1,
+        "patch_mechanism": "alias_edit",
+        "checks": {
+          "mis_bind_rate": true,
+          "conformal_coverage": false,
+          "synthetic_vs_real_gap": false
+        },
+        "admissible": false
+      },
+      "D_hybrid": {
+        "accuracy": 0.9696,
+        "mis_bind_rate": 0.0,
+        "oos_false_accept": 0.0,
+        "novel_entity_score": 0.95,
+        "holdout_accuracy": 0.4,
+        "synthetic_vs_real_gap": 0.5696,
+        "conformal_coverage": 0.4,
+        "patch_cost": 1,
+        "patch_mechanism": "alias_edit",
+        "checks": {
+          "mis_bind_rate": true,
+          "conformal_coverage": false,
+          "synthetic_vs_real_gap": false
+        },
+        "admissible": false
+      }
+    },
+    "recommended": null,
+    "recused": true,
+    "rationale": "No binder clears every ceiling; recusing from a single pick. Nearest is D_hybrid, failing ['conformal_coverage', 'synthetic_vs_real_gap']. The per-regime crossover still identifies a leader within each factor level."
+  }
+}

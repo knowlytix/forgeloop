@@ -29,9 +29,9 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.dirname(HERE)
 sys.path.insert(0, SCRIPTS)
-from _bootstrap import REPO_ROOT, load_store_geo, use_branch_library  # noqa: E402
+from _bootstrap import load_store_geo  # noqa: E402  (local store-loader helper)
 
-use_branch_library()
+from forgeloop import data_path  # noqa: E402  (resolves the installed book data)
 
 # Reclaim freed unified memory eagerly and reduce fragmentation across stages.
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
@@ -45,8 +45,7 @@ from knowlytix.knowledge.rag.compiler import QWEN_4B  # noqa: E402
 from knowlytix.knowledge.rag.compiler.config import (COMPILER_SUBDIR,  # noqa: E402
                                                      CompilerSFTConfig)
 
-STORE = os.environ.get(
-    "GMS_STORE", os.path.join(REPO_ROOT, "data", "gms_annual_report_store"))
+STORE = os.environ.get("GMS_STORE", str(data_path("gms_annual_report_store")))
 COMP_DIR = os.path.join(STORE, COMPILER_SUBDIR)
 DATA_DIR = os.path.join(COMP_DIR, "data")
 
@@ -63,7 +62,7 @@ HELDOUT_LEVELS = {"clarity": "Misleading"}
 SEED = 42
 
 # The 4th corpus consumer (Section 3 of the bake-off spec): (nl, query_triples).
-ENRICH_DIR = os.path.join(REPO_ROOT, "data", "enrichment")
+ENRICH_DIR = str(data_path("enrichment"))
 LLM_EXTRACT_SFT = os.path.join(ENRICH_DIR, "llm_extract_sft.jsonl")
 
 
