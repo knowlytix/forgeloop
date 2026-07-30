@@ -28,7 +28,7 @@ OUT = os.path.join(HERE, os.pardir, "notebooks",
 
 BOOTSTRAP = (
     "import os, sys\n"
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
     "sys.path.insert(0, KNOWLYTIX_SRC)"
 )
 
@@ -39,7 +39,7 @@ LAYOUT = '''\
 #   gms-rag-tutorial/
 #     pyproject.toml                 # deps: knowlytix, torch, transformers, pandas, jupyter
 #     scripts/
-#       _bootstrap.py                # makes `knowlytix` resolve to the branch source
+#       _bootstrap.py                # knowlytix/forgeloop resolve from the installed wheels
 #       build_store.py               # corpus  -> trained store + data/corpus_facts.md
 #       build_nb_*.py                # one builder per chapter -> notebooks/*.ipynb
 #       build_nb_appendix_D.py       # this appendix's builder

@@ -1,168 +1,209 @@
-#!/usr/bin/env python
-"""Builder for notebooks/11_grounded_synthesis_a_inline.ipynb (Ch9 — Grounded synthesis).
+# SPDX-License-Identifier: Apache-2.0
+"""Build notebooks/11_answering_through_the_gms_a_inline.ipynb (Ch8) with nbformat.
 
-CPU-only. Emits a valid nbformat-4 notebook; does NOT execute it (no store, no
-Qwen). GPU/Qwen cells are marked for the lead to run in CI.
+CPU-only: this only assembles the .ipynb JSON. It does NOT execute any cell —
+no store load, no Qwen. The lead executes the notebook in CI.
+
+Run:  python scripts/build_nb_08.py
 """
+
 from __future__ import annotations
 
-import pathlib
+import os
 
 import nbformat as nbf
 from nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook
 
-NB_PATH = pathlib.Path(__file__).resolve().parents[1] / "notebooks" / "11_grounded_synthesis_a_inline.ipynb"
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(HERE, os.pardir, "notebooks", "11_answering_through_the_gms_a_inline.ipynb")
 
-cells: list = []
-
-cells.append(new_markdown_cell(
-    "# Ch9 — Grounded synthesis\n"
-    "\n"
-    "Retrieval (Ch8) already produced the answer *values* through the graph. "
-    "Synthesis turns those verified facts and their source spans into prose — "
-    "**without** letting the model reach into its parametric memory. The "
-    "`Assembler` hands the synthesis LLM an `<evidence>` block and a system "
-    "prompt that says *answer ONLY from these*. When the evidence does not "
-    "contain the answer, the model is instructed to decline.\n"
-    "\n"
-    "This notebook is grounded in `data/corpus_facts.md` (Northwind Industries "
-    "FY2025). Cells tagged **[GPU/Qwen — CI]** load Qwen and are executed by the "
-    "lead in CI; every other cell runs on CPU with a scripted fake backend so "
-    "the chapter's claim is checkable deterministically."
-))
-
-# --- Cell 1: KNOWLYTIX_SRC bootstrap (verbatim from global brief) ---
-cells.append(new_code_cell(
+BOOTSTRAP = (
     "import os, sys\n"
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
     "sys.path.insert(0, KNOWLYTIX_SRC)"
-))
+)
 
-# --- Cell 2: imports ---
-cells.append(new_code_cell(
-    "from knowlytix.knowledge.rag.assemble import Assembler\n"
-    "from knowlytix.knowledge.rag.retrieve import RetrievedFact\n"
-    "from knowlytix.knowledge.rag.config import RagConfig\n"
-    "from knowlytix.knowledge.llm_backend import LLMBackend\n"
-    "from knowlytix.knowledge.geode import QWEN_3B\n"
-    "\n"
-    "print('synthesis model (real path):', QWEN_3B)"
-))
+LOAD_STORE = '''\
+# Reload the trained store built by scripts/build_store.py (F2). This is the only
+# GPU/Qwen-touching part of the chapter at build time -- the lead runs it in CI;
+# retrieval itself is pure geometry and needs no LLM.
+import os
+import torch
 
-# --- Cell 3: the retrieved evidence (grounded in corpus_facts.md) ---
-cells.append(new_code_cell(
-    '# Facts as Ch8\'s Retriever would return them, with provenance spans.\n'
-    '# Source: data/corpus_facts.md sample retrieval for "cloud platform revenue".\n'
-    'facts = [\n'
-    '    RetrievedFact(\n'
-    '        head="cloud platform", relation="has_revenue", tail="120.0",\n'
-    '        score=0.0, confidence=1.0, source="triple",\n'
-    '        location=":15:553-558", raw="Cloud Platform | Technology | 120.0 | 340",\n'
-    '    ),\n'
-    ']\n'
-    'ENM_VALUE = "120.0"   # segment_performance / Cloud Platform/Technology/Revenue\n'
-    'print(Assembler._context("What was Cloud Platform revenue?", facts))'
-))
+from knowlytix.knowledge.config import DocGMSConfig
+from knowlytix.knowledge.store import GMSExpertStore
+from knowlytix.knowledge.geode.provenance import ProvenanceLedger
 
-# --- Cell 4: a scripted fake backend (deterministic, CPU) ---
-cells.append(new_code_cell(
-    'class FakeBackend(LLMBackend):\n'
-    '    """Deterministic stand-in for Qwen: grounds in the evidence string.\n'
-    '\n'
-    '    Mirrors a well-behaved synthesizer: it answers from the FACT line when\n'
-    '    the asked value is present, otherwise it declines. Used so the chapter\'s\n'
-    '    claim is checkable in CI without a GPU.\n'
-    '    """\n'
-    '    def __init__(self, model="fake-grounded"):\n'
-    '        self._model = model\n'
-    '\n'
-    '    def call(self, system: str, user: str, max_tokens: int = 2048) -> str:\n'
-    '        if "120.0" in user:\n'
-    '            return "Cloud Platform reported revenue of 120.0."\n'
-    '        return "I cannot answer that from the available evidence."\n'
-    '\n'
-    '    @property\n'
-    '    def model_name(self) -> str:\n'
-    '        return self._model'
-))
+REPO_ROOT = os.path.dirname(os.path.abspath(os.path.join(os.getcwd(), "..")))
+STORE = os.environ.get("GMS_STORE",
+                       os.path.join(os.getcwd(), "..", "data", "gms_annual_report_store"))
 
-# --- Cell 5: Listing (1) — synthesize a grounded answer (fake backend, CPU) ---
-cells.append(new_code_cell(
-    'assembler = Assembler(FakeBackend())\n'
-    'grounded = assembler.assemble("What was Cloud Platform revenue?", facts)\n'
-    'print(grounded)'
-))
+store = GMSExpertStore(DocGMSConfig(store_path=STORE),
+                       device=torch.device("cpu"))
+assert store.load(), f"no trained store at {STORE}; run scripts/build_store.py first"
+ledger = ProvenanceLedger.from_text(store.markdown)
+print("entities:", store.adapter.num_entities, " relations:", store.adapter.num_relations)'''
 
-# --- Cell 6: Listing (1, real) — the same with local Qwen [GPU/Qwen — CI] ---
-cells.append(new_code_cell(
-    '# [GPU/Qwen — CI] Real synthesis path. The lead runs this in CI; it is the\n'
-    '# per-role LLM choice (local Qwen3-4B-Instruct, no API key).\n'
-    'from knowlytix.knowledge.llm_backend import LocalTransformersBackend\n'
-    '\n'
-    'qwen = LocalTransformersBackend(QWEN_3B)\n'
-    'real_answer = Assembler(qwen).assemble("What was Cloud Platform revenue?", facts)\n'
-    'print(real_answer)\n'
-    '# Expected: prose stating revenue of 120.0, no other figure.'
-))
+SINGLE_HOP = '''\
+# Single-hop: bind a question's terms, then answer it *through the graph*.
+# The asked value is the bare "?" slot; the retriever returns the asserted edge,
+# never a parsed number, and attaches the source span.
+from knowlytix.knowledge.rag import Retriever, TripleBinder
+from knowlytix.knowledge.rag.query_triples import QueryTriple
 
-# --- Cell 7: Listing (2) — refuses when the facts lack the answer ---
-cells.append(new_code_cell(
-    '# No fact answers an Outlook question (a coverage blind spot, Ch11): the\n'
-    '# evidence block is empty, so a grounded synthesizer must decline.\n'
-    'no_facts: list[RetrievedFact] = []\n'
-    'refusal = Assembler(FakeBackend()).assemble(\n'
-    '    "What does the Outlook section forecast for FY2026?", no_facts)\n'
-    'print(refusal)'
-))
+binder = TripleBinder(store)
+retriever = Retriever(store, ledger)
 
-# --- Cell 8: Exercise — swap the synthesis LLM via RagConfig (per-role) ---
-cells.append(new_markdown_cell(
-    "## Exercise — per-role synthesis LLM\n"
-    "`RagConfig` keeps the three LLM roles separate: `llm` (synthesis), "
-    "`llm_extract` (NL -> query triples), `llm_verify` (answer -> claim "
-    "triples). Swap *only* the synthesis backend and confirm the other roles "
-    "fall back per `RagConfig.extract_llm()` / `verify_llm()`."
-))
-cells.append(new_code_cell(
-    'extract_be = FakeBackend("fake-extract")\n'
-    'synth_be = FakeBackend("fake-synth")\n'
-    '\n'
-    'cfg = RagConfig(llm=synth_be, llm_extract=extract_be)\n'
-    '# Synthesis uses the swapped backend; verify defaults to the extract role.\n'
-    'assert cfg.llm.model_name == "fake-synth"\n'
-    'assert cfg.extract_llm().model_name == "fake-extract"\n'
-    'assert cfg.verify_llm().model_name == "fake-extract"   # verify -> extract\n'
-    'print("synthesis :", cfg.llm.model_name)\n'
-    'print("extract   :", cfg.extract_llm().model_name)\n'
-    'print("verify    :", cfg.verify_llm().model_name)'
-))
+bt = binder.bind(QueryTriple("cloud platform", "has_revenue", "?"))
+assert bt.bound  # every non-variable slot resolved to real graph vocabulary
 
-# --- Final cell: self-check assert proving the chapter's claim ---
-cells.append(new_markdown_cell(
-    "## Self-check\n"
-    "The chapter's claim: a grounded answer **contains the ENM figure and no "
-    "other number**, and the synthesizer **refuses** when the evidence lacks "
-    "the answer."
-))
-cells.append(new_code_cell(
-    'import re\n'
-    '\n'
-    '# (a) the grounded answer carries the exact ENM figure ...\n'
-    'assert ENM_VALUE in grounded\n'
-    '# ... and introduces no other number.\n'
-    'nums = re.findall(r"\\d+(?:\\.\\d+)?", grounded)\n'
-    'assert set(nums) == {ENM_VALUE}, nums\n'
-    '# (b) with no supporting facts, the synthesizer declines.\n'
-    'assert "cannot answer" in refusal.lower()\n'
-    'print("Ch9 self-check passed: grounded synthesis carries only the ENM figure;"\n'
-    '      " empty evidence -> refusal.")'
-))
+result = retriever.retrieve([bt])
+for f in result.facts:
+    print(f"{f.head} {f.relation} {f.tail}  "
+          f"[{f.source} conf={f.confidence:.2f}]  @ {f.location}")
+    print("   raw:", f.raw)
+print("answers:", result.answers)'''
 
-nb = new_notebook(cells=cells, metadata={
-    "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
-    "language_info": {"name": "python"},
-})
+SINGLE_HOP_OUT = '''\
+# Expected (from data/corpus_facts.md; exact values from the trained store):
+#   cloud platform has_revenue 120.0  [triple conf=1.00]  @ <report>:15:553-558
+#      raw: <the table cell text the triple resolved to>
+#   answers: [('120.0', 1.0)]
+#
+# The fact's source is "triple" (an *asserted* edge), score 0.0, confidence 1.0:
+# the GMS preferred the in-graph fact over any link_predict guess. The 120.0 is
+# the byte-exact figure carried by ENM, with a file:line:char span -- not a
+# number scraped from prose.'''
 
-NB_PATH.parent.mkdir(parents=True, exist_ok=True)
-nbf.write(nb, str(NB_PATH))
-print(f"wrote {NB_PATH}")
+MULTI_HOP = '''\
+# Multi-hop: "which region hosts the highest-revenue segment?"
+# Cloud Platform leads revenue (120.0). We resolve its division (?x), then the
+# region of that division (?). The intermediate variable ?x links the two hops:
+# the retriever resolves it from hop 1 and feeds it into hop 2 (variable env).
+chain = [
+    binder.bind(QueryTriple("cloud platform", "has_division", "?x")),
+    binder.bind(QueryTriple("?x", "has_region", "?")),
+]
+assert all(b.bound for b in chain)
+
+res = retriever.retrieve(chain)
+print("hops:")
+for f in res.facts:
+    print(f"  {f.head} {f.relation} {f.tail}  [{f.source}]  @ {f.location}")
+print("answer:", res.answers)'''
+
+MULTI_HOP_OUT = '''\
+# Expected (corpus_facts.md sample retrieval):
+#   hops:
+#     cloud platform has_division technology  [triple]  @ <report>:..
+#     technology has_region north america     [triple]  @ <report>:..
+#   answer: [('north america', 1.0)]
+#
+# Both hops are recorded as separate, provenance-bearing facts. The chain is the
+# audit trail: a reader can see *why* the answer is "north america" -- segment ->
+# division -> region -- and check each edge against its source span.'''
+
+ASSERTED_VS_PREDICT = '''\
+# Asserted edges are preferred over link_predict (Anti-pattern: guessing over a
+# fact you hold). For an edge the graph asserts, source == "triple", score 0.0;
+# link_predict only fills genuinely missing edges and is scored lower.
+asserted = store.query_triples(head="cloud platform", relation="has_revenue")
+print("asserted in graph:", asserted)
+
+# A missing edge falls back to link_predict (a ranked guess, lower confidence):
+guess = store.link_predict("cloud platform", "has_region", top_k=3)
+print("link_predict (no asserted edge):", guess)'''
+
+ASSERTED_VS_PREDICT_OUT = '''\
+# Expected:
+#   asserted in graph: [('cloud platform', 'has_revenue', '120.0')]
+#   link_predict (no asserted edge): [(<entity>, <distance>), ...]
+#
+# The retriever's _tail_query checks query_triples first; only an empty result
+# triggers link_predict. So an answer the graph *asserts* is always returned as
+# a hard fact, never a prediction. The segment->region link is not asserted
+# directly (region lives on the division), which is exactly why the region
+# question must be answered multi-hop, not by a single-edge guess.'''
+
+SELF_CHECK = '''\
+# Self-check: the multi-hop answer matches the cohort label, and every supporting
+# fact carries provenance (the chapter's claim: bound triples -> facts, with
+# multi-hop resolved through a variable env and provenance attached per fact).
+res = retriever.retrieve([
+    binder.bind(QueryTriple("cloud platform", "has_division", "?x")),
+    binder.bind(QueryTriple("?x", "has_region", "?")),
+])
+assert res.answers, "multi-hop produced no answer"
+assert res.answers[0][0] == "north america", res.answers
+assert {(f.head, f.relation, f.tail) for f in res.facts} == {
+    ("cloud platform", "has_division", "technology"),
+    ("technology", "has_region", "north america"),
+}
+assert all(f.source == "triple" for f in res.facts), \\
+    "expected asserted edges, not predictions"
+assert all(f.location for f in res.facts), "a fact lost its provenance span"
+print("OK: multi-hop answer = north america, both hops asserted with provenance")'''
+
+EXERCISE = '''\
+# Exercise (solution): a 3-hop chain over segment -> division -> region, then ask
+# for the head of that region's division. We reuse ?x (division) for the head hop.
+ex = [
+    binder.bind(QueryTriple("logistics", "has_division", "?x")),  # -> operations
+    binder.bind(QueryTriple("?x", "has_region", "?y")),           # -> europe
+    binder.bind(QueryTriple("?x", "has_head", "?")),              # -> sam reyes
+]
+assert all(b.bound for b in ex)
+ex_res = retriever.retrieve(ex)
+print("3-hop facts:")
+for f in ex_res.facts:
+    print(f"  {f.head} {f.relation} {f.tail}")
+print("answer (division head):", ex_res.answers)
+# Expected facts: logistics has_division operations; operations has_region europe;
+# operations has_head sam reyes.  answer: [('sam reyes', 1.0)]
+assert ex_res.answers[0][0] == "sam reyes", ex_res.answers'''
+
+
+def main() -> None:
+    nb = new_notebook()
+    cells = [
+        new_markdown_cell(
+            "# Ch8 — Answering through the GMS\n\n"
+            "Binding turned the question's words into graph vocabulary (Ch7). This "
+            "chapter turns **bound query triples into facts**. The retriever "
+            "resolves each triple *through the GMS*: it prefers an asserted edge "
+            "over a `link_predict` guess, chains multi-hop questions through a "
+            "variable environment (`?x` feeds the next hop, the bare `?` is the "
+            "asked value), attaches a `file:line:char` provenance span to every "
+            "fact, and returns ENM-exact numerics.\n\n"
+            "No LLM is involved in *retrieval* — only the geometry. Synthesis "
+            "(Ch9) and verification (Ch10) come after."),
+        new_code_cell(BOOTSTRAP),
+        new_code_cell(LOAD_STORE),
+        new_markdown_cell("## Listing 8.1 — Single-hop retrieval with provenance"),
+        new_code_cell(SINGLE_HOP),
+        new_code_cell(SINGLE_HOP_OUT),
+        new_markdown_cell("## Listing 8.2 — Multi-hop via a variable environment"),
+        new_code_cell(MULTI_HOP),
+        new_code_cell(MULTI_HOP_OUT),
+        new_markdown_cell("## Listing 8.3 — Asserted edges preferred over link_predict"),
+        new_code_cell(ASSERTED_VS_PREDICT),
+        new_code_cell(ASSERTED_VS_PREDICT_OUT),
+        new_markdown_cell("## Exercise solution — a 3-hop chain"),
+        new_code_cell(EXERCISE),
+        new_markdown_cell("## Self-check"),
+        new_code_cell(SELF_CHECK),
+    ]
+    nb["cells"] = cells
+    nb["metadata"] = {
+        "kernelspec": {"display_name": "Python 3", "language": "python",
+                       "name": "python3"},
+        "language_info": {"name": "python"},
+    }
+    os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    with open(OUT, "w", encoding="utf-8") as f:
+        nbf.write(nb, f)
+    print("wrote", os.path.abspath(OUT))
+
+
+if __name__ == "__main__":
+    main()

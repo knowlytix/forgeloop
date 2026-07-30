@@ -1,0 +1,1081 @@
+{
+  "arms": {
+    "A_encoder": {
+      "overall": {
+        "n": 329,
+        "n_answerable": 225,
+        "n_absent": 104,
+        "bind_rate": 0.9067,
+        "correct_bind_rate": 0.7289,
+        "mis_bind_rate": 0.1778,
+        "fail_bind_rate": 0.0933,
+        "oos_false_accept": 0.2115,
+        "abstention_quality": 0.9417,
+        "accuracy": 0.7477,
+        "latency_ms_mean": null
+      },
+      "novel_entity": {
+        "n": 84,
+        "n_answerable": 60,
+        "n_absent": 24,
+        "bind_rate": 0.8833,
+        "correct_bind_rate": 0.7167,
+        "mis_bind_rate": 0.1667,
+        "fail_bind_rate": 0.1167,
+        "oos_false_accept": 0.375,
+        "abstention_quality": 0.9091,
+        "accuracy": 0.6905,
+        "latency_ms_mean": null,
+        "novel_entity_score": 0.7167
+      },
+      "slices": {
+        "clarity": {
+          "Ambiguous": {
+            "n": 108,
+            "n_answerable": 71,
+            "n_absent": 37,
+            "bind_rate": 0.7887,
+            "correct_bind_rate": 0.6338,
+            "mis_bind_rate": 0.1549,
+            "fail_bind_rate": 0.2113,
+            "oos_false_accept": 0.1892,
+            "abstention_quality": 0.9333,
+            "accuracy": 0.6944,
+            "latency_ms_mean": null
+          },
+          "Clear": {
+            "n": 114,
+            "n_answerable": 85,
+            "n_absent": 29,
+            "bind_rate": 0.9647,
+            "correct_bind_rate": 0.8353,
+            "mis_bind_rate": 0.1294,
+            "fail_bind_rate": 0.0353,
+            "oos_false_accept": 0.1034,
+            "abstention_quality": 0.931,
+            "accuracy": 0.8509,
+            "latency_ms_mean": null
+          },
+          "Misleading": {
+            "n": 107,
+            "n_answerable": 69,
+            "n_absent": 38,
+            "bind_rate": 0.9565,
+            "correct_bind_rate": 0.6957,
+            "mis_bind_rate": 0.2609,
+            "fail_bind_rate": 0.0435,
+            "oos_false_accept": 0.3158,
+            "abstention_quality": 0.9655,
+            "accuracy": 0.6916,
+            "latency_ms_mean": null
+          }
+        },
+        "style": {
+          "Casual": {
+            "n": 69,
+            "n_answerable": 43,
+            "n_absent": 26,
+            "bind_rate": 0.8837,
+            "correct_bind_rate": 0.7442,
+            "mis_bind_rate": 0.1395,
+            "fail_bind_rate": 0.1163,
+            "oos_false_accept": 0.3462,
+            "abstention_quality": 0.9545,
+            "accuracy": 0.7101,
+            "latency_ms_mean": null
+          },
+          "Formal": {
+            "n": 45,
+            "n_answerable": 21,
+            "n_absent": 24,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 0.5238,
+            "mis_bind_rate": 0.4762,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.25,
+            "abstention_quality": 1.0,
+            "accuracy": 0.6444,
+            "latency_ms_mean": null
+          },
+          "Technical": {
+            "n": 215,
+            "n_answerable": 161,
+            "n_absent": 54,
+            "bind_rate": 0.9006,
+            "correct_bind_rate": 0.7516,
+            "mis_bind_rate": 0.1491,
+            "fail_bind_rate": 0.0994,
+            "oos_false_accept": 0.1296,
+            "abstention_quality": 0.9206,
+            "accuracy": 0.7814,
+            "latency_ms_mean": null
+          }
+        },
+        "length": {
+          "Long": {
+            "n": 119,
+            "n_answerable": 85,
+            "n_absent": 34,
+            "bind_rate": 0.8,
+            "correct_bind_rate": 0.4941,
+            "mis_bind_rate": 0.3059,
+            "fail_bind_rate": 0.2,
+            "oos_false_accept": 0.1176,
+            "abstention_quality": 0.8723,
+            "accuracy": 0.605,
+            "latency_ms_mean": null
+          },
+          "Medium": {
+            "n": 81,
+            "n_answerable": 52,
+            "n_absent": 29,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 0.7308,
+            "mis_bind_rate": 0.2692,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.1724,
+            "abstention_quality": 1.0,
+            "accuracy": 0.7654,
+            "latency_ms_mean": null
+          },
+          "Short": {
+            "n": 129,
+            "n_answerable": 88,
+            "n_absent": 41,
+            "bind_rate": 0.9545,
+            "correct_bind_rate": 0.9545,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0455,
+            "oos_false_accept": 0.3171,
+            "abstention_quality": 1.0,
+            "accuracy": 0.8682,
+            "latency_ms_mean": null
+          }
+        },
+        "expertise": {
+          "Expert": {
+            "n": 131,
+            "n_answerable": 96,
+            "n_absent": 35,
+            "bind_rate": 0.8542,
+            "correct_bind_rate": 0.6562,
+            "mis_bind_rate": 0.1979,
+            "fail_bind_rate": 0.1458,
+            "oos_false_accept": 0.2857,
+            "abstention_quality": 0.9231,
+            "accuracy": 0.6718,
+            "latency_ms_mean": null
+          },
+          "Intermediate": {
+            "n": 138,
+            "n_answerable": 89,
+            "n_absent": 49,
+            "bind_rate": 0.9438,
+            "correct_bind_rate": 0.809,
+            "mis_bind_rate": 0.1348,
+            "fail_bind_rate": 0.0562,
+            "oos_false_accept": 0.2041,
+            "abstention_quality": 0.9318,
+            "accuracy": 0.8043,
+            "latency_ms_mean": null
+          },
+          "Novice": {
+            "n": 60,
+            "n_answerable": 40,
+            "n_absent": 20,
+            "bind_rate": 0.95,
+            "correct_bind_rate": 0.725,
+            "mis_bind_rate": 0.225,
+            "fail_bind_rate": 0.05,
+            "oos_false_accept": 0.1,
+            "abstention_quality": 1.0,
+            "accuracy": 0.7833,
+            "latency_ms_mean": null
+          }
+        },
+        "paraphrase_depth": {
+          "Light": {
+            "n": 329,
+            "n_answerable": 225,
+            "n_absent": 104,
+            "bind_rate": 0.9067,
+            "correct_bind_rate": 0.7289,
+            "mis_bind_rate": 0.1778,
+            "fail_bind_rate": 0.0933,
+            "oos_false_accept": 0.2115,
+            "abstention_quality": 0.9417,
+            "accuracy": 0.7477,
+            "latency_ms_mean": null
+          }
+        }
+      },
+      "patch_cost": 2,
+      "patch_mechanism": "adapter_retune",
+      "holdout": {
+        "n": 40,
+        "n_answerable": 34,
+        "n_absent": 6,
+        "bind_rate": 0.5,
+        "correct_bind_rate": 0.4118,
+        "mis_bind_rate": 0.0882,
+        "fail_bind_rate": 0.5,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.8696,
+        "accuracy": 0.5,
+        "latency_ms_mean": null
+      },
+      "synthetic_vs_real_gap": 0.2477,
+      "conformal": {
+        "target": 0.9,
+        "coverage": 0.5,
+        "avg_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "n": 40
+      }
+    },
+    "B_compiler": {
+      "overall": {
+        "n": 329,
+        "n_answerable": 225,
+        "n_absent": 104,
+        "bind_rate": 0.9511,
+        "correct_bind_rate": 0.9511,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.0489,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.9478,
+        "accuracy": 0.9666,
+        "latency_ms_mean": null
+      },
+      "novel_entity": {
+        "n": 84,
+        "n_answerable": 60,
+        "n_absent": 24,
+        "bind_rate": 0.95,
+        "correct_bind_rate": 0.95,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.05,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.9259,
+        "accuracy": 0.9643,
+        "latency_ms_mean": null,
+        "novel_entity_score": 0.95
+      },
+      "slices": {
+        "clarity": {
+          "Ambiguous": {
+            "n": 108,
+            "n_answerable": 71,
+            "n_absent": 37,
+            "bind_rate": 0.9155,
+            "correct_bind_rate": 0.9155,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0845,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9302,
+            "accuracy": 0.9444,
+            "latency_ms_mean": null
+          },
+          "Clear": {
+            "n": 114,
+            "n_answerable": 85,
+            "n_absent": 29,
+            "bind_rate": 0.9647,
+            "correct_bind_rate": 0.9647,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0353,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9375,
+            "accuracy": 0.9737,
+            "latency_ms_mean": null
+          },
+          "Misleading": {
+            "n": 107,
+            "n_answerable": 69,
+            "n_absent": 38,
+            "bind_rate": 0.971,
+            "correct_bind_rate": 0.971,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.029,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.975,
+            "accuracy": 0.9813,
+            "latency_ms_mean": null
+          }
+        },
+        "style": {
+          "Casual": {
+            "n": 69,
+            "n_answerable": 43,
+            "n_absent": 26,
+            "bind_rate": 0.9302,
+            "correct_bind_rate": 0.9302,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0698,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9655,
+            "accuracy": 0.9565,
+            "latency_ms_mean": null
+          },
+          "Formal": {
+            "n": 45,
+            "n_answerable": 21,
+            "n_absent": 24,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          },
+          "Technical": {
+            "n": 215,
+            "n_answerable": 161,
+            "n_absent": 54,
+            "bind_rate": 0.9503,
+            "correct_bind_rate": 0.9503,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0497,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9194,
+            "accuracy": 0.9628,
+            "latency_ms_mean": null
+          }
+        },
+        "length": {
+          "Long": {
+            "n": 119,
+            "n_answerable": 85,
+            "n_absent": 34,
+            "bind_rate": 0.8706,
+            "correct_bind_rate": 0.8706,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.1294,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.8667,
+            "accuracy": 0.9076,
+            "latency_ms_mean": null
+          },
+          "Medium": {
+            "n": 81,
+            "n_answerable": 52,
+            "n_absent": 29,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          },
+          "Short": {
+            "n": 129,
+            "n_answerable": 88,
+            "n_absent": 41,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          }
+        },
+        "expertise": {
+          "Expert": {
+            "n": 131,
+            "n_answerable": 96,
+            "n_absent": 35,
+            "bind_rate": 0.9271,
+            "correct_bind_rate": 0.9271,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0729,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9048,
+            "accuracy": 0.9466,
+            "latency_ms_mean": null
+          },
+          "Intermediate": {
+            "n": 138,
+            "n_answerable": 89,
+            "n_absent": 49,
+            "bind_rate": 0.9551,
+            "correct_bind_rate": 0.9551,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0449,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9623,
+            "accuracy": 0.971,
+            "latency_ms_mean": null
+          },
+          "Novice": {
+            "n": 60,
+            "n_answerable": 40,
+            "n_absent": 20,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          }
+        },
+        "paraphrase_depth": {
+          "Light": {
+            "n": 329,
+            "n_answerable": 225,
+            "n_absent": 104,
+            "bind_rate": 0.9511,
+            "correct_bind_rate": 0.9511,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0489,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9478,
+            "accuracy": 0.9666,
+            "latency_ms_mean": null
+          }
+        }
+      },
+      "patch_cost": 3,
+      "patch_mechanism": "full_retrain",
+      "holdout": {
+        "n": 40,
+        "n_answerable": 34,
+        "n_absent": 6,
+        "bind_rate": 0.2647,
+        "correct_bind_rate": 0.2647,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.7353,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.871,
+        "accuracy": 0.375,
+        "latency_ms_mean": null
+      },
+      "synthetic_vs_real_gap": 0.5916,
+      "conformal": {
+        "target": 0.9,
+        "coverage": 0.375,
+        "avg_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "n": 40
+      }
+    },
+    "C_fewshot": {
+      "overall": {
+        "n": 329,
+        "n_answerable": 225,
+        "n_absent": 104,
+        "bind_rate": 0.9422,
+        "correct_bind_rate": 0.9422,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.0578,
+        "oos_false_accept": 0.0192,
+        "abstention_quality": 0.9565,
+        "accuracy": 0.9544,
+        "latency_ms_mean": null
+      },
+      "novel_entity": {
+        "n": 84,
+        "n_answerable": 60,
+        "n_absent": 24,
+        "bind_rate": 0.95,
+        "correct_bind_rate": 0.95,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.05,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.963,
+        "accuracy": 0.9643,
+        "latency_ms_mean": null,
+        "novel_entity_score": 0.95
+      },
+      "slices": {
+        "clarity": {
+          "Ambiguous": {
+            "n": 108,
+            "n_answerable": 71,
+            "n_absent": 37,
+            "bind_rate": 0.9296,
+            "correct_bind_rate": 0.9296,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0704,
+            "oos_false_accept": 0.0541,
+            "abstention_quality": 0.95,
+            "accuracy": 0.9352,
+            "latency_ms_mean": null
+          },
+          "Clear": {
+            "n": 114,
+            "n_answerable": 85,
+            "n_absent": 29,
+            "bind_rate": 0.9176,
+            "correct_bind_rate": 0.9176,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0824,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9444,
+            "accuracy": 0.9386,
+            "latency_ms_mean": null
+          },
+          "Misleading": {
+            "n": 107,
+            "n_answerable": 69,
+            "n_absent": 38,
+            "bind_rate": 0.9855,
+            "correct_bind_rate": 0.9855,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0145,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9744,
+            "accuracy": 0.9907,
+            "latency_ms_mean": null
+          }
+        },
+        "style": {
+          "Casual": {
+            "n": 69,
+            "n_answerable": 43,
+            "n_absent": 26,
+            "bind_rate": 0.9535,
+            "correct_bind_rate": 0.9535,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0465,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 0.971,
+            "latency_ms_mean": null
+          },
+          "Formal": {
+            "n": 45,
+            "n_answerable": 21,
+            "n_absent": 24,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0833,
+            "abstention_quality": 1.0,
+            "accuracy": 0.9556,
+            "latency_ms_mean": null
+          },
+          "Technical": {
+            "n": 215,
+            "n_answerable": 161,
+            "n_absent": 54,
+            "bind_rate": 0.9317,
+            "correct_bind_rate": 0.9317,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0683,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9231,
+            "accuracy": 0.9488,
+            "latency_ms_mean": null
+          }
+        },
+        "length": {
+          "Long": {
+            "n": 119,
+            "n_answerable": 85,
+            "n_absent": 34,
+            "bind_rate": 0.8471,
+            "correct_bind_rate": 0.8471,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.1529,
+            "oos_false_accept": 0.0588,
+            "abstention_quality": 0.8889,
+            "accuracy": 0.8739,
+            "latency_ms_mean": null
+          },
+          "Medium": {
+            "n": 81,
+            "n_answerable": 52,
+            "n_absent": 29,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          },
+          "Short": {
+            "n": 129,
+            "n_answerable": 88,
+            "n_absent": 41,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          }
+        },
+        "expertise": {
+          "Expert": {
+            "n": 131,
+            "n_answerable": 96,
+            "n_absent": 35,
+            "bind_rate": 0.9062,
+            "correct_bind_rate": 0.9062,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0938,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9091,
+            "accuracy": 0.9313,
+            "latency_ms_mean": null
+          },
+          "Intermediate": {
+            "n": 138,
+            "n_answerable": 89,
+            "n_absent": 49,
+            "bind_rate": 0.9551,
+            "correct_bind_rate": 0.9551,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0449,
+            "oos_false_accept": 0.0408,
+            "abstention_quality": 0.9804,
+            "accuracy": 0.9565,
+            "latency_ms_mean": null
+          },
+          "Novice": {
+            "n": 60,
+            "n_answerable": 40,
+            "n_absent": 20,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          }
+        },
+        "paraphrase_depth": {
+          "Light": {
+            "n": 329,
+            "n_answerable": 225,
+            "n_absent": 104,
+            "bind_rate": 0.9422,
+            "correct_bind_rate": 0.9422,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0578,
+            "oos_false_accept": 0.0192,
+            "abstention_quality": 0.9565,
+            "accuracy": 0.9544,
+            "latency_ms_mean": null
+          }
+        }
+      },
+      "patch_cost": 1,
+      "patch_mechanism": "alias_edit",
+      "holdout": {
+        "n": 40,
+        "n_answerable": 34,
+        "n_absent": 6,
+        "bind_rate": 0.2647,
+        "correct_bind_rate": 0.2647,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.7353,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.9032,
+        "accuracy": 0.375,
+        "latency_ms_mean": null
+      },
+      "synthetic_vs_real_gap": 0.5794,
+      "conformal": {
+        "target": 0.9,
+        "coverage": 0.375,
+        "avg_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "n": 40
+      }
+    },
+    "D_hybrid": {
+      "overall": {
+        "n": 329,
+        "n_answerable": 225,
+        "n_absent": 104,
+        "bind_rate": 0.9556,
+        "correct_bind_rate": 0.9556,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.0444,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.9474,
+        "accuracy": 0.9696,
+        "latency_ms_mean": null
+      },
+      "novel_entity": {
+        "n": 84,
+        "n_answerable": 60,
+        "n_absent": 24,
+        "bind_rate": 0.95,
+        "correct_bind_rate": 0.95,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.05,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.9259,
+        "accuracy": 0.9643,
+        "latency_ms_mean": null,
+        "novel_entity_score": 0.95
+      },
+      "slices": {
+        "clarity": {
+          "Ambiguous": {
+            "n": 108,
+            "n_answerable": 71,
+            "n_absent": 37,
+            "bind_rate": 0.9296,
+            "correct_bind_rate": 0.9296,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0704,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9286,
+            "accuracy": 0.9537,
+            "latency_ms_mean": null
+          },
+          "Clear": {
+            "n": 114,
+            "n_answerable": 85,
+            "n_absent": 29,
+            "bind_rate": 0.9647,
+            "correct_bind_rate": 0.9647,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0353,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9375,
+            "accuracy": 0.9737,
+            "latency_ms_mean": null
+          },
+          "Misleading": {
+            "n": 107,
+            "n_answerable": 69,
+            "n_absent": 38,
+            "bind_rate": 0.971,
+            "correct_bind_rate": 0.971,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.029,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.975,
+            "accuracy": 0.9813,
+            "latency_ms_mean": null
+          }
+        },
+        "style": {
+          "Casual": {
+            "n": 69,
+            "n_answerable": 43,
+            "n_absent": 26,
+            "bind_rate": 0.9535,
+            "correct_bind_rate": 0.9535,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0465,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9643,
+            "accuracy": 0.971,
+            "latency_ms_mean": null
+          },
+          "Formal": {
+            "n": 45,
+            "n_answerable": 21,
+            "n_absent": 24,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          },
+          "Technical": {
+            "n": 215,
+            "n_answerable": 161,
+            "n_absent": 54,
+            "bind_rate": 0.9503,
+            "correct_bind_rate": 0.9503,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0497,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9194,
+            "accuracy": 0.9628,
+            "latency_ms_mean": null
+          }
+        },
+        "length": {
+          "Long": {
+            "n": 119,
+            "n_answerable": 85,
+            "n_absent": 34,
+            "bind_rate": 0.8824,
+            "correct_bind_rate": 0.8824,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.1176,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.8636,
+            "accuracy": 0.916,
+            "latency_ms_mean": null
+          },
+          "Medium": {
+            "n": 81,
+            "n_answerable": 52,
+            "n_absent": 29,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          },
+          "Short": {
+            "n": 129,
+            "n_answerable": 88,
+            "n_absent": 41,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          }
+        },
+        "expertise": {
+          "Expert": {
+            "n": 131,
+            "n_answerable": 96,
+            "n_absent": 35,
+            "bind_rate": 0.9271,
+            "correct_bind_rate": 0.9271,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0729,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9048,
+            "accuracy": 0.9466,
+            "latency_ms_mean": null
+          },
+          "Intermediate": {
+            "n": 138,
+            "n_answerable": 89,
+            "n_absent": 49,
+            "bind_rate": 0.9663,
+            "correct_bind_rate": 0.9663,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0337,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9615,
+            "accuracy": 0.9783,
+            "latency_ms_mean": null
+          },
+          "Novice": {
+            "n": 60,
+            "n_answerable": 40,
+            "n_absent": 20,
+            "bind_rate": 1.0,
+            "correct_bind_rate": 1.0,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 1.0,
+            "accuracy": 1.0,
+            "latency_ms_mean": null
+          }
+        },
+        "paraphrase_depth": {
+          "Light": {
+            "n": 329,
+            "n_answerable": 225,
+            "n_absent": 104,
+            "bind_rate": 0.9556,
+            "correct_bind_rate": 0.9556,
+            "mis_bind_rate": 0.0,
+            "fail_bind_rate": 0.0444,
+            "oos_false_accept": 0.0,
+            "abstention_quality": 0.9474,
+            "accuracy": 0.9696,
+            "latency_ms_mean": null
+          }
+        }
+      },
+      "patch_cost": 1,
+      "patch_mechanism": "alias_edit",
+      "holdout": {
+        "n": 40,
+        "n_answerable": 34,
+        "n_absent": 6,
+        "bind_rate": 0.2941,
+        "correct_bind_rate": 0.2941,
+        "mis_bind_rate": 0.0,
+        "fail_bind_rate": 0.7059,
+        "oos_false_accept": 0.0,
+        "abstention_quality": 0.8333,
+        "accuracy": 0.4,
+        "latency_ms_mean": null
+      },
+      "synthetic_vs_real_gap": 0.5696,
+      "conformal": {
+        "target": 0.9,
+        "coverage": 0.4,
+        "avg_set_size": 1.0,
+        "singleton_rate": 1.0,
+        "n": 40
+      }
+    }
+  },
+  "crossover": {
+    "overall_accuracy_leader": "D_hybrid",
+    "by_factor": {
+      "clarity": {
+        "Ambiguous": {
+          "accuracy_leader": "D_hybrid",
+          "accuracy": {
+            "A_encoder": 0.6944,
+            "B_compiler": 0.9444,
+            "C_fewshot": 0.9352,
+            "D_hybrid": 0.9537
+          },
+          "min_mis_bind": "B_compiler"
+        },
+        "Clear": {
+          "accuracy_leader": "B_compiler",
+          "accuracy": {
+            "A_encoder": 0.8509,
+            "B_compiler": 0.9737,
+            "C_fewshot": 0.9386,
+            "D_hybrid": 0.9737
+          },
+          "min_mis_bind": "B_compiler"
+        },
+        "Misleading": {
+          "accuracy_leader": "C_fewshot",
+          "accuracy": {
+            "A_encoder": 0.6916,
+            "B_compiler": 0.9813,
+            "C_fewshot": 0.9907,
+            "D_hybrid": 0.9813
+          },
+          "min_mis_bind": "B_compiler"
+        }
+      },
+      "style": {
+        "Casual": {
+          "accuracy_leader": "C_fewshot",
+          "accuracy": {
+            "A_encoder": 0.7101,
+            "B_compiler": 0.9565,
+            "C_fewshot": 0.971,
+            "D_hybrid": 0.971
+          },
+          "min_mis_bind": "B_compiler"
+        },
+        "Formal": {
+          "accuracy_leader": "B_compiler",
+          "accuracy": {
+            "A_encoder": 0.6444,
+            "B_compiler": 1.0,
+            "C_fewshot": 0.9556,
+            "D_hybrid": 1.0
+          },
+          "min_mis_bind": "B_compiler"
+        },
+        "Technical": {
+          "accuracy_leader": "B_compiler",
+          "accuracy": {
+            "A_encoder": 0.7814,
+            "B_compiler": 0.9628,
+            "C_fewshot": 0.9488,
+            "D_hybrid": 0.9628
+          },
+          "min_mis_bind": "B_compiler"
+        }
+      },
+      "length": {
+        "Long": {
+          "accuracy_leader": "D_hybrid",
+          "accuracy": {
+            "A_encoder": 0.605,
+            "B_compiler": 0.9076,
+            "C_fewshot": 0.8739,
+            "D_hybrid": 0.916
+          },
+          "min_mis_bind": "B_compiler"
+        },
+        "Medium": {
+          "accuracy_leader": "B_compiler",
+          "accuracy": {
+            "A_encoder": 0.7654,
+            "B_compiler": 1.0,
+            "C_fewshot": 1.0,
+            "D_hybrid": 1.0
+          },
+          "min_mis_bind": "B_compiler"
+        },
+        "Short": {
+          "accuracy_leader": "B_compiler",
+          "accuracy": {
+            "A_encoder": 0.8682,
+            "B_compiler": 1.0,
+            "C_fewshot": 1.0,
+            "D_hybrid": 1.0
+          },
+          "min_mis_bind": "A_encoder"
+        }
+      },
+      "expertise": {
+        "Expert": {
+          "accuracy_leader": "B_compiler",
+          "accuracy": {
+            "A_encoder": 0.6718,
+            "B_compiler": 0.9466,
+            "C_fewshot": 0.9313,
+            "D_hybrid": 0.9466
+          },
+          "min_mis_bind": "B_compiler"
+        },
+        "Intermediate": {
+          "accuracy_leader": "D_hybrid",
+          "accuracy": {
+            "A_encoder": 0.8043,
+            "B_compiler": 0.971,
+            "C_fewshot": 0.9565,
+            "D_hybrid": 0.9783
+          },
+          "min_mis_bind": "B_compiler"
+        },
+        "Novice": {
+          "accuracy_leader": "B_compiler",
+          "accuracy": {
+            "A_encoder": 0.7833,
+            "B_compiler": 1.0,
+            "C_fewshot": 1.0,
+            "D_hybrid": 1.0
+          },
+          "min_mis_bind": "B_compiler"
+        }
+      },
+      "paraphrase_depth": {
+        "Light": {
+          "accuracy_leader": "D_hybrid",
+          "accuracy": {
+            "A_encoder": 0.7477,
+            "B_compiler": 0.9666,
+            "C_fewshot": 0.9544,
+            "D_hybrid": 0.9696
+          },
+          "min_mis_bind": "B_compiler"
+        }
+      }
+    }
+  }
+}

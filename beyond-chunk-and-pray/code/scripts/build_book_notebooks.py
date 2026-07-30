@@ -22,7 +22,7 @@ NBDIR = os.path.join(HERE, "..", "..", "notebooks")
 
 BOOT = (
     'import os, sys\n'
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
     'sys.path.insert(0, KNOWLYTIX_SRC)\n'
     'REPO = os.path.join(os.path.dirname(os.getcwd()), "code") if os.path.basename(os.getcwd()) == "notebooks" else os.getcwd()\n'
     'sys.path.insert(0, os.path.join(REPO, "scripts"))'
@@ -102,40 +102,61 @@ B_CHAPTERS = [
      [("md", "Bind a paraphrased query to the graph through the tuned v-encoder."),
       ("code", BOOT), ("code", PIPE),
       ("code", 'print(pipe.extract("How much did the cloud segment sell?").bound_triples)')]),
-    (10, "answering_through_the_gms", "Answering through the GMS",
+    (10, "binder_bakeoff", "Choosing a binder: a bake-off",
+     [("md", "The bake-off holds the pipeline fixed and varies only the binder across "
+             "four arms --- encoder (A), compiler (B), frozen few-shot (C) and the "
+             "alias-table hybrid (D). The arms are built and scored on the GPU by "
+             "`scripts/run_bakeoff.py`, and the G4 decision rule by "
+             "`scripts/bakeoff_decide.py`; this notebook reads the persisted crossover "
+             "and verdict, so it runs without loading a model."),
+      ("code", BOOT),
+      ("code", 'import json\n'
+               'report = json.load(open(os.path.join(REPO, "data", "enrichment", "bakeoff_ABCD.json")))\n'
+               'print(f"{\'arm\':12}{\'acc\':>7}{\'mis_bind\':>10}{\'oos_FAR\':>9}{\'holdout\':>9}{\'patch\':>7}")\n'
+               'for name, e in report["arms"].items():\n'
+               '    o = e["overall"]\n'
+               '    print(f"{name:12}{o[\'accuracy\']:>7.3f}{o[\'mis_bind_rate\']:>10.3f}"\n'
+               '          f"{o[\'oos_false_accept\']:>9.3f}{e[\'holdout\'][\'accuracy\']:>9.3f}{e[\'patch_cost\']:>7}")'),
+      ("code", 'decision = json.load(open(os.path.join(REPO, "data", "enrichment", "bakeoff_decision.json")))\n'
+               'print("recommended:", decision["recommended"], "| recused:", decision["recused"])\n'
+               'print(decision["rationale"])\n'
+               'print("per-regime leaders:")\n'
+               'for factor, levels in decision["by_regime"].items():\n'
+               '    print(f"  {factor:16}", ", ".join(f"{lv}:{arm}" for lv, arm in levels.items()))')]),
+    (11, "answering_through_the_gms", "Answering through the GMS",
      [("md", "Multi-hop answer through the real graph."),
       ("code", BOOT), ("code", PIPE),
       ("code", _q("Which region runs the division that contains Cloud Platform?", "answer"))]),
-    (11, "grounded_synthesis", "Grounded synthesis",
+    (12, "grounded_synthesis", "Grounded synthesis",
      [("md", "Synthesize a grounded answer from retrieved facts (real Qwen)."),
       ("code", BOOT), ("code", PIPE), ("code", _q("What was net income in FY2025?", "answer"))]),
-    (12, "self_verification", "Self-verification",
+    (13, "self_verification", "Self-verification",
      [("md", "The GMS catches a confident-wrong number (u-space contradiction)."),
       ("code", BOOT), ("code", PIPE),
       ("code", 'a = pipe.query("What is Cloud Platform revenue?")\n'
                'print("decision:", a.decision, "| verified:", a.verified)')]),
-    (13, "abstention_and_coverage", "Abstention and coverage",
+    (14, "abstention_and_coverage", "Abstention and coverage",
      [("md", "Abstain on a prose blind spot; coverage_report names the blind spots."),
       ("code", BOOT), ("code", PIPE),
       ("code", 'from knowlytix.knowledge.rag import coverage_report\n'
                'print(pipe.query("What is management\\u2019s outlook for fiscal 2026?").decision)\n'
                'print(round(coverage_report(store).coverage_ratio, 2))')]),
-    (14, "calibration", "Calibration",
+    (15, "calibration", "Calibration",
      [("md", "Calibrate the accept gate from the cohort (project step)."),
       ("code", BOOT), ("code", RUN + 'run("calibrate_accept_gate.py")'),
       ("code", 'import json\n'
                'print(json.load(open(os.path.join(REPO,"data","gms_annual_report_store","rag_gate_calibration.json"))))')]),
-    (15, "evaluation", "Evaluating the RAG",
+    (16, "evaluation", "Evaluating the RAG",
      [("md", "Run the DoE evaluation and the GEODE-vs-baseline comparison (project)."),
       ("code", BOOT), ("code", RUN + 'run("rag_doe_compare.py", "--limit", "150", "--k", "3")'),
       ("code", 'import json\n'
                'd = json.load(open(os.path.join(REPO,"data","enrichment","rag_doe_compare.json")))\n'
                'for m in ["precision_at_k","recall_at_k","correctness","completeness","abstention_rate"]:\n'
                '    print(f"{m:16}{d[\'geode\'][m]:>8.3f}{d[\'baseline\'][m]:>10.3f}")')]),
-    (16, "pluggable_llms_and_dense_fallback", "Pluggable LLMs",
+    (17, "pluggable_llms_and_dense_fallback", "Pluggable LLMs",
      [("md", "Same pipeline, swap the backend; dense fallback stays off."),
       ("code", BOOT), ("code", PIPE), ("code", _q("What was total revenue?", "answer"))]),
-    (17, "external_persistence_kal", "Persisting to KAL",
+    (18, "external_persistence_kal", "Persisting to KAL",
      [("md", "Persist the verified graph to KAL's offline mock and round-trip."),
       ("code", BOOT),
       ("code", 'import capstone_pipeline as cp\n'
@@ -145,7 +166,7 @@ B_CHAPTERS = [
                'n = persist_store_to_kal_sync(MockKnowledgeAdapter("capstone"), store,\n'
                '        tenant_id="northwind", source="annual_report.md", confidence=1.0)\n'
                'print("persisted", n, "of", len(store_to_kal_triples(store, source="annual_report.md")))')]),
-    (18, "capstone_summary", "Capstone: the complete pipeline + verdict",
+    (19, "capstone_summary", "Capstone: the complete pipeline + verdict",
      [("md", "The complete RAG, assembled, and the head-to-head verdict the book "
              "concludes on (project: the full comparison)."),
       ("code", BOOT), ("code", RUN + 'run("rag_doe_compare.py", "--limit", "150", "--k", "3")'),
@@ -257,8 +278,8 @@ def build() -> None:
         _write(f"{num:02d}_{slug}_b_project.ipynb", cells)
     _write("07_embedding_sft_a_inline.ipynb", CH7_A)
     _write("07_embedding_sft_b_project.ipynb", CH7_B)
-    _write("15_evaluation_a_inline.ipynb", CH15_A)
-    _write("18_capstone_summary_a_inline.ipynb", CH18_A)
+    _write("16_evaluation_a_inline.ipynb", CH15_A)
+    _write("19_capstone_summary_a_inline.ipynb", CH18_A)
 
 
 if __name__ == "__main__":

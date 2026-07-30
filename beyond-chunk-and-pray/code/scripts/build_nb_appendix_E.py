@@ -35,7 +35,7 @@ OUT = os.path.join(HERE, os.pardir, "notebooks",
 
 BOOTSTRAP = (
     "import os, sys\n"
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
     "sys.path.insert(0, KNOWLYTIX_SRC)\n"
     "REPO_ROOT = os.path.abspath(os.path.join(os.getcwd(), os.pardir))"
 )
@@ -235,7 +235,7 @@ print("decision:", demo.decision)
 print("sources :", [c.location for c in demo.sources])'''
 
 QWEN_CI = '''\
-# CI ONLY -- the real chunk-and-pray run on local Qwen3-4B-Instruct (GPU).
+# CI ONLY -- the real chunk-and-pray run on local Qwen2.5-3B-Instruct (GPU).
 # Same retrieval, same prompt; only the generator changes. This is the generator
 # a real chunk-and-pray deployment ships. The lead runs this in CI; it is NOT
 # executed during authoring. The cohort numbers reported in the appendix come

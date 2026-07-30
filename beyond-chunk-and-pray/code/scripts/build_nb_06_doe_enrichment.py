@@ -22,7 +22,7 @@ NBDIR = os.path.join(HERE, "..", "notebooks")
 
 _BOOT = (
     'import os, sys\n'
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
     'sys.path.insert(0, KNOWLYTIX_SRC)\n'
     'REPO = os.path.dirname(os.getcwd()) if os.path.basename(os.getcwd()) == "notebooks" else os.getcwd()\n'
     'sys.path.insert(0, os.path.join(REPO, "scripts"))   # project modules'
@@ -56,14 +56,14 @@ A = [
     ("code", _BOOT),
     ("code",
      'import torch\n'
-     'from knowlytix.knowledge.config import DocGMSConfig\n'
+     'from knowlytix.knowledge.config import DocGMSConfig, GeometryConfig\n'
      'from knowlytix.knowledge.store import GMSExpertStore\n'
      'from knowlytix.harness.suite import (\n'
      '    Catalog, resolve, CatalogBaseSource, compose, graphdoe_design)\n'
      '\n'
      'STORE = os.path.join(REPO, "data", "gms_annual_report_store")\n'
      'dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")\n'
-     'store = GMSExpertStore(DocGMSConfig(store_path=STORE), device=dev)\n'
+     'store = GMSExpertStore(DocGMSConfig(store_path=STORE, geometry=GeometryConfig(d_v=64, d_u=64, m=32, d=32)), device=dev)\n'
      'assert store.load(), "build the store first (Ch4)"'),
     ("md", "## Mine base questions (content base types from the suite catalog)"),
     ("code",

@@ -4,7 +4,7 @@
 Emits a valid nbformat-4 notebook with nbformat. CPU-only; does NOT execute
 any cell (no store load, no Qwen). Run:
 
-    python scripts/build_nb_01.py
+    ~/cluster/spark-venv/bin/python scripts/build_nb_01.py
 """
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ cells.append(new_markdown_cell(
 # Cell 1 — the mandatory bootstrap (global brief, verbatim).
 cells.append(new_code_cell(
     "import os, sys\n"
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
     "sys.path.insert(0, KNOWLYTIX_SRC)"
 ))
 
@@ -180,7 +180,7 @@ cells.append(new_code_cell(
     "# === CI-ONLY: loads the trained store + Qwen. Do not run during authoring. ===\n"
     "import torch\n"
     "from knowlytix.knowledge.store import GMSExpertStore\n"
-    "from knowlytix.knowledge.config import DocGMSConfig\n"
+    "from knowlytix.knowledge.config import DocGMSConfig, GeometryConfig\n"
     "from knowlytix.knowledge.llm_backend import LocalTransformersBackend\n"
     "from knowlytix.knowledge.rag import RagConfig, RagPipeline\n"
     "from knowlytix.knowledge.geode import QWEN_3B\n"
@@ -188,7 +188,7 @@ cells.append(new_code_cell(
     'STORE_PATH = str(DATA / "gms_annual_report_store")\n'
     "device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n"
     "\n"
-    "store = GMSExpertStore(DocGMSConfig(store_path=STORE_PATH), device=device)\n"
+    "store = GMSExpertStore(DocGMSConfig(store_path=STORE_PATH, geometry=GeometryConfig(d_v=64, d_u=64, m=32, d=32)), device=device)\n"
     "assert store.load(), f\"no trained store at {STORE_PATH}\"\n"
     "\n"
     "# ENM gives the authoritative number directly, byte-exact, no parsing.\n"

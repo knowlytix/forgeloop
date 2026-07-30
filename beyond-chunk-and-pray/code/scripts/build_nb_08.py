@@ -47,7 +47,7 @@ md(
 code(
     """
 import os, sys
-KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")
+KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")
 sys.path.insert(0, KNOWLYTIX_SRC)
 """
 )
@@ -284,7 +284,7 @@ assert relation_binds(repaired.relation)
 md(
     "## The real Qwen path (CI-only)\n"
     "Everything above used scripted backends for determinism. Here is the\n"
-    "production wiring: a local **Qwen3-4B-Instruct** via `LocalTransformersBackend`,\n"
+    "production wiring: a local **Qwen2.5-3B-Instruct** via `LocalTransformersBackend`,\n"
     "grounded with the live `schema_from_store`. This cell loads the trained store\n"
     "and a GPU model, so it is tagged `ci-gpu` — the lead executes it; do not run\n"
     "it in a shared-GPU authoring session."
@@ -293,7 +293,7 @@ code(
     """
 # CI-ONLY (ci-gpu): loads the trained store + a GPU Qwen. Do not run while authoring.
 import torch
-from knowlytix.knowledge.config import DocGMSConfig
+from knowlytix.knowledge.config import DocGMSConfig, GeometryConfig
 from knowlytix.knowledge.store import GMSExpertStore
 from knowlytix.knowledge.llm_backend import LocalTransformersBackend
 from knowlytix.knowledge.rag.query_triples import (
@@ -303,11 +303,11 @@ from knowlytix.knowledge.rag.query_triples import (
 STORE = os.path.join(KNOWLYTIX_SRC, "..", "gms-rag-tutorial",
                      "data", "gms_annual_report_store")
 dev = "cuda" if torch.cuda.is_available() else "cpu"
-store = GMSExpertStore(DocGMSConfig(store_path=STORE), device=torch.device(dev))
+store = GMSExpertStore(DocGMSConfig(store_path=STORE, geometry=GeometryConfig(d_v=64, d_u=64, m=32, d=32)), device=torch.device(dev))
 assert store.load(), "trained store not found — build it with scripts/build_store.py"
 
 vocab = schema_from_store(store)
-qwen = LocalTransformersBackend("Qwen/Qwen3-4B-Instruct-2507", device=dev)
+qwen = LocalTransformersBackend("Qwen/Qwen2.5-3B-Instruct", device=dev)
 extractor_qwen = QueryTripleExtractor(qwen, vocab=vocab)
 
 q = "How many people work in Logistics?"
