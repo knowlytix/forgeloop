@@ -24,7 +24,7 @@ attribute in context (a full question), not a bare keyword. The same enriched se
 trains the embeddings + LLM (scripts/build_store.py) and tests the RAG (the
 capstone). Generation uses Qwen at BUILD time only; the runtime gates are geometry.
 
-Run (GPU, loads Qwen):  python scripts/enrich_data.py --per-seed 6
+Run (GPU, loads Qwen):  python scripts/enrich_data.py --n-runs 150
 """
 from __future__ import annotations
 

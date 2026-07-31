@@ -204,6 +204,7 @@ dense_cfg = RagConfig(
     ),
     dense_fallback=True,        # opt in to the distrusted path
     strict_mode=False,          # actually return the (flagged) dense answer
+    query_parse_mode="llm",     # scripted LLM returns prose -> no triples -> dense path
 )
 assert dense_cfg.dense_fallback is True
 assert dense_cfg.vector_backend is None     # defaults to InMemoryVectorBackend
