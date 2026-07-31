@@ -118,12 +118,18 @@ def process_figure(records: list[dict], title: str = "agent trajectory", dark: b
     return fig
 
 
-def escalation_subgraph(kg, records: list[dict]):
+def escalation_subgraph(kg, records: list[dict], store_path: str | None = None):
     """KGData of the full escalation path flag_regulatory recorded: the message
     evidence that supports each fired flag (``flag has_evidence <ev>``), the severity
     walk (``flag has_severity <sev>``, ``<sev> has_action <act>``) from its
     ``severity_paths``, and the flag's name/statute. All stored triples (truthful);
-    the evidence set is the tool's recorded ``evidence`` field."""
+    the evidence set is the tool's recorded ``evidence`` field.
+
+    ``store_path`` is the GMS store directory (same path passed to
+    ``load_gms_store``). It is used as a fallback: when ``kg`` is loaded with
+    ``source='v'`` its labels are vocabulary terms, not entity names; passing
+    ``store_path`` lets the function reload the u-space entity embeddings so the
+    regulatory entities (e.g. "udaap", "high", "escalate") can be plotted."""
     from forgeloop.agents.capstone.regulatory_guard import _FLAG_TO_ENTITY
 
     flag_rec = next((r for r in records if r.get("tool") == "flag_regulatory"), None)
@@ -150,7 +156,14 @@ def escalation_subgraph(kg, records: list[dict]):
         if t not in seen:
             seen.add(t); trip.append(t)
     S = {x for (h, _, t) in trip for x in (h, t)}
-    idx = kg.index
     labels = [l for l in kg.labels if l in S]
-    emb = kg.embeddings[[idx[l] for l in labels]]
+    if not labels and store_path is not None:
+        # kg was loaded from v-space (vocabulary terms); reload entity embeddings
+        # from u-space so regulatory entity names ("udaap", "high", …) can be found.
+        from knowlytix.knowledge.viz import from_store_dir as _fsd
+        kg_u = _fsd(store_path, source="u")
+        labels = [l for l in kg_u.labels if l in S]
+        emb = kg_u.embeddings[[kg_u.index[l] for l in labels]]
+    else:
+        emb = kg.embeddings[[kg.index[l] for l in labels]]
     return kg.__class__(labels=labels, embeddings=emb, triples=trip)
