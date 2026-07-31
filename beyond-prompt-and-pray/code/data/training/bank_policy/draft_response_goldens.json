@@ -1,0 +1,50 @@
+{
+  "overdraft": {
+    "citation_keywords": ["overdraft"],
+    "required_numbers": ["35"],
+    "forbidden_phrases": [
+      "we will waive", "we waive", "fee will be waived", "fee has been waived",
+      "we are refunding", "we will be refunding"
+    ]
+  },
+  "disputes": {
+    "citation_keywords": ["dispute"],
+    "required_numbers": ["60"],
+    "forbidden_phrases": [
+      "we will waive", "we waive", "fee will be waived", "fee has been waived",
+      "we are refunding", "we will be refunding"
+    ]
+  },
+  "fee_reversal": {
+    "citation_keywords": ["reversal"],
+    "required_numbers": ["35"],
+    "forbidden_phrases": [
+      "we will waive", "we waive", "fee will be waived", "fee has been waived",
+      "we are refunding", "we will be refunding"
+    ]
+  },
+  "account_closure": {
+    "citation_keywords": ["closure"],
+    "required_numbers": ["30"],
+    "forbidden_phrases": [
+      "we will waive", "we waive", "fee will be waived", "fee has been waived",
+      "we are refunding", "we will be refunding"
+    ]
+  },
+  "pii_handling": {
+    "citation_keywords": ["privacy"],
+    "required_numbers": ["24"],
+    "forbidden_phrases": [
+      "we will waive", "we waive", "fee will be waived", "fee has been waived",
+      "we are refunding", "we will be refunding"
+    ]
+  },
+  "regulatory_escalation": {
+    "citation_keywords": ["compliance"],
+    "required_numbers": ["1"],
+    "forbidden_phrases": [
+      "we will waive", "we waive", "fee will be waived", "fee has been waived",
+      "we are refunding", "we will be refunding"
+    ]
+  }
+}

@@ -89,9 +89,16 @@ def main() -> int:
          produces=[f"{_STORE}/rag_gate_calibration.json"], force=args.force)
 
     if args.scenarios:
-        # 5. Polarity DoE split consumed by the disclosure calibration + gate comparison.
+        # 5. Polarity DoE split consumed by the classifier training + gate comparison.
         _run("build_polarity_doe_dataset.py",
              produces=["data/training/polarity/test_polarity.jsonl"], force=args.force)
+        # 5b. Train the Qwen LoRA polarity classifiers (Gate B in the comparison).
+        #     run_governed_scenarios.py loads the nl variant via LoraPolarityClassifier.load();
+        #     compare_polarity_gates.py evaluates both nl and tuple variants.
+        _run("train_polarity_classifier_lora.py", ["--input", "nl"],
+             produces=["data/polarity_classifier_qwen_nl/labels.json"], force=args.force)
+        _run("train_polarity_classifier_lora.py", ["--input", "tuple"],
+             produces=["data/polarity_classifier_qwen_tuple/labels.json"], force=args.force)
         # 6. Run the governed scenarios; calibrates + writes disclosure_gate_calibration.json.
         _run("run_governed_scenarios.py",
              produces=[f"{_STORE}/disclosure_gate_calibration.json",

@@ -70,7 +70,7 @@ def main() -> int:
     from knowlytix.knowledge.query import DocGMSConfig, GMSExpertStore
     from knowlytix.knowledge.rag import RagConfig, RagPipeline
 
-    store_path = Path(sys.argv[1]) if len(sys.argv) > 1 else _DEFAULT_STORE
+    store_path = (Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else _DEFAULT_STORE)
     if not store_path.exists():
         print(f"FAIL: missing store {store_path}; run build_geode_rag_store.py",
               file=sys.stderr)
