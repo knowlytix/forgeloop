@@ -1,0 +1,78 @@
+{
+  "n_test": 115,
+  "label_dist": {
+    "contradicted": 41,
+    "supported": 25,
+    "uncertain": 49
+  },
+  "gates": {
+    "gate_a_geometry_token": {
+      "accuracy": 0.565,
+      "contradiction": {
+        "precision": 0.5,
+        "recall": 0.805,
+        "f1": 0.617,
+        "tp": 33,
+        "fp": 33,
+        "fn": 8
+      },
+      "by_surface": {
+        "phrase": 0.552,
+        "sentence": 0.571,
+        "token": 0.571,
+        "verbose": 0.567
+      }
+    },
+    "gate_a_geometry_prose": {
+      "accuracy": 0.409,
+      "contradiction": {
+        "precision": 0.379,
+        "recall": 0.951,
+        "f1": 0.542,
+        "tp": 39,
+        "fp": 64,
+        "fn": 2
+      },
+      "by_surface": {
+        "phrase": 0.345,
+        "sentence": 0.357,
+        "token": 0.571,
+        "verbose": 0.367
+      }
+    },
+    "gate_b_qwen_tuple": {
+      "accuracy": 0.713,
+      "contradiction": {
+        "precision": 0.707,
+        "recall": 1.0,
+        "f1": 0.828,
+        "tp": 41,
+        "fp": 17,
+        "fn": 0
+      },
+      "by_surface": {
+        "phrase": 0.724,
+        "sentence": 0.714,
+        "token": 0.714,
+        "verbose": 0.7
+      }
+    },
+    "gate_b_qwen_nl": {
+      "accuracy": 0.713,
+      "contradiction": {
+        "precision": 0.759,
+        "recall": 1.0,
+        "f1": 0.863,
+        "tp": 41,
+        "fp": 13,
+        "fn": 0
+      },
+      "by_surface": {
+        "phrase": 0.793,
+        "sentence": 0.679,
+        "token": 0.786,
+        "verbose": 0.6
+      }
+    }
+  }
+}

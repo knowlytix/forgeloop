@@ -138,10 +138,11 @@ B_CHAPTERS = [
     (17, "external_persistence_kal", "Persisting to KAL",
      [("md", "Persist the verified graph to KAL's offline mock and round-trip."),
       ("code", BOOT),
-      ("code", 'import capstone_pipeline as cp\n'
+      ("code", 'import torch\n'
+               'import capstone_pipeline as cp\n'
                'from knowlytix.kal.adapters import MockKnowledgeAdapter\n'
                'from knowlytix.knowledge.rag.kal_sink import persist_store_to_kal_sync, store_to_kal_triples\n'
-               'store = cp.load_store(os.path.join(REPO, "data", "gms_annual_report_store"))\n'
+               'store = cp.load_store(os.path.join(REPO, "data", "gms_annual_report_store"), dev=torch.device("cpu"))\n'
                'n = persist_store_to_kal_sync(MockKnowledgeAdapter("capstone"), store,\n'
                '        tenant_id="northwind", source="annual_report.md", confidence=1.0)\n'
                'print("persisted", n, "of", len(store_to_kal_triples(store, source="annual_report.md")))')]),
@@ -244,11 +245,15 @@ CH18_A = [
              '    print(f"{a.decision:8} {q[:52]:52} -> {a.answer[:40]}")'),
     ("md", "The verdict the book concludes on (from the Ch15 comparison)."),
     ("code", 'import json\n'
-             'd = json.load(open(os.path.join(REPO,"data","enrichment","rag_doe_compare.json")))\n'
-             'g,b = d["geode"], d["baseline"]\n'
-             'print(f"precision  GEODE {g[\'precision_at_k\']:.2f} vs baseline {b[\'precision_at_k\']:.2f}")\n'
-             'print(f"correctness GEODE {g[\'correctness\']:.2f} vs baseline {b[\'correctness\']:.2f}")\n'
-             'print(f"abstention GEODE {g[\'abstention_rate\']:.2f} vs baseline {b[\'abstention_rate\']:.2f}")'),
+             '_cmp = os.path.join(REPO, "data", "enrichment", "rag_doe_compare.json")\n'
+             'if not os.path.exists(_cmp):\n'
+             '    print("rag_doe_compare.json not found \\u2014 run scripts/rag_doe_compare.py (GPU + Qwen) to build it.")\n'
+             'else:\n'
+             '    d = json.load(open(_cmp))\n'
+             '    g, b = d["geode"], d["baseline"]\n'
+             '    print(f"precision  GEODE {g[\'precision_at_k\']:.2f} vs baseline {b[\'precision_at_k\']:.2f}")\n'
+             '    print(f"correctness GEODE {g[\'correctness\']:.2f} vs baseline {b[\'correctness\']:.2f}")\n'
+             '    print(f"abstention GEODE {g[\'abstention_rate\']:.2f} vs baseline {b[\'abstention_rate\']:.2f}")'),
 ]
 
 

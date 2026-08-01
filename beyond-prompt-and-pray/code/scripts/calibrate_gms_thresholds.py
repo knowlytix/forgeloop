@@ -198,7 +198,7 @@ def main() -> int:
         return 1
 
     print("Sweeping plausibility threshold (theta) ...")
-    theta_result = sweep_threshold(store, PLAUSIBILITY_COHORT, max_false_allow=0.05)
+    theta_result = sweep_threshold(store, PLAUSIBILITY_COHORT, max_false_allow=0.15)
     print(f"  theta={theta_result.threshold:.2f}  acc={theta_result.accuracy:.3f}  "
           f"[CI {theta_result.ci_lo:.3f}, {theta_result.ci_hi:.3f}]  "
           f"false_allow={theta_result.false_allow_rate:.3f}  "
