@@ -1,10 +1,11 @@
 """agentlab — companion library for Building Agentic AI Systems from Scratch.
 
-Sub-packages are introduced chapter by chapter. See outline.tex for the map.
+Sub-packages are introduced chapter by chapter; the notebooks under
+``beyond-prompt-and-pray/notebooks/`` follow the same order and are the map.
 """
 
 from agentlab._datapaths import data_path, data_root, set_data_dir
-from agentlab.artifacts import ensure_artifacts, missing_artifacts
+from agentlab.artifacts import build_instructions, ensure_artifacts, missing_artifacts
 
 __version__ = "0.1.0"
 
@@ -14,5 +15,6 @@ __all__ = [
     "set_data_dir",
     "ensure_artifacts",
     "missing_artifacts",
+    "build_instructions",
     "__version__",
 ]

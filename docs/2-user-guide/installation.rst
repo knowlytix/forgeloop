@@ -60,8 +60,11 @@ is not on public PyPI, and a license is required.
 
 .. code-block:: bash
 
-    pip install knowlytix --index-url <KNOWLYTIX_INDEX_URL>   # license required; index from Knowlytix
-    pip install "forgeloop[gms]"                              # records the dependency
+    pip install knowlytix          # free to install from PyPI; license-gated at runtime
+    pip install "forgeloop[gms]"   # records the dependency
+
+Running it needs a license key at ``~/.knowlytix/license.key`` — sign up at
+https://knowlytix.ai/signup/. Never commit that key.
 
 forgeloop imports ``knowlytix`` lazily, so everything outside the GMS features
 works without it.
@@ -72,8 +75,30 @@ Data and trained artifacts
 The examples read from a book's ``data/`` directory, resolved by
 :func:`forgeloop.data_root` and :func:`forgeloop.data_path` (override with the
 ``FORGELOOP_DATA_DIR`` environment variable). Authored inputs — policy corpora,
-evaluation cases, governance exemplars — ship with the books. Trained artifacts
-— classifier and drafter adapters, calibrated GMS stores, fine-tuned extractor
-encoders — are large and are not committed or bundled in the wheel; they are
-reproducible from each book's ``scripts/``, or fetched from a published bundle
-with :func:`forgeloop.ensure_artifacts` (which uses the ``artifacts`` extra).
+evaluation cases, governance exemplars — ship with the books. So do the small
+calibrated GMS stores, the calibration files and the pinned campaign results, so
+most chapters run straight after ``pip install``.
+
+The large trained artifacts — the Qwen classifier and drafter adapters, the
+fine-tuned extractor encoders, roughly 200 MB — are **not** committed, not in the
+wheel, and **not published as a download**. You build them yourself from the
+committed corpora, using the training scripts in each book's ``scripts/``. That
+needs the licensed substrate, and the Qwen adapters want a CUDA GPU.
+
+:func:`forgeloop.missing_artifacts` lists what is absent and
+:func:`forgeloop.build_instructions` prints the exact command to build each one;
+any API that needs a missing artifact raises with the same message.
+
+If you have already built them elsewhere — another machine, a shared volume,
+a bundle you host yourself — point :func:`forgeloop.ensure_artifacts` at it
+rather than rebuilding:
+
+.. code-block:: bash
+
+    export FORGELOOP_ARTIFACTS_DIR=/path/to/artifacts     # a directory, laid out <book>/<entry>
+    export FORGELOOP_ARTIFACTS_URL=https://.../bundle.tar.gz   # or a tarball you host
+    export FORGELOOP_ARTIFACTS_REPO=<org>/<dataset>            # or a HF dataset (``artifacts`` extra)
+
+With none of these set there is nothing to fetch from, and
+:func:`forgeloop.ensure_artifacts` says so instead of reaching for a URL that
+does not exist.

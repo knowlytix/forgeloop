@@ -9,3 +9,5 @@ Artifacts
 
 .. autofunction:: forgeloop.artifacts.missing_artifacts
 
+.. autofunction:: forgeloop.artifacts.build_instructions
+
