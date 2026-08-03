@@ -2,7 +2,7 @@
 """Calibrate the existing GEODE-RAG gates for the Annual Report store and verify.
 
 This adds NO decision logic — every decision is already a calibrated gate in the
-library (GEODE_RAG_DESIGN.md §14). It fits each gate's operating point from the
+knowlytix library. It fits each gate's operating point from the
 store, persists it as JSON beside the store (the form the runtime gates read),
 and verifies the gate decides correctly.
 
