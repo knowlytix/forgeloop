@@ -6,11 +6,13 @@ code in this repository.
 **forgeloop** — open-source companion code and runnable notebooks for building,
 testing, and grounding trustworthy agentic AI systems on the Geometric Memory
 Systems (GMS) substrate. It is a monorepo of independent topic directories, each
-with its own `code/` package and `notebooks/`. Ported from the private
-`GMS-Agents` repo; the book manuscripts are intentionally excluded.
+with its own `code/` package and `notebooks/`. The book manuscripts are
+intentionally excluded.
 
-> **This repo is intended to become open source.** Never commit secrets,
-> credentials, or large trained-model weights (see the Hard rules below).
+> **This repo is public.** Never commit secrets, credentials, or large
+> trained-model weights (see the Hard rules below). Assume anything committed
+> here is permanent and world-readable — including anything you write into
+> `.claude/`, which is *not* a private scratchpad.
 
 ## Repository map
 

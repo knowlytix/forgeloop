@@ -1,0 +1,44 @@
+name: Bug report
+description: Something in the code or a notebook does not work as described.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not paste your `knowlytix` license key, API keys, or anything
+        from `~/.knowlytix/` into this issue.
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Which book, notebook or module?
+      placeholder: beyond-prompt-and-pray/notebooks/07_governance.ipynb
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, what you got. Paste the traceback.
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: substrate
+    attributes:
+      label: Is the knowlytix substrate installed and licensed?
+      options:
+        - "Yes — installed with a valid licence key"
+        - "Installed, but no licence key"
+        - "Not installed"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: "Output of: `python -V`, `pip show forgeloop | head -2`, OS, GPU (if any)"
+      render: shell
+    validations:
+      required: true

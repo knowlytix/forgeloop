@@ -27,8 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
@@ -41,13 +41,31 @@ jobs:
       - name: Run ruff
         run: ruff check .
 
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      # This repo is public, and a pushed credential is leaked the moment it
+      # lands -- deleting the commit does not undo it. GitHub's own secret
+      # scanning catches vendor tokens after the push; this fails the PR before
+      # it, and covers the two cases no vendor pattern knows about: a knowlytix
+      # licence key, and an absolute path off a contributor's machine.
+      # Stdlib only, no extra pip install needed.
+      - name: Scan for committed secrets
+        run: python scripts/secret_scan.py
+
   notebooks:
     name: Notebook output guard
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       # Executed notebook output must not be committed: it bloats the repo,
@@ -63,8 +81,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       # The three beyond-*/ book directories are the source of truth; the
@@ -81,8 +99,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip

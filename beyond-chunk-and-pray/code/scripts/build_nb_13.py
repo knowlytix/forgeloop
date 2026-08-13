@@ -134,8 +134,14 @@ CELLS.append(code(
     "class FixtureStore:\n"
     '    """CPU-only stand-in exposing the store surface the verifier/binder use."""\n'
     "\n"
+    "    doc_graph = None  # GeometricQueryParser checks store.doc_graph before iterating\n"
+    "    enm = None        # pipeline checks store.enm before building numeric-order index\n"
+    "    markdown = \"\"    # pipeline uses getattr(store, 'markdown', '') for provenance\n"
+    "    store_path = \"\"  # pipeline uses store.store_path for provenance ledger\n"
+    "\n"
     "    def __init__(self, triples):\n"
     "        self._triples = [tuple(t) for t in triples]\n"
+    "        self.triples = self._triples  # verify.py iterates store.triples directly\n"
     "        ents = {h for h, _, _ in self._triples} | {t for _, _, t in self._triples}\n"
     "        rels = {r for _, r, _ in self._triples}\n"
     "        self.adapter = _Adapter(\n"
@@ -301,6 +307,8 @@ CELLS.append(code(
     '    on_verify_fail="abstain",\n'
     "    relevance_gate=False,       # offline: skip the extra LLM relevance call\n"
     "    ground_extraction=False,    # offline: scripted extractor needs no schema\n"
+    '    query_parse_mode="llm",     # use the scripted llm_extract, not GeometricQueryParser\n'
+    '    verify_mode="llm",          # use the scripted llm_verify for claim extraction\n'
     ")\n"
     "pipe = RagPipeline.from_store(store, cfg)\n"
     "ans = pipe.query(question)\n"
@@ -346,6 +354,8 @@ CELLS.append(code(
     '    on_verify_fail="regenerate",\n'
     "    relevance_gate=False,\n"
     "    ground_extraction=False,\n"
+    '    query_parse_mode="llm",\n'
+    '    verify_mode="llm",\n'
     ")\n"
     "regen_ans = RagPipeline.from_store(store, regen_cfg).query(question)\n"
     "\n"

@@ -31,7 +31,7 @@ help:
 	@echo "make install      everything, ready to run"
 	@echo "make install-dev  install plus test and lint extras"
 	@echo "make assemble     rebuild forgeloop/ and the docs gallery from the books"
-	@echo "make check        everything CI runs: lint, notebook guard, drift, tests"
+	@echo "make check        everything CI runs: lint, secrets, notebook guard, drift, tests"
 	@echo "make docs         build the documentation site into docs/docs/_build/html"
 
 # Order matters: agentlab first, because beyond-ship-and-pray imports it.
@@ -65,6 +65,7 @@ assemble:
 
 # Mirrors the CI jobs, so a green run here means a green run there.
 check: lint
+	$(PYTHON) scripts/secret_scan.py
 	$(PYTHON) scripts/notebook_outputs.py --check
 	$(PYTHON) scripts/build_forgeloop.py --package --check
 	$(MAKE) test

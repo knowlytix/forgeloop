@@ -35,6 +35,8 @@ from knowlytix.harness.suite import evaluate as ev  # noqa: E402
 from knowlytix.harness.testing.completeness import CompletenessEvaluator  # noqa: E402
 from knowlytix.harness.testing.hallucination import HallucinationOracle  # noqa: E402
 
+import torch  # noqa: E402
+
 import baseline_rag  # noqa: E402
 import capstone_pipeline as cp  # noqa: E402
 
@@ -154,7 +156,7 @@ def main() -> None:
     args = ap.parse_args()
 
     dev = cp.device()
-    store = cp.load_store(STORE, dev)
+    store = cp.load_store(STORE, torch.device("cpu"))  # tiny model; CPU saves VRAM for Qwen
     llm = cp.make_qwen(dev)
     oracle = HallucinationOracle(store=store)     # calibrated per-relation grounded cut
     comp_eval = CompletenessEvaluator(store)

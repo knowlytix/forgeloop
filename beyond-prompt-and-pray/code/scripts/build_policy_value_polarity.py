@@ -85,31 +85,12 @@ groups = {t: (g if t in g else [t] + g) for t, g in groups.items()}  # keep the 
 dropped = [tok for tok, c in counts.items() if c > 1]
 log(f"  dropped ambiguous (in >1 group): {dropped}")
 
-log("[2/4] SFT u-space polarity encoder (contradiction objective) ...")
-cfg = EmbeddingSFTConfig(rank=8, mode="full", objective="contradiction",
-                         epochs=400, margin=1.3, device="cuda")
-u = finetune_contradiction(groups, cfg)
-u.save(Path(STORE) / "value_polarity_encoder")
-log(f"  saved {STORE}/value_polarity_encoder ({len(groups)} disjoint stance groups)")
+# Free the LLM from GPU before SFT so the two don't compete for VRAM.
+del llm
+torch.cuda.empty_cache()
 
-
-def ten(a, b):
-    v = F.normalize(torch.as_tensor(u.encode([a, b]), dtype=torch.float32), p=2, dim=-1)
-    return _tension(float(v[0] @ v[1]))
-
-
-syn_t, ant_t = [], []
-for t, (_, opp) in POLES.items():
-    sy = [ten(t, s) for s in groups[t] if s != t]
-    an = [ten(t, s) for s in groups.get(opp, [opp]) if s != opp] + [ten(t, opp)]
-    syn_t += sy
-    ant_t += an
-log(f"  SFT check: synonym[{min(syn_t):.2f},{max(syn_t):.2f}] "
-    f"antonym[{min(ant_t):.2f},{max(ant_t):.2f}] separable={max(syn_t) < min(ant_t)}")
-
-log("[3/4] calibrating 3-class polarity cuts (5-fold CV gated) ...")
-# Each axis pairs opposite stances; the lists are same-stance synonyms.
-axes = [
+# Each calibration axis pairs opposite stances with same-stance synonyms.
+_AXES = [
     ("forbidden", ["prohibited", "banned", "disallowed", "outlawed"],
      "permitted", ["allowed", "authorized", "approved"]),
     ("required", ["mandatory", "compulsory", "obligatory", "enforced"],
@@ -117,11 +98,43 @@ axes = [
     ("issued", ["granted", "provided", "awarded", "conferred"],
      "denied", ["withheld", "refused", "rejected"]),
 ]
-tension, labels = polarity_tension_cohort(u.encode, axes)
-cuts = PolarityCuts.calibrate(tension, labels)
+
+_MAX_ATTEMPTS = 3
+cuts = None
+for _attempt in range(_MAX_ATTEMPTS):
+    _seed = 42 + _attempt
+    log(f"[2/4] SFT u-space polarity encoder (contradiction objective; seed={_seed}) ...")
+    cfg = EmbeddingSFTConfig(rank=8, mode="full", objective="contradiction",
+                             epochs=800, margin=1.5, device="cuda", seed=_seed)
+    u = finetune_contradiction(groups, cfg)
+    u.save(Path(STORE) / "value_polarity_encoder")
+    log(f"  saved {STORE}/value_polarity_encoder ({len(groups)} disjoint stance groups)")
+
+    def ten(a, b):
+        v = F.normalize(torch.as_tensor(u.encode([a, b]), dtype=torch.float32), p=2, dim=-1)
+        return _tension(float(v[0] @ v[1]))
+
+    syn_t, ant_t = [], []
+    for t, (_, opp) in POLES.items():
+        sy = [ten(t, s) for s in groups[t] if s != t]
+        an = [ten(t, s) for s in groups.get(opp, [opp]) if s != opp] + [ten(t, opp)]
+        syn_t += sy
+        ant_t += an
+    log(f"  SFT check: synonym[{min(syn_t):.2f},{max(syn_t):.2f}] "
+        f"antonym[{min(ant_t):.2f},{max(ant_t):.2f}] separable={max(syn_t) < min(ant_t)}")
+
+    log("[3/4] calibrating 3-class polarity cuts (5-fold CV gated) ...")
+    tension, labels = polarity_tension_cohort(u.encode, _AXES)
+    cuts = PolarityCuts.calibrate(tension, labels)
+    if cuts is not None:
+        break
+    log(f"  DEGENERATE: CV gate not cleared (attempt {_attempt + 1}/{_MAX_ATTEMPTS}); "
+        f"retrying with seed={_seed + 1} ...")
+
 if cuts is None:
-    log("  DEGENERATE: CV gate not cleared; no cuts fit. Aborting.")
+    log(f"  DEGENERATE: all {_MAX_ATTEMPTS} attempts failed. Aborting.")
     sys.exit(1)
+
 CAL = os.path.join(STORE, "value_polarity_calibration.json")
 cuts.save(CAL)
 log(f"  cohort samples : {len(tension)}")

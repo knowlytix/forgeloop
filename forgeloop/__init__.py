@@ -7,15 +7,16 @@ One installable package spanning the three books' companion code:
 - :mod:`forgeloop.rag`      — governed retrieval (*Beyond Chunk and Pray*)
 
 Shared across them: :func:`data_root`/:func:`data_path`/:func:`set_data_dir`
-resolve a book's ``data/`` directory, and :func:`ensure_artifacts` fetches the
-trained artifacts that are not committed.
+resolve a book's ``data/`` directory, while :func:`missing_artifacts` and
+:func:`build_instructions` report which large trained artifacts are not built
+yet and what to run to build them (they are trained locally, not downloaded).
 """
 
 from importlib.metadata import PackageNotFoundError, version as _version
 from pathlib import Path
 
 from forgeloop._paths import data_path, data_root, set_data_dir
-from forgeloop.artifacts import ensure_artifacts, missing_artifacts
+from forgeloop.artifacts import build_instructions, ensure_artifacts, missing_artifacts
 
 # Read from installed package metadata rather than hardcoding, so pyproject.toml
 # is the single source of truth. A hardcoded literal here silently drifts: it
@@ -45,6 +46,7 @@ __all__ = [
     "set_data_dir",
     "ensure_artifacts",
     "missing_artifacts",
+    "build_instructions",
     "notebooks_dir",
     "__version__",
 ]

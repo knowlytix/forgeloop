@@ -42,8 +42,8 @@ myst_heading_anchors = 2
 # The API reference documents both forgeloop and the knowlytix GMS backend it
 # wraps. Documenting knowlytix requires importing it for real, so we mock a
 # heavy dependency only when it is genuinely absent from the build environment.
-# In the licensed spark-venv all of these are present, so nothing is mocked and
-# every signature renders from the real objects. In a plain environment the
+# In a fully-provisioned environment all of these are present, so nothing is
+# mocked and every signature renders from the real objects. In a plain one the
 # missing ones are mocked so the forgeloop pages still build (the knowlytix
 # pages then require the licensed package). numpy, pydantic and pyyaml are light
 # real dependencies and are never mocked.

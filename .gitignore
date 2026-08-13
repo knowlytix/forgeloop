@@ -140,6 +140,12 @@ coverage.xml
 *.pem
 *.key
 *.lic
+*.p12
+*.pfx
+# The knowlytix licence lives in ~/.knowlytix/license.key; ignore any copy of
+# that directory that lands in a checkout.
+.knowlytix/
+license.key
 credentials.json
 service-account-*.json
 .aws/
@@ -150,9 +156,15 @@ id_rsa.pub
 id_ed25519
 id_ed25519.pub
 
-# --- Claude Code transient state (keep committed skills/hooks that are content) ---
-.claude/scheduled_tasks.lock
-.claude/settings.local.json
+# --- Claude Code working state ---
+# Ignored wholesale, not file-by-file. A per-book `.claude/skills/` here once
+# carried internal engineering notes -- private branch names, local checkout
+# paths and a list of the substrate internals that must not be described in
+# public -- and it shipped simply because nothing excluded it. Agent working
+# notes are written for a private machine; this repo is world-readable. If a
+# skill or hook is genuinely meant for readers, `git add -f` it deliberately.
+.claude/
+**/.claude/
 
 # --- OS / editor cruft ---
 .DS_Store

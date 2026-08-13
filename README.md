@@ -61,8 +61,23 @@ Idempotent, and it reports what it will build before starting. Tier 1 is CPU-onl
 and covers most chapters; Tier 2 downloads `Qwen3-4B-Instruct` (~8 GB) and wants a
 CUDA GPU.
 
-Weights and stores are not committed; `00_setup` builds them from the corpora in
-the repo.
+Stores are not committed — `00_setup` builds them from the corpora in the repo.
+
+**Trained adapters.** A handful of chapters also load fine-tuned adapters (the
+Qwen complaint classifier and drafter, the extractor encoders — ~200 MB). These
+are *not* committed and *not* published as a download: `00_setup` does not build
+them, and you train them yourself with the `scripts/train_*.py` in each book.
+Nothing silently fails — ask what is missing and how to build it:
+
+```python
+import forgeloop
+forgeloop.missing_artifacts()          # what is not built yet
+print(forgeloop.build_instructions())  # the exact command per artifact
+```
+
+Built them elsewhere already? Set `FORGELOOP_ARTIFACTS_DIR` (or
+`FORGELOOP_ARTIFACTS_URL` / `FORGELOOP_ARTIFACTS_REPO`) and call
+`forgeloop.ensure_artifacts()` instead of retraining.
 
 > *`litellm` wheel fails to build?* Recent versions need a Rust toolchain and have
 > no prebuilt wheel on some platforms. `knowlytix` only requires `litellm>=1.40`,
@@ -113,8 +128,31 @@ make check          # exactly what CI runs
 make assemble       # rebuild forgeloop/ and the docs gallery
 ```
 
-`make check` runs the four CI gates: `ruff`, no committed notebook output,
-`forgeloop/` matching the books, and the tests. Green locally means green in CI.
+`make check` runs the five CI gates: `ruff`, no committed secrets, no committed
+notebook output, `forgeloop/` matching the books, and the tests. Green locally
+means green in CI.
+
+Full details, including what never belongs in a commit, are in
+[CONTRIBUTING.md](CONTRIBUTING.md). Participation is covered by the
+[Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
+## Getting help
+
+- **Something is broken** — [open an issue](https://github.com/knowlytix/forgeloop/issues).
+  Say which book and notebook, and whether you have the substrate licensed.
+- **A security problem** — do *not* open an issue; see [SECURITY.md](SECURITY.md).
+- **Licence key / sign-up** — <https://knowlytix.ai/signup/>.
+
+Two things to know before you file:
+
+- **Never paste your licence key or API keys** into an issue, a notebook cell you
+  commit, or a traceback. `~/.knowlytix/`, `*.key` and `.env*` are git-ignored
+  here; keep them that way.
+- **The banking data is synthetic.** Every customer, case and figure under
+  `data/` is invented for the examples. Don't swap in real data in a clone you
+  intend to push.
 
 ## License
 

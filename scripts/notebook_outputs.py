@@ -1,15 +1,24 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Keep executed output out of tracked notebooks.
+"""Keep tracked notebooks in the state a stranger can open them in.
 
-Committed notebook output bloats the repo, produces unreadable diffs (a one-line
-code edit shows up as thousands of changed output lines), and re-renders stale
-results on GitHub long after the code moved on. This script is the one tool for
-both sides of that policy:
+Two things leak out of a working Jupyter session and into a commit, and both
+break for the next reader:
+
+*Executed output* bloats the repo, produces unreadable diffs (a one-line code
+edit shows up as thousands of changed output lines), and re-renders stale
+results on GitHub long after the code moved on.
+
+*The kernelspec* records whichever kernel the author happened to run. A name
+like ``spark-venv`` exists on one machine; everyone else opens the notebook to a
+"kernel not found" dialog before they have read a line. Tracked notebooks name
+the stock ``python3`` kernel, which resolves in any environment.
+
+This script is the one tool for both sides of that policy:
 
     python scripts/notebook_outputs.py --check    # CI gate: non-zero if any
-                                                  # tracked notebook has output
-    python scripts/notebook_outputs.py --strip    # clear it in place
+                                                  # tracked notebook offends
+    python scripts/notebook_outputs.py --strip    # fix them in place
 
 "Output" means, per code cell, ``outputs`` and ``execution_count``, plus the
 ``execution`` timing block some frontends stash in cell metadata and the
@@ -48,9 +57,30 @@ def _style(raw: bytes, obj: object) -> tuple[int | None, bool, str]:
     return 1, True, "\n"
 
 
+# What every generator in this repo already writes, and what Jupyter resolves to
+# out of the box.
+STOCK_KERNEL = {"display_name": "Python 3", "language": "python", "name": "python3"}
+
+
+def _foreign_kernel(obj: dict) -> str | None:
+    """The kernel name if it is one only the author's machine has, else None.
+
+    A notebook with no kernelspec at all is left alone: Jupyter falls back to the
+    running kernel, which is the behaviour we want anyway.
+    """
+    spec = obj.get("metadata", {}).get("kernelspec")
+    if not spec:
+        return None
+    name = spec.get("name")
+    return name if name != STOCK_KERNEL["name"] else None
+
+
 def strip_notebook(obj: dict) -> bool:
-    """Clear output from ``obj`` in place. Returns True if anything changed."""
+    """Normalize ``obj`` in place. Returns True if anything changed."""
     changed = False
+    if _foreign_kernel(obj) is not None:
+        obj["metadata"]["kernelspec"] = dict(STOCK_KERNEL)
+        changed = True
     for cell in obj.get("cells", []):
         if cell.get("cell_type") != "code":
             continue
@@ -67,14 +97,17 @@ def strip_notebook(obj: dict) -> bool:
     return changed
 
 
-def offending(obj: dict) -> bool:
-    """True when a notebook still carries executed output."""
+def offending(obj: dict) -> str | None:
+    """Why a notebook fails the gate, or None if it is clean."""
     for cell in obj.get("cells", []):
         if cell.get("cell_type") != "code":
             continue
         if cell.get("outputs") or cell.get("execution_count") is not None:
-            return True
-    return False
+            return "executed output"
+    kernel = _foreign_kernel(obj)
+    if kernel is not None:
+        return f"machine-specific kernel {kernel!r}"
+    return None
 
 
 def main() -> int:
@@ -86,6 +119,7 @@ def main() -> int:
 
     notebooks = tracked_notebooks()
     hits: list[Path] = []
+    reasons: dict[Path, str] = {}
 
     for path in notebooks:
         raw = path.read_bytes()
@@ -96,8 +130,10 @@ def main() -> int:
             return 2
 
         if args.check:
-            if offending(obj):
+            reason = offending(obj)
+            if reason:
                 hits.append(path)
+                reasons[path] = reason
             continue
 
         indent, ensure_ascii, newline = _style(raw, obj)
@@ -111,17 +147,18 @@ def main() -> int:
     if args.check:
         if hits:
             print(
-                f"ERROR: {len(hits)} of {len(notebooks)} tracked notebooks carry executed "
-                f"output.\nRun `python scripts/notebook_outputs.py --strip` and commit.\n",
+                f"ERROR: {len(hits)} of {len(notebooks)} tracked notebooks are not clean.\n"
+                f"Run `python scripts/notebook_outputs.py --strip` and commit.\n",
                 file=sys.stderr,
             )
             for path in hits:
-                print(f"  {path}", file=sys.stderr)
+                print(f"  {path}: {reasons[path]}", file=sys.stderr)
             return 1
-        print(f"ok: {len(notebooks)} tracked notebooks carry no output")
+        print(f"ok: {len(notebooks)} tracked notebooks carry no output "
+              f"and name the stock kernel")
         return 0
 
-    print(f"stripped {len(hits)} of {len(notebooks)} tracked notebooks")
+    print(f"normalized {len(hits)} of {len(notebooks)} tracked notebooks")
     return 0
 
 
