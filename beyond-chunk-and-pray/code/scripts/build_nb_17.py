@@ -112,7 +112,7 @@ print("all roles ->", cfg2.verify_llm().model_name)
 md(r"""
 ### The real Qwen path (CI)
 
-For a real deployment every role is a local Qwen2.5-3B-Instruct. The agent
+For a real deployment every role is a local Qwen3-4B-Instruct. The agent
 runtime is **Qwen-locked** (see Ch5 and the EXTRACTION_AGENT_DESIGN note); the
 same model serves all three roles here. This cell needs the GPU — the lead runs
 it in CI.

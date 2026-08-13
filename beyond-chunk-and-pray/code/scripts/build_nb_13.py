@@ -376,7 +376,7 @@ CELLS.append(md(
 
 # --- real Qwen path (marked for CI) ---------------------------------------
 CELLS.append(md(
-    "## The real path: Qwen2.5-3B as the verify-LLM\n"
+    "## The real path: Qwen3-4B as the verify-LLM\n"
     "\n"
     "In production the verify-LLM is the same local model that synthesizes — only\n"
     "its *role* differs (decompose, not generate). The cell below is the real Qwen\n"
@@ -390,7 +390,7 @@ CELLS.append(code(
     "from knowlytix.knowledge.geode.agent_llm import QWEN_3B\n"
     "from knowlytix.knowledge.llm_backend import LocalTransformersBackend\n"
     "\n"
-    "qwen = LocalTransformersBackend(QWEN_3B)        # Qwen/Qwen2.5-3B-Instruct\n"
+    "qwen = LocalTransformersBackend(QWEN_3B)        # Qwen/Qwen3-4B-Instruct-2507\n"
     "qwen_verifier = AnswerVerifier(store, qwen)\n"
     "qwen_report = qwen_verifier.verify(bad_draft)\n"
     "assert qwen_report.ok is False                  # 455.0 contradicts 355.0"

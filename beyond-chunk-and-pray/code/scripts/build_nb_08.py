@@ -284,7 +284,7 @@ assert relation_binds(repaired.relation)
 md(
     "## The real Qwen path (CI-only)\n"
     "Everything above used scripted backends for determinism. Here is the\n"
-    "production wiring: a local **Qwen2.5-3B-Instruct** via `LocalTransformersBackend`,\n"
+    "production wiring: a local **Qwen3-4B-Instruct** via `LocalTransformersBackend`,\n"
     "grounded with the live `schema_from_store`. This cell loads the trained store\n"
     "and a GPU model, so it is tagged `ci-gpu` — the lead executes it; do not run\n"
     "it in a shared-GPU authoring session."
@@ -308,7 +308,7 @@ store = GMSExpertStore(DocGMSConfig(store_path=STORE, geometry=GeometryConfig(d_
 assert store.load(), "trained store not found — build it with scripts/build_store.py"
 
 vocab = schema_from_store(store)
-qwen = LocalTransformersBackend("Qwen/Qwen2.5-3B-Instruct", device=dev)
+qwen = LocalTransformersBackend("Qwen/Qwen3-4B-Instruct-2507", device=dev)
 extractor_qwen = QueryTripleExtractor(qwen, vocab=vocab)
 
 q = "How many people work in Logistics?"
