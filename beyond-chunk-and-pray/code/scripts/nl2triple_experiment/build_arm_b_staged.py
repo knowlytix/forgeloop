@@ -105,7 +105,13 @@ def _emit_llm_extract_sft(splits):
     n = 0
     with open(LLM_EXTRACT_SFT, "w") as f:
         for row in splits.get("train", []):
-            if row.get("category") == "relation_absent":
+            # Skip on absent hops, not just on the relation_absent category: any
+            # other generator category lacking "hops" used to raise KeyError here,
+            # AFTER the file was partly written. run_bakeoff.py then feeds that
+            # truncated corpus to ExemplarIndex.from_rows, which silently drops
+            # unusable rows -- so arm C would quietly train on a short corpus with
+            # no error surfaced at bake-off time.
+            if row.get("category") == "relation_absent" or not row.get("hops"):
                 continue
             rec = {"nl": row["question"], "triples": _hops_to_triples(row["hops"]),
                    "category": row.get("category"), "_factors": row.get("factors", {})}

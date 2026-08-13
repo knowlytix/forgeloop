@@ -21,31 +21,24 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.dirname(HERE)
 sys.path.insert(0, SCRIPTS)
-from forgeloop import data_path  # noqa: E402  (resolves the installed book data)
-
 import torch  # noqa: E402
-
-from knowlytix.core.config import GeometryConfig  # noqa: E402
-from knowlytix.knowledge.config import DocGMSConfig  # noqa: E402
+from _bootstrap import load_store_geo  # noqa: E402  (local store-loader helper)
 from knowlytix.knowledge.llm_backend import LocalTransformersBackend  # noqa: E402
 from knowlytix.knowledge.rag.compiler import QWEN_4B, build_query_compiler  # noqa: E402
-from knowlytix.knowledge.store import GMSExpertStore  # noqa: E402
+
+from forgeloop import data_path  # noqa: E402  (resolves the installed book data)
 
 STORE = os.environ.get("GMS_STORE", str(data_path("gms_annual_report_store")))
 
 
-def load_store(store_path, dev):
-    g = json.load(open(os.path.join(store_path, "model_dims.json")))["geometry"]
-    cfg = DocGMSConfig(store_path=store_path, geometry=GeometryConfig(
-        d_v=g["d_v"], d_u=g["d_u"], m=g["m"], d=g["d"]))
-    store = GMSExpertStore(cfg, device=dev)
-    assert store.load(), f"store not found at {store_path}"
-    return store
-
-
 def main():
     dev = "cuda" if torch.cuda.is_available() else "cpu"
-    store = load_store(STORE, dev)
+    # Shared loader, same as build_arm_b_staged.py and run_bakeoff.py. The local
+    # copy this replaced read model_dims.json unconditionally, so a store without
+    # that file raised FileNotFoundError here while the sibling drivers loaded it
+    # fine on the default geometry -- same store, two behaviours depending on
+    # which script you ran.
+    store = load_store_geo(STORE, dev)
     llm = LocalTransformersBackend(QWEN_4B, device=dev)
     print(f"[arm-b] store={STORE} dev={dev} triples={len(store.triples)}", flush=True)
     manifest = build_query_compiler(

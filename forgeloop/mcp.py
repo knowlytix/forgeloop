@@ -122,10 +122,19 @@ def build_server(stores_dir: str, device=None) -> FastMCP:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(add_help=False)
-    p.add_argument("--stores-dir", default="gms_stores")
-    p.add_argument("--device", default=None)
-    args, _ = p.parse_known_args()
+    # Real parsing, not parse_known_args(): a misspelled flag (--stores_dir,
+    # --store-dir) used to be discarded silently, the server started on the
+    # default gms_stores, ActiveStore os.makedirs'd it, and every store tool
+    # answered "no active store" with nothing pointing at the typo. -h now works
+    # too, which add_help=False had disabled despite the docstring advertising it.
+    p = argparse.ArgumentParser(
+        prog="python -m forgeloop.mcp",
+        description="MCP stdio server over a GMS store directory.")
+    p.add_argument("--stores-dir", default="gms_stores",
+                   help="directory holding the GMS stores (default: gms_stores)")
+    p.add_argument("--device", default=None,
+                   help="torch device for the store, e.g. cpu or cuda (default: auto)")
+    args = p.parse_args()
     build_server(args.stores_dir, args.device).run(transport="stdio")
 
 

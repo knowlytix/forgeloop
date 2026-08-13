@@ -35,7 +35,8 @@ cells.append(new_markdown_cell(
 cells.append(new_code_cell(
     "import os, sys\n"
     'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
-    "sys.path.insert(0, KNOWLYTIX_SRC)"
+    "if KNOWLYTIX_SRC:\n"
+    "    sys.path.insert(0, KNOWLYTIX_SRC)"
 ))
 
 # --- Cell 2: imports ---

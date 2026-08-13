@@ -50,7 +50,8 @@ md(
 code(
     "import os, sys\n"
     'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
-    "sys.path.insert(0, KNOWLYTIX_SRC)"
+    "if KNOWLYTIX_SRC:\n"
+    "    sys.path.insert(0, KNOWLYTIX_SRC)"
 )
 
 # --- the deterministic fake backend --------------------------------------

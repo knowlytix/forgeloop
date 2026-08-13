@@ -75,10 +75,18 @@ def _binder(pipe):
         preds = []
         for q in questions:
             ans = pipe.query(q, generate=False)
-            bound = [[b.head, b.relation]
-                     for b in (getattr(ans, "bound_triples", []) or [])
-                     if getattr(b, "bound", False)]
-            preds.append(BinderPrediction(hops=bound or None,
+            triples = getattr(ans, "bound_triples", []) or []
+            # All-or-nothing: an arm commits to a chain only if EVERY hop bound.
+            # Filtering out the unbound hops instead would report a 2-hop query
+            # whose second hop failed as a valid 1-hop chain -- a chain the arm
+            # never predicted. metric_report's abstention_quality calls
+            # _would_be_correct() on that pred_answer, so a fabricated
+            # subsequence answers a different question than the one asked and
+            # silently scores the "was this abstention justified?" column.
+            all_bound = bool(triples) and all(
+                getattr(b, "bound", False) for b in triples)
+            hops = [[b.head, b.relation] for b in triples] if all_bound else None
+            preds.append(BinderPrediction(hops=hops,
                                           decision=getattr(ans, "decision", "accept")))
         return preds
     return binder
@@ -92,7 +100,18 @@ def _base_config(llm, v_encode, u_encode, relcal, **over):
         relevance_tau_contra=relcal.get("default_tau_contra", 0.75),
         relevance_tau_contra_per_relation=relcal.get("tau_contra_per_relation", {}),
         verify_llm_output=True, verify_mode="geometric", on_verify_fail="abstain",
-        dense_fallback=False, accept_threshold=0.0, numeric_order=True, **over)
+        dense_fallback=False, accept_threshold=0.0,
+        # numeric_order MUST stay off here, even though it is a good default in
+        # production. RagPipeline.query runs _try_numeric_order BEFORE extraction
+        # and regardless of generate=False, and that route returns decision
+        # "accept" with NO bound_triples. _binder would then emit hops=None, and
+        # run_arm scores bound=False / pred_answer=None as `mis_bind` -- for every
+        # superlative or comparison question, in every arm, even when the pipeline
+        # answered it correctly. mis_bind_rate is the load-bearing ceiling in the
+        # G4 decision, so that would silently indict whichever binder saw the most
+        # superlatives. This is a binder bake-off: every question must go through
+        # the binder, not around it.
+        numeric_order=False, **over)
 
 
 def build_arms(store, llm, base_4b, v_encode, u_encode, relcal):
