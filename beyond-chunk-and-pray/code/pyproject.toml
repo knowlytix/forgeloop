@@ -24,6 +24,13 @@ ml = [
     # level. This book worked only because installing it alongside
     # beyond-prompt-and-pray pulled peft in transitively.
     "peft>=0.10",
+    # scripts/nl2triple_experiment/train_lora.py builds a HF Dataset directly;
+    # knowlytix.knowledge.rag.compiler.train.train_compiler (ch10 bake-off, arm
+    # B) lazily imports both trl.SFTTrainer and datasets -- its own error names
+    # this exact stack (transformers, peft, trl, datasets, accelerate). Neither
+    # was declared here; both only worked transitively so far.
+    "trl",
+    "datasets",
 ]
 notebooks = ["jupyter", "nbconvert", "pandas"]
 dev = ["pytest>=8.0", "ruff"]
