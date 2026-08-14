@@ -128,6 +128,19 @@ coverage.xml
 **/*_augmented.jsonl
 **/data/**/rag_doe_*.json
 **/data/**/compare_parsers_results.json
+# nl2triple/: local GPU build output (Ch10 bake-off's Route-B parser
+# experiment -- DoE-inverted training pairs + LoRA adapter). Regenerate via
+# scripts/nl2triple_experiment/{make_data,train_lora}.py.
+**/data/nl2triple/
+# enrichment/ intermediates -- regenerate via enrich_data.py. bakeoff_ABCD.json
+# and bakeoff_decision.json (the persisted Ch10 crossover, still tracked)
+# stay off this list on purpose: Ch10's final cell reads them directly, and
+# rebuilding them needs a full arm-B/C/D campaign against the licensed
+# substrate -- same reasoning as the pinned capstone_*.json above.
+**/data/enrichment/rag_cohort.json
+**/data/enrichment/embedding_sft.jsonl
+**/data/enrichment/embedding_u_groups.json
+**/data/enrichment/llm_draft_sft.jsonl
 **/data/corpus_facts.md
 **/data/**/*.log.jsonl
 

@@ -40,6 +40,7 @@ use_branch_library()
 import torch  # noqa: E402
 import enrich_data as ed  # noqa: E402  (reuse _natural_target/_build_rewrite_prompt/SEMANTIC)
 
+import knowlytix.harness.suite as _suite  # noqa: E402
 from knowlytix.core.config import GeometryConfig  # noqa: E402
 from knowlytix.harness.suite import (  # noqa: E402
     Catalog, CatalogBaseSource, compose, graphdoe_design, resolve)
@@ -133,8 +134,8 @@ def _guarded(rw, target, anchors):
 
 
 def build_train(store, trips, dev, batch_size=16):
-    CAT = Catalog.load(os.path.join(use_branch_library(), "knowlytix",
-                                    "harness", "suite", "catalogs"))
+    catalogs = os.path.join(os.path.dirname(_suite.__file__), "catalogs")
+    CAT = Catalog.load(catalogs)
     suite = resolve(CAT, ed.BASE_TYPES, ed.FACTORS, mode="embedded")
     items = CatalogBaseSource(store, max_per_category=MAX_PER_CAT,
                               seed=TRAIN_SEED).items(suite)
