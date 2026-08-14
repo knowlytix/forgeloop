@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Build notebooks/13_self_verification_a_inline.ipynb (CPU-only; does NOT execute it).
 
-Emits a valid nbformat-4 notebook for Chapter 10 (Self-verification: the GMS as
+Emits a valid nbformat-4 notebook for Chapter 11 (Self-verification: the GMS as
 a hallucination detector). Listings are grounded in data/corpus_facts.md and use
 only real symbols from knowlytix.knowledge.rag.verify / .pipeline / .config.
 
@@ -38,7 +38,7 @@ CELLS.append(code(
 ))
 
 CELLS.append(md(
-    "# Chapter 10 — Self-verification: the GMS as a hallucination detector\n"
+    "# Chapter 11 — Self-verification: the GMS as a hallucination detector\n"
     "\n"
     "Chapter 9 produced a *grounded* draft: the synthesizer was handed retrieved\n"
     "facts plus their spans and told to answer only from them. That constrains the\n"
@@ -421,7 +421,7 @@ CELLS.append(code(
     'assert ans.verification["ok"] is False\n'
     'assert "455" not in ans.answer\n'
     "\n"
-    'print("Chapter 10 self-check passed: hallucinated figure caught and refused.")'
+    'print("Chapter 11 self-check passed: hallucinated figure caught and refused.")'
 ))
 
 nb = new_notebook(cells=CELLS)

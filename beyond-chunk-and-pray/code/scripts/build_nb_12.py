@@ -108,7 +108,7 @@ cells.append(new_code_cell(
 
 # --- Cell 7: Listing (2) — refuses when the facts lack the answer ---
 cells.append(new_code_cell(
-    '# No fact answers an Outlook question (a coverage blind spot, Ch11): the\n'
+    '# No fact answers an Outlook question (a coverage blind spot, Ch12): the\n'
     '# evidence block is empty, so a grounded synthesizer must decline.\n'
     'no_facts: list[RetrievedFact] = []\n'
     'refusal = Assembler(FakeBackend()).assemble(\n'

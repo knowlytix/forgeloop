@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Shared capstone pipeline wiring (Chunk and Pray, Ch16).
+"""Shared capstone pipeline wiring (Chunk and Pray, Ch17).
 
 One source of truth so the agent under test and the gate calibration use the
 SAME pipeline (oracle == agent). Everything here is assembled from library

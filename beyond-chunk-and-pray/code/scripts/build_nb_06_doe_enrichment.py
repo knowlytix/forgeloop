@@ -52,7 +52,7 @@ A = [
            "The store from Ch4 is an *oracle*: every fact it holds is a known answer. "
            "We mine it for questions, enrich each across a DoE of presentation "
            "factors, and emit one corpus that trains the encoders (Ch7) and tests "
-           "the RAG (Ch15). This notebook shows the suite API inline."),
+           "the RAG (Ch16). This notebook shows the suite API inline."),
     ("code", _BOOT),
     ("code",
      'import torch\n'
@@ -112,7 +112,7 @@ B = [
      'import subprocess, sys\n'
      'subprocess.run([sys.executable, os.path.join(REPO, "scripts", "enrich_data.py"),\n'
      '                "--n-runs", "150"], check=True)'),
-    ("md", "## Inspect the emitted artifacts (shared with Ch7 and Ch15)"),
+    ("md", "## Inspect the emitted artifacts (shared with Ch7 and Ch16)"),
     ("code",
      'import json, collections\n'
      'ENR = os.path.join(REPO, "data", "enrichment")\n'
@@ -122,12 +122,12 @@ B = [
      'print("embedding_u_groups  :", sorted(ugroups))\n'
      'print("by clarity          :", dict(collections.Counter(\n'
      '      c["_factors"]["clarity"] for c in cohort)))'),
-    ("md", "**Self-check** - the artifacts Ch7 (SFT) and Ch15 (evaluation) consume exist."),
+    ("md", "**Self-check** - the artifacts Ch7 (SFT) and Ch16 (evaluation) consume exist."),
     ("code",
      'for f in ["rag_cohort.json", "embedding_sft.jsonl",\n'
      '          "embedding_u_groups.json", "llm_draft_sft.jsonl"]:\n'
      '    assert os.path.isfile(os.path.join(ENR, f)), f\n'
-     'print("OK: enrichment corpus ready for Ch7 and Ch15")'),
+     'print("OK: enrichment corpus ready for Ch7 and Ch16")'),
 ]
 
 

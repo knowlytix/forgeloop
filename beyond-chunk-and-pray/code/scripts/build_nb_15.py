@@ -32,14 +32,14 @@ sys.path.insert(0, KNOWLYTIX_SRC)
 
 md(
     """
-# Ch12 — Calibrate, don't guess
+# Ch13 — Calibrate, don't guess
 
 A bind threshold picked by eye is a number you cannot defend. This chapter sets
 the embedding-binding similarity cut **from a labeled cohort**: paraphrases that
 *should* resolve to a Northwind segment are positives, unrelated terms are
 negatives, and `calibrate_bind_threshold` sweeps a grid for the operating point
 that best separates them. The same discipline applies to the accept/abstain cuts
-downstream — see Ch11 (abstention) and App C (the GMS calibration method).
+downstream — see Ch12 (abstention) and App C (the GMS calibration method).
 
 We hold the binder's encoder deterministic here so the chapter runs in CI without
 the GPU/MiniLM path. In production you inject the real encoder; the *procedure* is
@@ -159,7 +159,7 @@ md(
     """
 **What the output means.** The chosen threshold is the *operating point*: above
 it the binder accepts a paraphrase as a segment match; below it the term is
-refused (bind-check abstention, Ch11). `acc == 1.0` means the grid found a cut
+refused (bind-check abstention, Ch12). `acc == 1.0` means the grid found a cut
 that lets every paraphrase through and refuses every unrelated term. The binder
 mutates in place — subsequent `bind` calls use the calibrated value.
 """

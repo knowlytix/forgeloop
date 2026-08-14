@@ -29,7 +29,7 @@ def code(src: str) -> None:
 
 # ---------------------------------------------------------------------------
 md(r"""
-# Ch14 — Pluggable LLMs and the distrusted dense fallback
+# Ch15 — Pluggable LLMs and the distrusted dense fallback
 
 A GEODE-RAG deployment has three LLM-shaped jobs: **extract** the query triples,
 **synthesize** the grounded answer, and (optionally) **verify** the answer's own
@@ -40,7 +40,7 @@ off by default, opt-in, and — when it does answer — quarantined with
 `verified=False` and a notice, because its hits are not GMS-verified.
 
 The grounded triple path always abstains on a prose-only question
-(see Ch11). The dense fallback is the *only* way to get a (caveated) answer to
+(see Ch12). The dense fallback is the *only* way to get a (caveated) answer to
 such a question, and `strict_mode` lets a bank-grade deployment turn even that
 off. Every claim below is grounded in `data/corpus_facts.md`; the Qwen/store
 cells are marked **CI** for the lead to execute.
@@ -306,7 +306,7 @@ assert strict_cfg.dense_fallback is True and strict_cfg.strict_mode is True
 # Per-role fallback chain resolves correctly.
 shared = ScriptedBackend("qwen")
 assert RagConfig(llm=shared).verify_llm() is shared
-print("Ch14 self-check passed: pluggable roles + quarantined dense fallback.")
+print("Ch15 self-check passed: pluggable roles + quarantined dense fallback.")
 """)
 
 nb["cells"] = cells

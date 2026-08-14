@@ -28,7 +28,7 @@ BOOT = (
     'sys.path.insert(0, os.path.join(REPO, "scripts"))'
 )
 # Build the shared capstone pipeline on the real store (accept gate open here;
-# Ch14 calibrates it). Used by every retrieval/answer chapter's B notebook.
+# Ch15 calibrates it). Used by every retrieval/answer chapter's B notebook.
 PIPE = (
     'import capstone_pipeline as cp\n'
     'store = cp.load_store(os.path.join(REPO, "data", "gms_annual_report_store"))\n'
@@ -270,9 +270,9 @@ CH7_B = [
 ]
 
 
-# Ch15 A (inline DoE evaluation) -- replaces the stale renamed eval notebook.
+# Ch16 A (inline DoE evaluation) -- replaces the stale renamed eval notebook.
 CH15_A = [
-    ("md", "# Ch15 (A, inline) - Evaluating the RAG with a Designed Experiment\n\n"
+    ("md", "# Ch16 (A, inline) - Evaluating the RAG with a Designed Experiment\n\n"
            "The DoE cohort (Ch6) is the test set, the GMS is the oracle. We measure "
            "precision/recall@k, calibrated correctness, completeness, and attribute "
            "failures to the presentation factors."),
@@ -301,19 +301,19 @@ CH15_A = [
              '      f"completeness={C/max(1,NA):.3f} abstention={AB/N:.3f}")'),
 ]
 
-# Ch18 A (inline capstone) -- the complete pipeline run + the verdict.
+# Ch19 A (inline capstone) -- the complete pipeline run + the verdict.
 CH18_A = [
-    ("md", "# Ch18 (A, inline) - the complete pipeline, and the verdict\n\n"
+    ("md", "# Ch19 (A, inline) - the complete pipeline, and the verdict\n\n"
            "Everything assembled: one pipeline over the store built and tuned across "
            "Ch4-7, answering through the graph with provenance, abstaining on prose, "
-           "and the head-to-head verdict from Ch15."),
+           "and the head-to-head verdict from Ch16."),
     ("code", BOOT), ("code", PIPE),
     ("code", 'for q in ["What is Cloud Platform revenue?",\n'
              '          "Which region runs the division that contains Cloud Platform?",\n'
              '          "What is management\\u2019s outlook for fiscal 2026?"]:\n'
              '    a = pipe.query(q)\n'
              '    print(f"{a.decision:8} {q[:52]:52} -> {a.answer[:40]}")'),
-    ("md", "The verdict the book concludes on (from the Ch15 comparison)."),
+    ("md", "The verdict the book concludes on (from the Ch16 comparison)."),
     ("code", 'import json\n'
              '_cmp = os.path.join(REPO, "data", "enrichment", "rag_doe_compare.json")\n'
              'if not os.path.exists(_cmp):\n'

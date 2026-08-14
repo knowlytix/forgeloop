@@ -177,7 +177,7 @@ def main() -> None:
             "asked value), attaches a `file:line:char` provenance span to every "
             "fact, and returns ENM-exact numerics.\n\n"
             "No LLM is involved in *retrieval* — only the geometry. Synthesis "
-            "(Ch9) and verification (Ch10) come after."),
+            "(Ch9) and verification (Ch11) come after."),
         new_code_cell(BOOTSTRAP),
         new_code_cell(LOAD_STORE),
         new_markdown_cell("## Listing 8.1 — Single-hop retrieval with provenance"),
