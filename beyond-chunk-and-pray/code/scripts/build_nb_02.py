@@ -44,8 +44,9 @@ CELLS.append(md(
 # --- Cell 1: bootstrap (verbatim from global brief) ---
 CELLS.append(code(
     "import os, sys\n"
-    "KNOWLYTIX_SRC = os.environ.get(\"KNOWLYTIX_SRC\", \"/path/to/GMS-knowlytix\")\n"
-    "sys.path.insert(0, KNOWLYTIX_SRC)"
+    "KNOWLYTIX_SRC = os.environ.get(\"KNOWLYTIX_SRC\", \"\")\n"
+    "if KNOWLYTIX_SRC:\n"
+    "    sys.path.insert(0, KNOWLYTIX_SRC)"
 ))
 
 CELLS.append(md(
@@ -223,7 +224,7 @@ CELLS.append(md(
     "*geometric* signal rather than a string compare. Below: the two real\n"
     "division heads (`dana cole`, `sam reyes`) are distinct people running\n"
     "distinct divisions — the energy reads them as not-agreeing, which is exactly\n"
-    "what flags a 'two CEOs' style contradiction in Chapter 5 and Chapter 10."
+    "what flags a 'two CEOs' style contradiction in Chapter 5 and Chapter 11."
 ))
 
 # --- Cell 8: tension_energy ---

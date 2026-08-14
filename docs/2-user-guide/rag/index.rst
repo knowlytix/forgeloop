@@ -5,7 +5,8 @@ This part follows *Beyond Chunk and Pray*, one page per chapter and in the
 book's order. It develops governed retrieval over geometric memory: why chunking
 fails, the geometric store and provenance, extraction from document to graph,
 GEODE self-correction and designed-experiment enrichment, encoder tuning,
-triple-mediated retrieval and binding, grounded synthesis, self-verification,
+triple-mediated retrieval and binding, a bake-off among candidate binders,
+grounded synthesis, self-verification,
 abstention and calibration, evaluation, pluggable LLMs, external persistence and
 a closing capstone. The pages correspond to :mod:`forgeloop.rag`.
 
@@ -21,12 +22,13 @@ a closing capstone. The pages correspond to :mod:`forgeloop.rag`.
    07_embedding_sft
    08_triple_mediated_retrieval
    09_binding
-   10_answering_through_the_gms
-   11_grounded_synthesis
-   12_self_verification
-   13_abstention_and_coverage
-   14_calibration
-   15_evaluation
-   16_pluggable_llms_and_dense_fallback
-   17_external_persistence_kal
-   18_capstone_summary
+   10_binder_bakeoff
+   11_answering_through_the_gms
+   12_grounded_synthesis
+   13_self_verification
+   14_abstention_and_coverage
+   15_calibration
+   16_evaluation
+   17_pluggable_llms_and_dense_fallback
+   18_external_persistence_kal
+   19_capstone_summary

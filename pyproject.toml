@@ -30,6 +30,12 @@ ml = ["torch>=2.0", "transformers>=4.40", "peft>=0.10", "accelerate>=0.30"]
 artifacts = ["huggingface_hub>=0.20"]
 # GMS substrate (geometry, stores, DOE harness) — licensed, installed separately.
 gms = ["knowlytix", "pandas"]
+# The composed MCP server (forgeloop.mcp): knowlytix model-agnostic store tools +
+# the governance/testing/ingest tools from the companion packages. mcp<2 pins the
+# FastMCP-era SDK (2.0 renamed FastMCP -> MCPServer). transformers/accelerate are
+# needed only for the opt-in model-backed rag_retrieve_compiled tool.
+mcp = ["mcp>=1.26,<2", "knowlytix", "agentlab", "gmstest", "reasonloop",
+       "transformers>=4.40", "accelerate>=0.30"]
 anthropic = ["anthropic>=0.30"]
 notebooks = ["jupyterlab", "matplotlib", "pandas"]
 dev = ["pytest>=8.0", "pytest-cov", "ruff", "black"]
@@ -37,6 +43,10 @@ all = [
     "torch>=2.0", "transformers>=4.40", "peft>=0.10", "accelerate>=0.30",
     "huggingface_hub>=0.20", "anthropic>=0.30", "jupyterlab", "matplotlib", "pandas",
 ]
+
+[project.scripts]
+# Composed model-agnostic + forgeloop-tools MCP server (needs the [mcp] extra).
+gms-mcp = "forgeloop.mcp:main"
 
 [project.urls]
 Homepage = "https://github.com/knowlytix/forgeloop"

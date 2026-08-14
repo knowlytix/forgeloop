@@ -4,7 +4,7 @@
 Emits a valid nbformat-4 notebook with nbformat. CPU-only; does NOT execute
 any cell (no store load, no Qwen). Run:
 
-    python scripts/build_nb_01.py
+    ~/cluster/spark-venv/bin/python scripts/build_nb_01.py
 """
 from __future__ import annotations
 
@@ -36,8 +36,9 @@ cells.append(new_markdown_cell(
 # Cell 1 — the mandatory bootstrap (global brief, verbatim).
 cells.append(new_code_cell(
     "import os, sys\n"
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
-    "sys.path.insert(0, KNOWLYTIX_SRC)"
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
+    "if KNOWLYTIX_SRC:\n"
+    "    sys.path.insert(0, KNOWLYTIX_SRC)"
 ))
 
 cells.append(new_markdown_cell(
@@ -157,10 +158,10 @@ cells.append(new_markdown_cell(
     "modes from the chapter thesis: hallucinated retrieval (wrong chunk ranks "
     "first), no provenance (chunk-level line range only), and silently wrong "
     "numbers (parsed from text). The fourth — unverifiable, \"a model judging a "
-    "model\" — appears the moment you add an LLM grader to this same loop (Ch10).\n"
+    "model\" — appears the moment you add an LLM grader to this same loop (Ch11).\n"
     "\n"
     "Cross-reference: the agent book's Ch9 (memory tiers) treats this dense index "
-    "as the *lowest-trust* tier; this book quarantines it entirely (Ch14)."
+    "as the *lowest-trust* tier; this book quarantines it entirely (Ch15)."
 ))
 
 cells.append(new_markdown_cell(
@@ -180,7 +181,7 @@ cells.append(new_code_cell(
     "# === CI-ONLY: loads the trained store + Qwen. Do not run during authoring. ===\n"
     "import torch\n"
     "from knowlytix.knowledge.store import GMSExpertStore\n"
-    "from knowlytix.knowledge.config import DocGMSConfig\n"
+    "from knowlytix.knowledge.config import DocGMSConfig, GeometryConfig\n"
     "from knowlytix.knowledge.llm_backend import LocalTransformersBackend\n"
     "from knowlytix.knowledge.rag import RagConfig, RagPipeline\n"
     "from knowlytix.knowledge.geode import QWEN_3B\n"
@@ -188,7 +189,7 @@ cells.append(new_code_cell(
     'STORE_PATH = str(DATA / "gms_annual_report_store")\n'
     "device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n"
     "\n"
-    "store = GMSExpertStore(DocGMSConfig(store_path=STORE_PATH), device=device)\n"
+    "store = GMSExpertStore(DocGMSConfig(store_path=STORE_PATH, geometry=GeometryConfig(d_v=64, d_u=64, m=32, d=32)), device=device)\n"
     "assert store.load(), f\"no trained store at {STORE_PATH}\"\n"
     "\n"
     "# ENM gives the authoritative number directly, byte-exact, no parsing.\n"
@@ -212,12 +213,12 @@ cells.append(new_markdown_cell(
     "retrieved triple carries a `file:line:char` span back to the exact table "
     "cell. The answer is *grounded* and *verifiable* — and when no triple binds "
     "(the MD&A/Risk/Outlook prose), the pipeline **abstains** instead of "
-    "guessing (Ch11).\n"
+    "guessing (Ch12).\n"
     "\n"
     "**Honest limit.** Triple-mediation only helps where triples exist. The four "
     "prose sections of this report carry zero triples (coverage_ratio = 0.56 in "
     "`corpus_facts.md`); a question answerable only from prose will *abstain*, "
-    "not answer, unless you opt into the distrusted dense fallback (Ch14). "
+    "not answer, unless you opt into the distrusted dense fallback (Ch15). "
     "Chunk-and-pray would have *guessed*; this is the trade the book argues for."
 ))
 

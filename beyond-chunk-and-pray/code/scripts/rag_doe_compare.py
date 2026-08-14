@@ -108,7 +108,7 @@ def _eval_system(name, query_fn, source_hit, oracle, comp_eval, cohort, store, K
         rec.append(1.0 if hits else 0.0)
         answered = getattr(ans, "decision", "accept") == "accept"
         abst.append(0.0 if answered else 1.0)
-        # Answer-driven, calibrated correctness + completeness (the Ch16 method),
+        # Answer-driven, calibrated correctness + completeness (the Ch17 method),
         # answered cases only so coverage (abstention) does not conflate with it.
         if answered:
             gold = _golden(store, c)               # store triples (head, rel, value)

@@ -6,7 +6,7 @@ fixed-size overlapping chunks, sentence-transformers embeddings, cosine top-k
 retrieval, and a generator that answers from the retrieved passages with no
 binding, no Exact Numerical Memory, no abstention and no verification. It runs
 the SAME data/eval_cohort.json the GEODE-RAG pipeline is graded on
-(Chapter 13), so the contrast is empirical rather than rhetorical.
+(Chapter 14), so the contrast is empirical rather than rhetorical.
 
 This builder only assembles the .ipynb JSON; it executes nothing. The notebook
 itself runs on CPU for everything except the optional, CI-marked real-Qwen cell.
@@ -35,14 +35,15 @@ OUT = os.path.join(HERE, os.pardir, "notebooks",
 
 BOOTSTRAP = (
     "import os, sys\n"
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
-    "sys.path.insert(0, KNOWLYTIX_SRC)\n"
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
+    "if KNOWLYTIX_SRC:\n"
+    "    sys.path.insert(0, KNOWLYTIX_SRC)\n"
     "REPO_ROOT = os.path.abspath(os.path.join(os.getcwd(), os.pardir))"
 )
 
 LOAD_CORPUS = '''\
 # The baseline reads the SAME corpus and the SAME labeled cohort the GEODE-RAG
-# pipeline is graded on (Chapter 13). Nothing about the data changes; only the
+# pipeline is graded on (Chapter 14). Nothing about the data changes; only the
 # retrieval contract does. There is no trained store here -- chunk-and-pray needs
 # only raw text and an embedding model.
 import json
@@ -257,9 +258,9 @@ print(qwen_baseline.query("What was total revenue?").answer)'''
 
 TRUST = '''\
 # CI -- run the cohort through the REAL (Qwen) baseline and compute the SAME
-# trust metrics as Chapter 13: provenance rate, abstention precision and the
+# trust metrics as Chapter 14: provenance rate, abstention precision and the
 # confident-wrong count, plus the accept rate. The grader is byte-identical to
-# Chapter 13; only the system under test differs. (The extractive `baseline`
+# Chapter 14; only the system under test differs. (The extractive `baseline`
 # above gives the same architectural verdict on CPU; see the self-check.)
 def trust_metrics(rag, rows):
     confident_wrong = 0
@@ -317,7 +318,7 @@ print("GEODE-RAG source: data/annual_report.md:15:553-558",
       "  (the exact cell 120.0 resolves to)")
 
 # The two prose blind spots (Outlook, Risk Factors) carry no triples; GEODE-RAG
-# abstains on them (Chapter 13, abstention_precision = 1.0). Chunk-and-pray has
+# abstains on them (Chapter 14, abstention_precision = 1.0). Chunk-and-pray has
 # no abstention path, so it answers anyway -- a confident-wrong on each.
 prose = [r for r in cohort if r["type"] == "unanswerable"]
 for r in prose:
@@ -359,7 +360,7 @@ def build() -> None:
             "\n"
             "This appendix builds the system the book argues against, end to end, "
             "and runs it through the **same** labeled cohort the GEODE-RAG "
-            "pipeline is graded on (Chapter 13). It is a yardstick, not a straw "
+            "pipeline is graded on (Chapter 14). It is a yardstick, not a straw "
             "man: a textbook dense-retrieval RAG --- fixed-size chunks, "
             "sentence-transformers embeddings, cosine top-$k$, stuff-and-generate "
             "--- with no triple binding, no Exact Numerical Memory, no abstention "
@@ -379,7 +380,7 @@ def build() -> None:
         new_code_cell(GENERATE),
         new_markdown_cell("## The real generator: local Qwen (CI)"),
         new_code_cell(QWEN_CI),
-        new_markdown_cell("## The cohort, scored exactly as in Chapter 13"),
+        new_markdown_cell("## The cohort, scored exactly as in Chapter 14"),
         new_code_cell(TRUST),
         new_markdown_cell("## Provenance and the prose blind spots"),
         new_code_cell(CONTRAST),

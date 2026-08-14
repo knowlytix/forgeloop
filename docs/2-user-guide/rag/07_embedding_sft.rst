@@ -11,7 +11,7 @@ it asks about, and logical contradiction in the u-space, where a claim asserting
 the wrong value sits far from the truth. Both are supervised fine-tunes of a
 low-rank adapter over a frozen base encoder; the base never moves. The v-space
 tune drives binding (:doc:`09_binding`) and the u-space tune drives
-self-verification (:doc:`12_self_verification`).
+self-verification (:doc:`13_self_verification`).
 
 The two encoders
 ----------------
@@ -130,7 +130,7 @@ relevance-gate calibration in one pass, writing ``tuned_encoder/``,
 ``contradiction_encoder/`` and ``relevance_calibration.json`` beside the store.
 The persisted operating point, the v-accept floor and the per-attribute u-veto
 cut, is fit from the same data and exercised under calibration
-(:doc:`14_calibration`). The encoders are only as good as the generated data
+(:doc:`15_calibration`). The encoders are only as good as the generated data
 behind them, and a high held-out accuracy on generated questions is not a
 guarantee on phrasings far outside the factor design.
 
@@ -142,5 +142,5 @@ See also
   :func:`~knowlytix.embedding.finetune.finetune_embedding` and the objectives.
 - :doc:`08_triple_mediated_retrieval` and :doc:`09_binding` — where the tuned
   v-encoder is consumed.
-- :doc:`14_calibration` — fitting the relevance gate's operating point.
+- :doc:`15_calibration` — fitting the relevance gate's operating point.
 - :doc:`/4-notebook-examples/rag/index` — the same fine-tunes run end to end.

@@ -1,14 +1,16 @@
 Retrieval
 =========
 
-Beyond Chunk and Pray, Chapters 8-14 — triple-mediated retrieval, binding, grounded synthesis, self-verification and abstention.
+Beyond Chunk and Pray, Chapters 8-15 — triple-mediated retrieval, binding, the binder bake-off, grounded synthesis, self-verification and abstention.
 
 .. toctree::
    :maxdepth: 1
 
    admissibility_filter
    assemble
+   bakeoff
    binding
+   compiler_walk
    config
    coverage
    dense

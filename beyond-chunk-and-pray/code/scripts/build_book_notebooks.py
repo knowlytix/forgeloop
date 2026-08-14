@@ -22,13 +22,13 @@ NBDIR = os.path.join(HERE, "..", "..", "notebooks")
 
 BOOT = (
     'import os, sys\n'
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
     'sys.path.insert(0, KNOWLYTIX_SRC)\n'
     'REPO = os.path.join(os.path.dirname(os.getcwd()), "code") if os.path.basename(os.getcwd()) == "notebooks" else os.getcwd()\n'
     'sys.path.insert(0, os.path.join(REPO, "scripts"))'
 )
 # Build the shared capstone pipeline on the real store (accept gate open here;
-# Ch14 calibrates it). Used by every retrieval/answer chapter's B notebook.
+# Ch15 calibrates it). Used by every retrieval/answer chapter's B notebook.
 PIPE = (
     'import capstone_pipeline as cp\n'
     'store = cp.load_store(os.path.join(REPO, "data", "gms_annual_report_store"))\n'
@@ -102,40 +102,110 @@ B_CHAPTERS = [
      [("md", "Bind a paraphrased query to the graph through the tuned v-encoder."),
       ("code", BOOT), ("code", PIPE),
       ("code", 'print(pipe.extract("How much did the cloud segment sell?").bound_triples)')]),
-    (10, "answering_through_the_gms", "Answering through the GMS",
+    (10, "binder_bakeoff", "Choosing a binder: a bake-off",
+     [("md", "The work of the bake-off is **building** the binders; comparing them is a "
+             "much smaller step. This notebook builds all four over the annual-report "
+             "store --- it generates training samples from the store, fine-tunes the "
+             "compiler (arm B), indexes those samples for the frozen few-shot binder "
+             "(arm C), and calibrates the patchable alias table (arm D) --- and only "
+             "then reads the persisted crossover. The build cells need the GPU and the "
+             "licensed backend; run them locally (execution is off at render time)."),
+      ("md", "**Setup.** Load the store and the base LM through the installed package."),
+      ("code",
+       "from forgeloop import data_path, ensure_artifacts\n"
+       "from forgeloop.rag import load_store\n"
+       "from knowlytix.knowledge.llm_backend import LocalTransformersBackend\n"
+       "from knowlytix.knowledge.rag.compiler import (build_compiler_dataset, train_compiler,\n"
+       "                                              CompilerSFTConfig, QWEN_4B)\n"
+       "ensure_artifacts()          # fetch the store + adapters if missing (portable)\n"
+       "store = load_store()        # forgeloop resolves the store dir -- no hardcoded path\n"
+       "llm = LocalTransformersBackend(QWEN_4B)   # rephraser for datagen + base for SFT"),
+      ("md", "**Arm B, step 1 --- generate samples (a design of experiments).** "
+             "`build_compiler_dataset` runs three knowlytix stages: graph generators "
+             "mine base questions (single-hop, two-hop, and relation-absent probes), "
+             "each carrying its gold hop chain as the training target; "
+             "`DesignMatrix.from_catalog` draws a space-filling **Sobol** design over "
+             "the ~20 presentation factors of the DoE (clarity, length, expertise, "
+             "paraphrase depth, ...); and `QuestionRephraser` realizes each design row, "
+             "rewriting the base question to those factor levels while preserving the "
+             "target chain. A held-out factor level and a fraction of facts become the "
+             "eval splits, so the design defines what the model is tested on."),
+      ("code",
+       "splits = build_compiler_dataset(\n"
+       "    store, llm, group='comprehensive', variants_per_base=12,\n"
+       "    heldout_levels={'clarity': 'Misleading'}, heldout_fact_frac=0.15, seed=42)\n"
+       "print({k: len(v) for k, v in splits.items()})\n"
+       "print('one sample:', splits['train'][0])"),
+      ("md", "**Arm B, step 2 --- fine-tune the SLM compiler** on the samples with a "
+             "low-rank adapter, written into the store's `query_compiler/`."),
+      ("code",
+       "compiler_dir = train_compiler(\n"
+       "    splits['train'], out_dir=str(data_path('gms_annual_report_store', 'query_compiler')),\n"
+       "    config=CompilerSFTConfig(base_model=QWEN_4B, lora_r=16, lora_alpha=32, epochs=3))\n"
+       "print('compiler adapter:', compiler_dir)"),
+      ("md", "**Arm C --- index the same samples** in the tuned encoder's space (no "
+             "training); the k nearest are shown to a frozen model at inference."),
+      ("code",
+       "from knowlytix.embedding import FineTunedEmbedding\n"
+       "from knowlytix.knowledge.rag.bakeoff import ExemplarIndex\n"
+       "v_encoder = FineTunedEmbedding.load(str(data_path('gms_annual_report_store', 'tuned_encoder')))\n"
+       "index = ExemplarIndex.from_rows(splits['train'], v_encoder.encode)\n"
+       "print('exemplars indexed:', len(index))"),
+      ("md", "**Arm D --- build a patchable alias table** for the head entity, with a "
+             "calibrated encoder-nearest fallback; a mis-binding is fixed by one edit."),
+      ("code",
+       "from knowlytix.knowledge.rag.bakeoff import AliasTableResolver, calibrate_alias_resolver\n"
+       "from knowlytix.knowledge.rag.compiler.walk import StoreChainWalker\n"
+       "entities = StoreChainWalker(store).entities\n"
+       "tau = calibrate_alias_resolver(entities, v_encoder.encode, far_ceiling=0.05)['tau']\n"
+       "resolver = AliasTableResolver.from_store(store, encoder=v_encoder.encode, tau=tau)\n"
+       "resolver.add_alias('CP', 'cloud platform')   # a patch is one row, not a retrain\n"
+       "print('alias entries:', len(resolver.table), '| fallback tau:', round(tau, 3))"),
+      ("md", "**The comparison, in one step.** With the binders built, the crossover and "
+             "the G4 verdict are read from the persisted run."),
+      ("code",
+       "import json\n"
+       "report = json.load(open(data_path('enrichment', 'bakeoff_ABCD.json')))\n"
+       "decision = json.load(open(data_path('enrichment', 'bakeoff_decision.json')))\n"
+       "for name, e in report['arms'].items():\n"
+       "    o = e['overall']\n"
+       "    print(f\"{name:12} acc={o['accuracy']:.3f} mis_bind={o['mis_bind_rate']:.3f} \"\n"
+       "          f\"holdout={e['holdout']['accuracy']:.3f} patch={e['patch_cost']}\")\n"
+       "print('decision:', decision['recommended'], '| recused:', decision['recused'])")]),
+    (11, "answering_through_the_gms", "Answering through the GMS",
      [("md", "Multi-hop answer through the real graph."),
       ("code", BOOT), ("code", PIPE),
       ("code", _q("Which region runs the division that contains Cloud Platform?", "answer"))]),
-    (11, "grounded_synthesis", "Grounded synthesis",
+    (12, "grounded_synthesis", "Grounded synthesis",
      [("md", "Synthesize a grounded answer from retrieved facts (real Qwen)."),
       ("code", BOOT), ("code", PIPE), ("code", _q("What was net income in FY2025?", "answer"))]),
-    (12, "self_verification", "Self-verification",
+    (13, "self_verification", "Self-verification",
      [("md", "The GMS catches a confident-wrong number (u-space contradiction)."),
       ("code", BOOT), ("code", PIPE),
       ("code", 'a = pipe.query("What is Cloud Platform revenue?")\n'
                'print("decision:", a.decision, "| verified:", a.verified)')]),
-    (13, "abstention_and_coverage", "Abstention and coverage",
+    (14, "abstention_and_coverage", "Abstention and coverage",
      [("md", "Abstain on a prose blind spot; coverage_report names the blind spots."),
       ("code", BOOT), ("code", PIPE),
       ("code", 'from knowlytix.knowledge.rag import coverage_report\n'
                'print(pipe.query("What is management\\u2019s outlook for fiscal 2026?").decision)\n'
                'print(round(coverage_report(store).coverage_ratio, 2))')]),
-    (14, "calibration", "Calibration",
+    (15, "calibration", "Calibration",
      [("md", "Calibrate the accept gate from the cohort (project step)."),
       ("code", BOOT), ("code", RUN + 'run("calibrate_accept_gate.py")'),
       ("code", 'import json\n'
                'print(json.load(open(os.path.join(REPO,"data","gms_annual_report_store","rag_gate_calibration.json"))))')]),
-    (15, "evaluation", "Evaluating the RAG",
+    (16, "evaluation", "Evaluating the RAG",
      [("md", "Run the DoE evaluation and the GEODE-vs-baseline comparison (project)."),
       ("code", BOOT), ("code", RUN + 'run("rag_doe_compare.py", "--limit", "150", "--k", "3")'),
       ("code", 'import json\n'
                'd = json.load(open(os.path.join(REPO,"data","enrichment","rag_doe_compare.json")))\n'
                'for m in ["precision_at_k","recall_at_k","correctness","completeness","abstention_rate"]:\n'
                '    print(f"{m:16}{d[\'geode\'][m]:>8.3f}{d[\'baseline\'][m]:>10.3f}")')]),
-    (16, "pluggable_llms_and_dense_fallback", "Pluggable LLMs",
+    (17, "pluggable_llms_and_dense_fallback", "Pluggable LLMs",
      [("md", "Same pipeline, swap the backend; dense fallback stays off."),
       ("code", BOOT), ("code", PIPE), ("code", _q("What was total revenue?", "answer"))]),
-    (17, "external_persistence_kal", "Persisting to KAL",
+    (18, "external_persistence_kal", "Persisting to KAL",
      [("md", "Persist the verified graph to KAL's offline mock and round-trip."),
       ("code", BOOT),
       ("code", 'import torch\n'
@@ -146,7 +216,7 @@ B_CHAPTERS = [
                'n = persist_store_to_kal_sync(MockKnowledgeAdapter("capstone"), store,\n'
                '        tenant_id="northwind", source="annual_report.md", confidence=1.0)\n'
                'print("persisted", n, "of", len(store_to_kal_triples(store, source="annual_report.md")))')]),
-    (18, "capstone_summary", "Capstone: the complete pipeline + verdict",
+    (19, "capstone_summary", "Capstone: the complete pipeline + verdict",
      [("md", "The complete RAG, assembled, and the head-to-head verdict the book "
              "concludes on (project: the full comparison)."),
       ("code", BOOT), ("code", RUN + 'run("rag_doe_compare.py", "--limit", "150", "--k", "3")'),
@@ -200,9 +270,9 @@ CH7_B = [
 ]
 
 
-# Ch15 A (inline DoE evaluation) -- replaces the stale renamed eval notebook.
+# Ch16 A (inline DoE evaluation) -- replaces the stale renamed eval notebook.
 CH15_A = [
-    ("md", "# Ch15 (A, inline) - Evaluating the RAG with a Designed Experiment\n\n"
+    ("md", "# Ch16 (A, inline) - Evaluating the RAG with a Designed Experiment\n\n"
            "The DoE cohort (Ch6) is the test set, the GMS is the oracle. We measure "
            "precision/recall@k, calibrated correctness, completeness, and attribute "
            "failures to the presentation factors."),
@@ -231,19 +301,19 @@ CH15_A = [
              '      f"completeness={C/max(1,NA):.3f} abstention={AB/N:.3f}")'),
 ]
 
-# Ch18 A (inline capstone) -- the complete pipeline run + the verdict.
+# Ch19 A (inline capstone) -- the complete pipeline run + the verdict.
 CH18_A = [
-    ("md", "# Ch18 (A, inline) - the complete pipeline, and the verdict\n\n"
+    ("md", "# Ch19 (A, inline) - the complete pipeline, and the verdict\n\n"
            "Everything assembled: one pipeline over the store built and tuned across "
            "Ch4-7, answering through the graph with provenance, abstaining on prose, "
-           "and the head-to-head verdict from Ch15."),
+           "and the head-to-head verdict from Ch16."),
     ("code", BOOT), ("code", PIPE),
     ("code", 'for q in ["What is Cloud Platform revenue?",\n'
              '          "Which region runs the division that contains Cloud Platform?",\n'
              '          "What is management\\u2019s outlook for fiscal 2026?"]:\n'
              '    a = pipe.query(q)\n'
              '    print(f"{a.decision:8} {q[:52]:52} -> {a.answer[:40]}")'),
-    ("md", "The verdict the book concludes on (from the Ch15 comparison)."),
+    ("md", "The verdict the book concludes on (from the Ch16 comparison)."),
     ("code", 'import json\n'
              '_cmp = os.path.join(REPO, "data", "enrichment", "rag_doe_compare.json")\n'
              'if not os.path.exists(_cmp):\n'
@@ -262,8 +332,8 @@ def build() -> None:
         _write(f"{num:02d}_{slug}_b_project.ipynb", cells)
     _write("07_embedding_sft_a_inline.ipynb", CH7_A)
     _write("07_embedding_sft_b_project.ipynb", CH7_B)
-    _write("15_evaluation_a_inline.ipynb", CH15_A)
-    _write("18_capstone_summary_a_inline.ipynb", CH18_A)
+    _write("16_evaluation_a_inline.ipynb", CH15_A)
+    _write("19_capstone_summary_a_inline.ipynb", CH18_A)
 
 
 if __name__ == "__main__":

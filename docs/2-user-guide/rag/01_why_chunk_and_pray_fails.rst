@@ -164,7 +164,7 @@ abstains. The report's four prose sections carry no triples, so a question
 answerable only from prose returns an abstention rather than a guess. This is the
 trade the rest of the part develops: an answer that can be checked against a span,
 or no answer at all. The distrusted dense index becomes an opt-in fallback
-(:doc:`16_pluggable_llms_and_dense_fallback`), not the default retriever.
+(:doc:`17_pluggable_llms_and_dense_fallback`), not the default retriever.
 
 See also
 --------

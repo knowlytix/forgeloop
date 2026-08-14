@@ -7,7 +7,7 @@ first step. A question is translated into query triples, patterns of the form
 ``(head, relation, tail)`` in which the asked-for value is the bare variable
 ``?``, and those triples are later bound to the graph's vocabulary
 (:doc:`09_binding`) and answered through the geometric memory
-(:doc:`10_answering_through_the_gms`). The surface form of the question never
+(:doc:`11_answering_through_the_gms`). The surface form of the question never
 touches an opaque similarity search.
 
 The query-triple vocabulary
@@ -204,7 +204,7 @@ requires a GPU and a licensed knowlytix build.
 Extraction produces a checkable form; it does not itself answer. An attribute the
 graph never recorded yields abstention rather than a forced answer. The end-to-end
 run through :class:`~knowlytix.knowledge.rag.pipeline.RagPipeline` returns a
-decision and provenance and is the subject of :doc:`10_answering_through_the_gms`.
+decision and provenance and is the subject of :doc:`11_answering_through_the_gms`.
 
 See also
 --------

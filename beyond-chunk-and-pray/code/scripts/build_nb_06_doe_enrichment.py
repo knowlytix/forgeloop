@@ -22,7 +22,7 @@ NBDIR = os.path.join(HERE, "..", "notebooks")
 
 _BOOT = (
     'import os, sys\n'
-    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
+    'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
     'sys.path.insert(0, KNOWLYTIX_SRC)\n'
     'REPO = os.path.dirname(os.getcwd()) if os.path.basename(os.getcwd()) == "notebooks" else os.getcwd()\n'
     'sys.path.insert(0, os.path.join(REPO, "scripts"))   # project modules'
@@ -52,18 +52,18 @@ A = [
            "The store from Ch4 is an *oracle*: every fact it holds is a known answer. "
            "We mine it for questions, enrich each across a DoE of presentation "
            "factors, and emit one corpus that trains the encoders (Ch7) and tests "
-           "the RAG (Ch15). This notebook shows the suite API inline."),
+           "the RAG (Ch16). This notebook shows the suite API inline."),
     ("code", _BOOT),
     ("code",
      'import torch\n'
-     'from knowlytix.knowledge.config import DocGMSConfig\n'
+     'from knowlytix.knowledge.config import DocGMSConfig, GeometryConfig\n'
      'from knowlytix.knowledge.store import GMSExpertStore\n'
      'from knowlytix.harness.suite import (\n'
      '    Catalog, resolve, CatalogBaseSource, compose, graphdoe_design)\n'
      '\n'
      'STORE = os.path.join(REPO, "data", "gms_annual_report_store")\n'
      'dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")\n'
-     'store = GMSExpertStore(DocGMSConfig(store_path=STORE), device=dev)\n'
+     'store = GMSExpertStore(DocGMSConfig(store_path=STORE, geometry=GeometryConfig(d_v=64, d_u=64, m=32, d=32)), device=dev)\n'
      'assert store.load(), "build the store first (Ch4)"'),
     ("md", "## Mine base questions (content base types from the suite catalog)"),
     ("code",
@@ -112,7 +112,7 @@ B = [
      'import subprocess, sys\n'
      'subprocess.run([sys.executable, os.path.join(REPO, "scripts", "enrich_data.py"),\n'
      '                "--n-runs", "150"], check=True)'),
-    ("md", "## Inspect the emitted artifacts (shared with Ch7 and Ch15)"),
+    ("md", "## Inspect the emitted artifacts (shared with Ch7 and Ch16)"),
     ("code",
      'import json, collections\n'
      'ENR = os.path.join(REPO, "data", "enrichment")\n'
@@ -122,12 +122,12 @@ B = [
      'print("embedding_u_groups  :", sorted(ugroups))\n'
      'print("by clarity          :", dict(collections.Counter(\n'
      '      c["_factors"]["clarity"] for c in cohort)))'),
-    ("md", "**Self-check** - the artifacts Ch7 (SFT) and Ch15 (evaluation) consume exist."),
+    ("md", "**Self-check** - the artifacts Ch7 (SFT) and Ch16 (evaluation) consume exist."),
     ("code",
      'for f in ["rag_cohort.json", "embedding_sft.jsonl",\n'
      '          "embedding_u_groups.json", "llm_draft_sft.jsonl"]:\n'
      '    assert os.path.isfile(os.path.join(ENR, f)), f\n'
-     'print("OK: enrichment corpus ready for Ch7 and Ch15")'),
+     'print("OK: enrichment corpus ready for Ch7 and Ch16")'),
 ]
 
 

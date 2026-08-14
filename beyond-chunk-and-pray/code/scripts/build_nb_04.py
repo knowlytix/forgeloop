@@ -22,8 +22,9 @@ def build() -> nbf.NotebookNode:
     # --- Cell 0: the canonical bootstrap (global brief A.5, verbatim). ---
     cells.append(new_code_cell(
         "import os, sys\n"
-        'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
-        "sys.path.insert(0, KNOWLYTIX_SRC)"
+        'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "")\n'
+        "if KNOWLYTIX_SRC:\n"
+    "    sys.path.insert(0, KNOWLYTIX_SRC)"
     ))
 
     cells.append(new_markdown_cell(

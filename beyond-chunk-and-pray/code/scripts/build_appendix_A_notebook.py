@@ -34,7 +34,7 @@ def code(text: str) -> None:
 md(
     "# Appendix A — Plugging GEODE-RAG into a governed agent\n"
     "\n"
-    "The capstone (Chapter 16) assembled a full GEODE-RAG system over the\n"
+    "The capstone (Chapter 17) assembled a full GEODE-RAG system over the\n"
     "Northwind Industries annual report. This appendix is the **bridge** to the\n"
     "agent book, *Beyond Prompt and Pray*: we wrap that pipeline as a single\n"
     "typed, gated tool — `search_report` — and run it inside a minimal governed\n"
@@ -50,7 +50,8 @@ md(
 code(
     "import os, sys\n"
     'KNOWLYTIX_SRC = os.environ.get("KNOWLYTIX_SRC", "/path/to/GMS-knowlytix")\n'
-    "sys.path.insert(0, KNOWLYTIX_SRC)"
+    "if KNOWLYTIX_SRC:\n"
+    "    sys.path.insert(0, KNOWLYTIX_SRC)"
 )
 
 # --- the deterministic fake backend --------------------------------------
@@ -117,7 +118,7 @@ code(
     '        binding="embedding",      # paraphrases bind (Chapter 7)\n'
     "        dense_fallback=False,      # quarantined dense index never used\n"
     "        strict_mode=True,          # graph-only; abstain rather than guess\n"
-    "        verify_llm_output=True,    # GMS self-verification (Chapter 10)\n"
+    "        verify_llm_output=True,    # GMS self-verification (Chapter 11)\n"
     '        on_verify_fail="abstain",  # a contradicted claim never ships\n'
     "    )\n"
     "    return RagPipeline.from_store(store, rag)"
@@ -364,7 +365,7 @@ md(
     "\n"
     "A governed agent must be able to tell *\"I don't know\"* from a wrong answer.\n"
     "Because the pipeline abstains on a prose/blind-spot question\n"
-    "(Chapter 11; coverage blind spots in `data/corpus_facts.md`: MD&A, Risk\n"
+    "(Chapter 12; coverage blind spots in `data/corpus_facts.md`: MD&A, Risk\n"
     "Factors, Outlook), the tool surfaces `decision=\"abstain\"` with empty\n"
     "`sources`. The agent branches on that instead of fabricating."
 )
