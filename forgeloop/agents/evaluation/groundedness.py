@@ -1,9 +1,17 @@
-"""Claim extraction and evidence checking.
+"""Claim extraction and lexical groundedness — a labeled foil.
 
-This is a deliberately naive baseline. Real groundedness checking uses an
-NLI model or a verifier LM. The point of the chapter is to make the
-verification step explicit — extract claims, attach evidence, classify —
-not to ship a state-of-the-art verifier.
+`check_groundedness` scores a claim against evidence by content-term overlap.
+It is a lexical baseline, kept only to make the verification pattern explicit —
+extract claims, attach evidence, classify — and to contrast with the check the
+rest of the stack actually uses.
+
+The recommended groundedness check is geometric, not lexical and not an
+LLM-as-judge. A claim reduced to a triple is scored by its geodesic distance to
+a trained GMS store (`GMSMemory.score_triple`, "groundedness as distance",
+Chapter 10): a continuous score, small for a claim the store recognizes and
+large for a fabricated one. That score is the same primitive that gates a tool
+call and a drafted answer at run time, and it is replayable bit-for-bit, which
+neither term overlap nor a model judging a model provides.
 """
 
 from __future__ import annotations
@@ -78,6 +86,10 @@ def _content_terms(text: str) -> set[str]:
 
 def check_groundedness(claim: Claim, evidence: dict[str, str]) -> GroundednessResult:
     """Classify a claim as supported or unsupported by content-term overlap.
+
+    This is the lexical foil described in the module docstring. The recommended
+    groundedness check is geometric (`GMSMemory.score_triple`); this function is
+    kept only for the Chapter 10 contrast.
 
     Args:
         claim: The claim to check.

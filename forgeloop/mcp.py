@@ -8,7 +8,7 @@ from the companion packages:
 
 - ``gate_plan``        — plan admissibility (agentlab GMSPlanGate)
 - ``judge_answer``     — geometric hallucination judge (agentlab GeometricJudge)
-- ``check_grounding``  — lexical claim/evidence coverage (agentlab.evaluation)
+- ``check_grounding``  — geometric claim/evidence groundedness (agentlab GeometricJudge)
 - ``test_attribute``   — DoE factor attribution (gmstest.evaluate)
 - ``crawl_page``       — browser ingest to markdown (reasonloop.ingest)
 
@@ -85,13 +85,39 @@ def register_forgeloop_tools(mcp: FastMCP, active: ActiveStore) -> None:
 
     @_tool
     def check_grounding(text: str, evidence: dict[str, str]) -> str:
-        """Lexical groundedness of a text's claims against labeled evidence spans."""
-        from agentlab.evaluation.groundedness import (
-            extract_claims, groundedness_report, coverage)
-        report = groundedness_report(extract_claims(text), evidence)
-        return _dumps({"coverage": coverage(report),
-                       "claims": [{"claim": r.claim.text, "verdict": str(r.verdict)}
-                                  for r in report]})
+        """Geometric groundedness: for each claim, the geodesic distance to its
+        nearest evidence span (agentlab GeometricJudge, no language model).
+
+        coverage is the fraction of claims the judge labels grounded. Each claim
+        reports its geodesic distance and hallucination label against the nearest
+        span, so the caller can route by margin and reproduce the verdict exactly.
+        """
+        err = active.ensure()
+        if err:
+            return _dumps({"error": err})
+        from agentlab.evaluation.groundedness import extract_claims
+        from agentlab.testing.judge import GeometricJudge
+        judge = GeometricJudge(active.tools.store)
+        claims_out = []
+        n_grounded = 0
+        for claim in extract_claims(text):
+            best = None  # (geodesic, evidence_id, verdict)
+            for ev_id, ev_text in evidence.items():
+                v = judge.judge(claim.text, ev_text)
+                if best is None or v.geodesic < best[0]:
+                    best = (v.geodesic, ev_id, v)
+            if best is None:
+                claims_out.append({"claim": claim.text, "grounded": False,
+                                   "label": "uncertain", "geodesic": None,
+                                   "evidence_id": None})
+                continue
+            geo, ev_id, v = best
+            n_grounded += int(v.passed)
+            claims_out.append({"claim": claim.text, "grounded": v.passed,
+                               "label": str(v.label), "geodesic": geo,
+                               "evidence_id": ev_id})
+        coverage = n_grounded / len(claims_out) if claims_out else 0.0
+        return _dumps({"coverage": coverage, "claims": claims_out})
 
     @_tool
     def test_attribute(rows: list[dict], factor_names: list[str],
